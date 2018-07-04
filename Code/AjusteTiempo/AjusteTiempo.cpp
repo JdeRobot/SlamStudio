@@ -625,7 +625,7 @@ void AjusteTiempo::calcularAutocorrelacion3(char coordinate, int maxLine, int in
 
 		  double r = sxy / denom;
 		  //double r = sxy / sqrt(sx*sy);
-          if ((fabs(r) < 1 )&& (fabs(r) > rMax)){
+          if ((fabs(r) <= 1 )&& (fabs(r) > rMax)){
         	  rMax=r;
         	  delayMax=delay;
           }
@@ -668,11 +668,11 @@ void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, Ma
 	std::cout <<"antes de declarar la variable"<<std::endl;
 	//int maxLine = 30;
 	maxLine=maxLine;
-	MatrixXd readingA (maxLine,4);//size is big enough to store an unknown number of data rows from file
+	MatrixXd readingA (maxLine,3);//size is big enough to store an unknown number of data rows from file
 	int totalLines = B2.rows()+offset;
 	MatrixXd readingB= MatrixXd::Zero(totalLines,B2.cols());
 	for (int h=0; h< maxLine;h++){
-		std::cout <<"h="<<h<<std::endl;
+		//std::cout <<"h="<<h<<std::endl;
 		readingB.row(int(h+offset)) = B2.row(h);
 	}
 	//VectorXd vTiempoA (maxLine), vSerieA (maxLine) ;
@@ -696,7 +696,7 @@ void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, Ma
 	//std::cout <<"fin de bucle"<<contLin<<std::endl;
 
 	contLin=maxLine;
-	//std::cout <<"contLin="<<contLin<<std::endl;
+	std::cout <<"contLin="<<contLin<<std::endl;
 	//Calcular autoCorrelacion
 	//MatrixXd A (contLin,3);
 	//MatrixXd B (contLin,3);
@@ -712,9 +712,14 @@ void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, Ma
 	std::cout <<"contLin2"<<contLin<<std::endl;
 
 	mediaSerieA = A1.col(1).mean();
+	if ( abs(mediaSerieA )< 0.00001){
+			mediaSerieA = 0.0;
+	}
 	std::cout <<"	mediaSerieA="<<	mediaSerieA<<std::endl;
 
 	mediaSerieB = B2.col(1).mean();
+	if ( abs(mediaSerieB )< 0.00001)
+				mediaSerieB = 0.0;
 	std::cout <<"	mediaSerieB="<<	mediaSerieB<<std::endl;
 
 
@@ -724,9 +729,11 @@ void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, Ma
 			//centeredTA.row(contLin)<< vTiempoA.array() - mediaTiempoA;
 
 		//}
-	centeredSA = A1.col(1).array() - mediaSerieA;
+	centeredSA = A1.col(0).array() - mediaSerieA;
+	//centeredSA = A1.col(1).array() - mediaSerieA;
 	//std::cout <<"	centeredSA="<<	centeredSA<<std::endl;
-	centeredSB = B2.col(1).array() - mediaSerieB;
+	//centeredSB = B2.col(1).array() - mediaSerieB;
+	centeredSB = B2.col(0).array() - mediaSerieB;
 	//std::cout <<"	centeredSB="<<	centeredSB<<std::endl;
 
 	double denom=0,sx=0,sy=0;
@@ -743,12 +750,16 @@ void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, Ma
        double sxy=0, rMax=0;
        int j = 0,delayMax=0;
 
+       std::cout <<"contLin3="<<contLin<<std::endl;
+       std::cout <<"maxLine="<<maxLine<<std::endl;
+
 	  for (int delay=-intervalo;delay<intervalo;delay++) {
 		  sxy = 0;
 		  sx=0;
 		  sy=0;
-		  std::cout <<"delay ="<<delay<<std::endl;
-		  for (int i=0;i<contLin;i++) {
+		  //std::cout <<"delay ="<<delay<<std::endl;
+		  //for (int i=0;i<contLin;i++) {
+		  for (int i=0;i<maxLine;i++) {
 			 //std::cout <<"i ="<<i<<" j="<<j<<std::endl;
 			 j = i + delay;
 			 if (j < 0 || j >= maxLine)
@@ -757,7 +768,8 @@ void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, Ma
 				//sxy += (vTiempoA[i] - mx) * (vTiempoB[j] - my);
 				 //sxy += centeredTA[i] * centeredTB[j];
 				 //sxy += centeredSA[i] * centeredSB[j];
-				 sxy += ((A1.row(i))(1) - mediaSerieA) * ((readingB.row(j))(1) - mediaSerieB);
+				 //sxy += ((A1.row(i))(1) - mediaSerieA) * ((readingB.row(j))(1) - mediaSerieB);
+				 sxy += ((A1.row(i))(0) - mediaSerieA) * ((readingB.row(j))(0) - mediaSerieB);
                  //sx += centeredSA(i)*centeredSA(i);
 			     //sy += centeredSB(j)*centeredSB(j);
 		  }
@@ -766,13 +778,13 @@ void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, Ma
 
 		  double r = sxy / denom;
 		  //double r = sxy / sqrt(sx*sy);
-          if ((fabs(r) < 1 )&& (fabs(r) > rMax)){
+          if ((fabs(r) <= 1 )&& (fabs(r) > rMax)){
         	  rMax=r;
         	  delayMax=delay;
           }
 	      // r is the correlation coefficient at "delay"
-		 std::cout <<"r ="<<fabs(r)<<std::endl;
-         std::cout <<"delay ="<<delay<<std::endl;
+		 //std::cout <<"r ="<<fabs(r)<<std::endl;
+         //std::cout <<"delay ="<<delay<<std::endl;
          outRegresion<< r << " " << delay << std::endl;
 		  //std::cout <<"i="<<i<<std::endl;
 	   }
@@ -815,10 +827,10 @@ double AjusteTiempo::calcularAutocorrelacion4(int maxLine, int intervalo,double 
 	//Calcular autoCorrelacion
 
 	meanXSerieA = A.row(1).mean(); // Takes the xA coordinate
-	std::cout <<"	meanXSerieA="<<	meanXSerieA<<std::endl;
+	//std::cout <<"	meanXSerieA="<<	meanXSerieA<<std::endl;
 
 	meanXSerieB = B.row(1).mean(); // takes the xB coordinate
-	std::cout <<"	meanXSerieB="<<	meanXSerieB<<std::endl;
+	//std::cout <<"	meanXSerieB="<<	meanXSerieB<<std::endl;
 
 
 	//Serie
@@ -912,7 +924,7 @@ int main( int argc, char** argv )
 		std::cout <<"	ESTOY EN BLOQUE 2="<<std::endl;
         AjusteTiempo micorrelador;
 		MatrixXd A,B;
-		double offset = 11;
+		double offset = 0;
 		int maxLine = 2500;
 		int intervalo = 200;		//micorrelador.calcularAutocorrelacion( maxLine,intervalo, offset, A,  B);
 		//micorrelador.calcularAutocorrelacion2( maxLine,intervalo, offset, A,  B);
@@ -925,8 +937,9 @@ int main( int argc, char** argv )
 
 
 }
-
 */
+
+
 
 //create sequence 1, two variables , T (time), X
 
