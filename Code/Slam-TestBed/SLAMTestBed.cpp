@@ -28,7 +28,7 @@ SLAMTestBed::SLAMTestBed(){
 
 int main(){
 
-	int maxLine = 2500;
+	int maxLine = 500;
 	Transformador myTransformador;
 
 	MatrixXd readingA (maxLine,3);
@@ -36,15 +36,25 @@ int main(){
 	std::cout <<"1="<<std::endl;
 	std::cout << std::setprecision(4) << std::fixed;
 	std::ifstream infileA( "/home/tfm3/workspace/SLAMTestBed/miEntradaA.txt" );
+	//std::ifstream infileA( "/home/tfm3/workspace/SLAMTestBed/miEntradaA1000.txt" );
 	//inputFile >> std::setprecision(6) >> std::fixed;
 	int GNoise = 0;
 	Point3D miEscala;
+	//miEscala.setXYZ(3.7525,3.7525,3.7525);
 	miEscala.setXYZ(1,1,1);
+	//miEscala.setXYZ(2,2,2);
 	Point3D miTraslacion;
-	miTraslacion.setXYZ(1,1,1);
-	myTransformador.createContaminatedSequence("miEntradaA.txt","miSalidaContaminada.txt",miTraslacion,miEscala,0,'X',GNoise);
+	miTraslacion.setXYZ(0,0,0);
+
+	//Creating new dataset (dataset B) similar to the first one but contaminated. Write it into a file
+	//double offset = 1;
+	double offset = 0;
+
+	myTransformador.createContaminatedSequence("miEntradaA.txt","miSalidaContaminada.txt",miTraslacion,miEscala,0,'X',GNoise,offset);
 	std::cout << std::setprecision(4) << std::fixed;
 	//std::ifstream infileB( "/home/tfm3/workspace/SLAMTestBed/miEntradaA.txt" );
+
+	// Reading input file B, with new dataset contaminated
 	std::ifstream infileB( "miSalidaContaminada.txt" );
 
 
@@ -71,8 +81,10 @@ int main(){
 
 	}
 	infileA.close();
-	MatrixXd A (contLin,3);
+
+	MatrixXd A,AA (contLin,3);
 	A = readingA.block(0,0,contLin,3);
+	AA = readingA.block(0,0,contLin,3);//to use with Scale and PCA
 
 	contLin=0;
 
@@ -83,42 +95,133 @@ int main(){
 
 	}
 	infileB.close();
-	MatrixXd B (contLin,3);
+	MatrixXd B,BB (contLin,3);
 	B = readingB.block(0,0,contLin,3);
+	BB = readingB.block(0,0,contLin,3);//to use with Scale and PCA
 
 
-    //GeneratorPCA myGeneratorPCA;
+    GeneratorPCA myGeneratorPCA;
     //Point3D miEscala2;
     //miEscala2.setXYZ(1,1,1);
     //Point3D miTraslacion2;
     //miTraslacion2.setXYZ(1,1,1);
     //myTransformador.createMatRotTraslaEscala('X',0,miTraslacion2,miEscala2);
+    Vector3d centroidA = A.colwise().mean();
+    Vector3d centroidB = B.colwise().mean();
+    //A = A.rowwise() - centroidA.transpose();
+    //B = B.rowwise() - centroidB.transpose();
+    myGeneratorPCA.calculatePCAbySVD(AA);//A is converted to PCA. Important,inside this function also is calculated A.rowwise() - A.colwise().mean(). A is converted to a newA
+    myGeneratorPCA.calculatePCAbySVD(BB);//B is converted to PCA. Important,inside this function also is calculated B.rowwise() - B.colwise().mean(). B is converted to a newB
 
-    //myGeneratorPCA.calculatePCAbySVD(A);
-    //myGeneratorPCA.calculatePCAbySVD(B);
-
-    //FindScala myFindScala;
+    FindScala myFindScala;
     Registrador myRegister; //to calculate matrix Rotation and Traslation
 
+
+    // PREVIOUSLY, INSIDE calculatePCAbySVD, we calculated the difference with the centroids. No need to calculate it again
     //MatrixXd AA = A.rowwise() - A.colwise().mean();
     //MatrixXd BB = B.rowwise() - B.colwise().mean();
 
+
+
     //myFindScala.getScalaSVD(AA,BB);
 
+    //
+    Vector3d myScalaSVD = myFindScala.getScalaSVD(AA,BB);
+    //Vector3d myScalaSVD = myFindScala.getScalaSVD(AA,BB);
+    std::cout <<"myScalaSVD"<<myScalaSVD<<std::endl;
 
-    MatrixXd ret_R,ret_T;
 
+
+    //A = A.rowwise() - A.colwise().mean();
+    //B = B.rowwise() - B.colwise().mean();
+    //Begin scale adaptation
+    //Divide dataset B by myScalaSVD
+    MatrixXd newB (contLin,3);
+    newB = B.block(0,0,contLin,3);
+    MatrixXd newBB (contLin,3);
+    newBB = BB.block(0,0,contLin,3);
+    //newB = BB.block(0,0,contLin,3);
+
+    if (myScalaSVD(0) > 1 || myScalaSVD(1) > 1 || myScalaSVD(1) > 1 ){ //if myScaleSVD is not (1,1,1)
+
+
+    	std::cout <<"Scale is greater than 1. Divide by Scale dataset B and datasetBB"<<myScalaSVD<<std::endl;
+		for (int i= 0; i< newB.rows(); i++){
+
+					VectorXd aRow = newB.row(i);
+					newB.row(i) << aRow(0)/myScalaSVD(0),aRow(1)/myScalaSVD(1),aRow(2)/myScalaSVD(2);
+
+
+				}
+
+		for (int i= 0; i< newBB.rows(); i++){
+			VectorXd aRowBB = newBB.row(i);
+			newBB.row(i) << aRowBB(0)/myScalaSVD(0),aRowBB(1)/myScalaSVD(1),aRowBB(2)/myScalaSVD(2);
+
+		}
+
+		Vector3d myScalaSVD2 = myFindScala.getScalaSVD(A,newB);
+		Vector3d myScalaSVD2BB = myFindScala.getScalaSVD(AA,newBB);
+		//Vector3d myScalaSVD2 = myFindScala.getScalaSVD(AA,newB);
+		std::cout <<"myScalaSVD2. After dividing by scale dataset B"<<myScalaSVD2<<std::endl;
+		std::cout <<"myScalaSVD2BB. After dividing by scale dataset BB"<<myScalaSVD2BB<<std::endl;
+
+    }
+    // end scale adaptation
+
+
+    MatrixXd ret_R,ret_T,MatrixXd , ret_Toriginal , otroBB (contLin-25,3),otroAA (contLin-25,3);
+
+    myRegister.rigid_transform_3D(A,newB,ret_R,ret_T);
     //myRegister.rigid_transform_3D(A,B,ret_R,ret_T);
+    //myRegister.rigid_transform_3D_normalized(A,B,ret_R,ret_T);
+    //myRegister.rigid_transform_3D_normalized(A,newB,ret_R,ret_T);
+    Vector3d centroidNewB = newB.colwise().mean();
+    ret_Toriginal = -ret_R * centroidA+centroidB;
+    ret_T = -ret_R * centroidA+centroidNewB;
+    std::cout <<"La traslacion original es:\n"<<ret_Toriginal<<std::endl;
+    std::cout <<"La traslacion sin escala es:\n"<<ret_T<<std::endl;
+    std::cout <<"La rotacion sin escala es:\n"<<ret_T<<std::endl;
+    Vector3d newTrasla ;
+    newTrasla<< ret_T(0)*myScalaSVD(0), ret_T(1)*myScalaSVD(1), ret_T(2)*myScalaSVD(2);
+    std::cout <<"La traslacion sin escala, multiplicada de nuevo por la escala es:"<<newTrasla<<std::endl;
+
 	//std::cout <<"ret_R="<<ret_R<<std::endl;
     //std::cout <<"ret_T="<<ret_T<<std::endl;
 
     AjusteTiempo myFindOffset;
-    double offset = 40;
+    //double offset = 8;
+    //double offset = 0;
 	//int maxLine = A.cols;
 	int intervalo = 100;		//micorrelador.calcularAutocorrelacion( maxLine,intervalo, offset, A,  B);
-	//myFindOffset.calculateCrossCorrelation( maxLine,intervalo, offset, A,  B);
+	//myFindOffset.calculateCrossCorrelation( maxLine,intervalo, offset, A,  B);//malo
 	std::cout <<"Antes de calculateOffset"<<std::endl;
-	myFindOffset.calculateOffset( maxLine,intervalo, offset, A,  B);
+	otroBB = BB.block(25,0,contLin-25,3);
+    otroAA = AA.block(25,0,contLin-25,3);
+    //mostrar valores de A y B
+	for (int i= 0; i< 30; i++){
+		std::cout <<i<<" A.col "<<A.row(i)<<" B.col "<<B.row(i)<<std::endl;
+
+			}
+
+	for (int i= 0; i< 30; i++){
+			std::cout <<i <<" otroAA.col "<<otroAA.row(i)<<" otroBB.col "<<otroBB.row(i)<<std::endl;
+
+	}
+	myFindOffset.calculateOffset( A.rows(),intervalo, offset, A,  A);//ok
+	myFindOffset.calculateOffset( A.rows(),intervalo, offset, A,  B);//ok
+	myFindOffset.calculateOffset( maxLine,intervalo, offset, AA,  newBB);//ok
+
+
+	//myFindOffset.calculateOffset( maxLine,intervalo, offset, AA,  BB);//ok
+	//myFindOffset.calculateOffset( otroAA.rows(),intervalo, offset, otroAA,  otroAA);//ok
+	//myFindOffset.calculateOffset( maxLine,intervalo, offset, otroAA,  otroAA);//no ok
+	//myFindOffset.calculateOffset( maxLine,intervalo, offset, A,  newB);//ok
+	//myFindOffset.calculateOffset( maxLine,intervalo, offset, AA,  BB);//ok
+	//myFindOffset.calculateCrossCorrelation( maxLine,intervalo, offset, AA,  BB);//malo
+	//myFindOffset.calculateCrossCorrelation( otroAA.rows(),intervalo, offset, otroAA,  otroBB);//malo
+
+	//std::cout <<"B"<<B<<std::endl;
 
 
 
