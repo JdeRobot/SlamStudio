@@ -228,7 +228,7 @@ void GeneratorPCA::calculatePCA(int maxLine, MatrixXd& A){
 	// Map the dataset in the new three dimensional space.
 	centered = centered * pcaTransform;
 
-	for (int i= 0; i< contLin; i++){
+	/*for (int i= 0; i< contLin; i++){
 		//std::cout <<"i="<<i<<std::endl;
 		//std::cout <<"centered.row(i)="<<centered.row(i)<<std::endl;
 		VectorXd aRow = centered.row(i);
@@ -237,7 +237,7 @@ void GeneratorPCA::calculatePCA(int maxLine, MatrixXd& A){
 		//outA << centered.row(i).[1], centered.row(i).[2],centered.row(i).[3];
 		//outA << centered.row(i,1), centered.row(i,2),centered.row(i,3);
 
-	}
+	}*/
 
     outA.close();
 
