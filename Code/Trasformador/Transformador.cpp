@@ -351,7 +351,7 @@ void Transformador::setFrequency(double myFrequency){
 double Transformador::getFrequency(){
 	return frequency;
 }
-double Transformador::generateGaussianNoise(double mu, double sigma)
+double Transformador::generateGaussianNoise(double mu, double sigma, int CNoise)
 {
 	static const double epsilon = std::numeric_limits<double>::min();
 	static const double two_pi = 2.0*3.14159265358979323846;
@@ -376,31 +376,44 @@ double Transformador::generateGaussianNoise(double mu, double sigma)
 	//std::cout<<"cosmicNoise="<<cosmicNoise<<"\n";
 
 	int probabilityToApplyNoise = 290;
+    if ( CNoise == 1){// if Cosmic Noise ==1 , then generate Cosmic Noise
+		if ( cosmicNoise % (probabilityToApplyNoise+1) != probabilityToApplyNoise ) {
 
-	if ( cosmicNoise % (probabilityToApplyNoise+1) != probabilityToApplyNoise ) {
+				cosmicNoise=0;
+				//To apply cosmicNoise, we need that cosmicNoise % (probability+1) must be equal to probability+1
+				//for instance, if probabilityTAN=5
+				//then we need that cosmicNoise % 6 == 5, otherwise cosmicNoise=0
 
-		cosmicNoise=0;
-		//To apply cosmicNoise, we need that cosmicNoise % (probability+1) must be equal to probability+1
-		//for instance, if probabilityTAN=5
-		//then we need that cosmicNoise % 6 == 5, otherwise cosmicNoise=0
+			}else {
+				this->contCosmicNoise ++;
+				if ( this->contCosmicNoise % 2 == 0 )
+						cosmicNoise=-cosmicNoise;
+				std::cout<<"##############################################cosmicNoise will be applied "<<cosmicNoise<<" counter= "<<this->contCosmicNoise<<" \n";
 
-	}else {
-        this->contCosmicNoise ++;
-        if ( this->contCosmicNoise % 2 == 0 )
-        		cosmicNoise=-cosmicNoise;
-		std::cout<<"##############################################cosmicNoise will be applied "<<cosmicNoise<<" counter= "<<this->contCosmicNoise<<" \n";
-
-	}
-	double z0;
+		}
+    }
+    double z0;
 	z0 = sqrt(-2.0 * log(u1)) * cos(two_pi * u2);
 	z1 = sqrt(-2.0 * log(u1)) * sin(two_pi * u2);
-	return z0 * sigma + mu + cosmicNoise/12;
+	if (CNoise == 1) {
+		return z0 * sigma + mu + cosmicNoise/12;
+	} else {
+		return z0 * sigma + mu;
+	}
 	//return z0 * sigma + mu + cosmicNoise/200 ;
 	//return z0 * sigma + mu + (cosmicNoise % 10 + 2 );
 	//return z0 * sigma + mu;
 }
 
-void Transformador::createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise){
+void Transformador::createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise, int CNoise, double offset){
+	// This function modify an input dataset or sequence, and create another new dataset or sequence modified
+	// traslacion: is the traslation value (X,Y,Z)
+	// escala    : is the scale value (X,Y,Z)
+	// anguloRot : is the angle value for Rotation
+	// eje       : indicates the axis (X or Y or Z) to perform the Rotation
+	// GNoise    : boolean value to indicate if Gaussian Noise must be applied to create the new modified dataset
+	// CNoise    : boolean value to indicate if Cosmic Noise must be applied to create the new modified dataset
+	// offset    : Indicates time offset
 	    std::cout << std::setprecision(6) << std::fixed;
 	    std::ofstream out( outputFileName );
 	    out << std::setprecision(6) << std::fixed;
@@ -410,7 +423,7 @@ void Transformador::createContaminatedSequence(char* inputFileName,char* outputF
 	    int contLin=0;
 	    Transformador myTransformador;
 	    myTransformador.setFrequency(0);
-	    myTransformador.setOffset(5);
+	    myTransformador.setOffset(offset);
 	    myTransformador.setInitTime(-1);
 	    //for (contLin=0;contLin <50; contLin++  ){
 	    // FOR READING FILE AND DRAW CURVE
@@ -467,7 +480,7 @@ void Transformador::createContaminatedSequence(char* inputFileName,char* outputF
 	        //modify the Point3D adding Gaussian Noise
 	        //std::cout<<"-----------------antes generateGaussianNoise\n";
 	        if (GNoise == 1) {
-				gnoise=myTransformador.generateGaussianNoise(0,0.01);//mean , deviation
+				gnoise=myTransformador.generateGaussianNoise(0,0.01,CNoise);//mean , deviation, cosmicNoise
 				//std::cout<<"-----------------despues generateGaussianNoise\n";
 				chooseXYZ= long(abs(gnoise*10000)) % 3;//
 				switch (chooseXYZ){

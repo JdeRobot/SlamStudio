@@ -65,7 +65,7 @@ public:
 	void setTraslacion (Point3D aPoint3D);
 	void displayMatriz (double matriz [4][4], int matriz_rows, int matriz_cols);
 	void displayMatrizRotTrasla ();
-	double generateGaussianNoise(double mu, double sigma);
+	double generateGaussianNoise(double mu, double sigma,int CNoise);
 	void createMatRotTraslaEscala ( char eje , float angulo, Point3D aPoint3D,Point3D aScala );
 	void setFrequency(double myFrequency);
     double getFrequency();
@@ -74,7 +74,7 @@ public:
     void setInitTime(double initialValue);
     double getInitTime();
     //void createContaminatedSequence(char* inputFileName,char* outputFileName,int GNoise);
-    void createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise);
+    void createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise,int CNoise,double offset);
 
 
 };

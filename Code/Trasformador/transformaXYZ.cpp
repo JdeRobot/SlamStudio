@@ -356,7 +356,7 @@ int main( int argc, char** argv )
 
         //modify the Point3D adding Gaussian Noise
         //std::cout<<"-----------------antes generateGaussianNoise\n";
-        gnoise=myTransformador.generateGaussianNoise(0,0.01);//mean , deviation
+        gnoise=myTransformador.generateGaussianNoise(0,0.01,0);//mean , deviation
         //std::cout<<"-----------------despues generateGaussianNoise\n";
         chooseXYZ= abs(gnoise*10000) % 3;//
         switch (chooseXYZ){
