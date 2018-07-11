@@ -712,15 +712,16 @@ void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, Ma
 	std::cout <<"contLin2"<<contLin<<std::endl;
 
 	mediaSerieA = A1.col(1).mean();
-	if ( abs(mediaSerieA )< 0.00001){
-			mediaSerieA = 0.0;
-	}
-	std::cout <<"	mediaSerieA="<<	mediaSerieA<<std::endl;
+	//if ( abs(mediaSerieA )< 0.000001){
+	//		mediaSerieA = 0.0;
+	//}
+	std::cout <<"	mediaSerieA="<<	round(mediaSerieA)<<std::endl;
 
 	mediaSerieB = B2.col(1).mean();
-	if ( abs(mediaSerieB )< 0.00001)
-				mediaSerieB = 0.0;
-	std::cout <<"	mediaSerieB="<<	mediaSerieB<<std::endl;
+	//mediaSerieB = B2.col(1).mean();
+	//if ( abs(mediaSerieB )< 0.000001)
+	//			mediaSerieB = 0.0;
+	std::cout <<"	mediaSerieB="<<	round(mediaSerieB)<<std::endl;
 
 
 	//Serie
