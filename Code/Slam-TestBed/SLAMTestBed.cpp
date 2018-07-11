@@ -28,29 +28,32 @@ SLAMTestBed::SLAMTestBed(){
 
 int main(){
 
-	int maxLine = 500;
+	//int maxLine = 500;
+	int maxLine = 3000;
 	Transformador myTransformador;
 
 	MatrixXd readingA (maxLine,3);
 	MatrixXd readingB (maxLine,3);
 	std::cout <<"1="<<std::endl;
-	std::cout << std::setprecision(4) << std::fixed;
+	std::cout << std::setprecision(6) << std::fixed;
 	std::ifstream infileA( "/home/tfm3/workspace/SLAMTestBed/miEntradaA.txt" );
 	//std::ifstream infileA( "/home/tfm3/workspace/SLAMTestBed/miEntradaA1000.txt" );
 	//inputFile >> std::setprecision(6) >> std::fixed;
-	int GNoise = 0;
+	//int GNoise = 0;
+	int GNoise = 1;// indicates if Gaussian Noise must be generated
+	int CNoise = 0;// indicates if Cosmic Noise must be generated
 	Point3D miEscala;
 	//miEscala.setXYZ(3.7525,3.7525,3.7525);
-	miEscala.setXYZ(1,1,1);
+	miEscala.setXYZ(3,3,3);
 	//miEscala.setXYZ(2,2,2);
 	Point3D miTraslacion;
-	miTraslacion.setXYZ(0,0,0);
+	miTraslacion.setXYZ(3,3,3);
 
 	//Creating new dataset (dataset B) similar to the first one but contaminated. Write it into a file
-	//double offset = 1;
-	double offset = 0;
+	double offset = 11;
+	//double offset = 0;
 
-	myTransformador.createContaminatedSequence("miEntradaA.txt","miSalidaContaminada.txt",miTraslacion,miEscala,0,'X',GNoise,offset);
+	myTransformador.createContaminatedSequence("miEntradaA.txt","miSalidaContaminada.txt",miTraslacion,miEscala,60,'X',GNoise,CNoise,offset);
 	std::cout << std::setprecision(4) << std::fixed;
 	//std::ifstream infileB( "/home/tfm3/workspace/SLAMTestBed/miEntradaA.txt" );
 
@@ -80,6 +83,7 @@ int main(){
 
 
 	}
+
 	infileA.close();
 
 	MatrixXd A,AA (contLin,3);
@@ -210,7 +214,9 @@ int main(){
 	}
 	myFindOffset.calculateOffset( A.rows(),intervalo, offset, A,  A);//ok
 	myFindOffset.calculateOffset( A.rows(),intervalo, offset, A,  B);//ok
+	myFindOffset.calculateOffset( A.rows(),intervalo, offset, A,  newB);//ok
 	myFindOffset.calculateOffset( maxLine,intervalo, offset, AA,  newBB);//ok
+	myFindOffset.calculateOffset( maxLine,intervalo, offset, AA,  BB);//ok
 
 
 	//myFindOffset.calculateOffset( maxLine,intervalo, offset, AA,  BB);//ok
