@@ -18,6 +18,8 @@ public:
    //void calcularAutocorrelacion3(char coordinate, int maxLine, int intervalo,double offset, MatrixXd& A1, MatrixXd& B2);
    void readMatrixFromFile(int maxLine,char* fileName, MatrixXd& A);
    void writeMatrixFromFile(int maxLine,char* fileName, MatrixXd& A);
+   //void estimatePCAOrder(MatrixXd& A, MatrixXd& B);
+   int estimatePCAorder(MatrixXd& A, MatrixXd& B);
 
 
 
