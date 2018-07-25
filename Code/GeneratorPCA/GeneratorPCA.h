@@ -17,7 +17,7 @@ public:
    //void calcularAutocorrelacion3(char coordinate, int maxLine, int intervalo,double offset, MatrixXd& A1, MatrixXd& B2);
    void calculatePCA(int maxLine, MatrixXd& A1);
    void calculatePCAbySVD(int maxLine,MatrixXd& A1);
-   void calculatePCAbySVD(MatrixXd& A1);
-
+   void calculatePCAbySVD(int rotation,MatrixXd& A, MatrixXd& A2, MatrixXd& PCA);
+   void rotatePCA (int cont,MatrixXd& PCA);
 };
 #endif

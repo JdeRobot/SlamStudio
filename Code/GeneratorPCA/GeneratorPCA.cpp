@@ -20,6 +20,55 @@ using namespace Eigen;
 GeneratorPCA::GeneratorPCA(){
 	std::cout<< "constructor por defecto AjusteTiempo" <<std::endl;
 }
+void GeneratorPCA::rotatePCA (int cont,MatrixXd& PCA){
+	// This function rotates the 3 principal components estimated by pca
+	// there are 6 possibilities, 3!= 3*2, therefore 5 possible rotations
+	//  cont = 0   XYZ
+	//  cont = 1   XZY
+	//  cont = 2   YZX
+	//  cont = 3   YXZ
+	//  cont = 4   ZXY
+	//  cont = 5   ZYX
+
+	MatrixXd aux= PCA.block(0,0,3,3);
+	//if (cont==1 || cont == 3){
+	// if cont == 0 the order does not change
+	if (cont==1 ){
+        // XYZ -->  XZY
+		aux.col(1)= PCA.col(1);
+		PCA.col(1)= PCA.col(2);
+		PCA.col(2)= aux.col(1);
+
+
+	} else if (cont==2 ){
+        // XYZ --> YZX
+		aux.col(0)=PCA.col(0);
+		PCA.col(0)=PCA.col(1);
+		PCA.col(1)=PCA.col(2);
+		PCA.col(2)=aux.col(0);
+
+	}else if (cont==3){
+		// XYZ --> YXZ
+
+		aux.col(0)=PCA.col(0);
+		PCA.col(0)=PCA.col(1);
+		PCA.col(1)=aux.col(0);
+
+	}else if (cont==4){
+		// XYZ --> ZXY
+		aux.col(0)=PCA.col(0);
+		PCA.col(0)=PCA.col(2);
+		PCA.col(2)=PCA.col(1);
+		PCA.col(1)=aux.col(0);
+
+	}else if (cont==5){
+		// XYZ --> ZYX
+		aux.col(0)=PCA.col(0);
+		PCA.col(0)=PCA.col(2);
+		PCA.col(2)=aux.col(0);
+
+	}
+}
 void GeneratorPCA::calculatePCAbySVD(int maxLine, MatrixXd& A){
 	/*
 	 * based on code
@@ -112,12 +161,12 @@ void GeneratorPCA::calculatePCAbySVD(int maxLine, MatrixXd& A){
 
 }
 
-void GeneratorPCA::calculatePCAbySVD( MatrixXd& A){
+void GeneratorPCA::calculatePCAbySVD( int rotation,MatrixXd& A , MatrixXd& A2 ,MatrixXd& PCA){
 	/*
 	 * based on code
 	 * https://forum.kde.org/viewtopic.php?f=9&t=110265
 	 */
-
+    // int rotation , means one of the six possibles orders of pca solution. XYZ, XZY, YZX,YXZ,ZXY,ZYX
 
 	Eigen::MatrixXd aligned = A.rowwise() - A.colwise().mean();
 	Eigen::MatrixXd cov = aligned.adjoint() * aligned;
@@ -137,10 +186,13 @@ void GeneratorPCA::calculatePCAbySVD( MatrixXd& A){
 	MatrixXd Aux1=pcaTransform.block(0,0,3,3);
 	//IMPORTANT : change order of columns . Column 0 by colum 2. When calculate PCA normally returns cols in increasing value.
 	//When calculate PCA using SVD columns are returned in decreasing value.
-	MatrixXd Aux2= pcaTransform.block(0,0,3,3);
+	/*MatrixXd Aux2= pcaTransform.block(0,0,3,3);
 	Aux2.col(0)=Aux1.col(0);
 	Aux1.col(0)=Aux1.col(2);
 	Aux1.col(2)=Aux2.col(0);
+	*/
+	//int cont=2;
+	rotatePCA(rotation,Aux1);
 	std::cout <<"svd.matrixV_A1="<<Aux1<<std::endl;
 	std::cout <<"antesDeTerminarcalculatePCAbySVD1"<<std::endl;
 	pcaTransform= Aux1.block(0,0,3,3);
@@ -156,7 +208,8 @@ void GeneratorPCA::calculatePCAbySVD( MatrixXd& A){
 	std::cout <<"pcaTransformLeft="<<svd.matrixV().leftCols(3)<<std::endl;
 	std::cout <<"svd.matrixV="<<svd.matrixV()<<std::endl;
 	//std::cout <<"svd.matrixU="<<svd.matrixU()<<std::endl;
-    A=projected.block(0,0,projected.rows(),projected.cols());
+	// Return the dataset transformed by pca
+    A2=projected.block(0,0,projected.rows(),projected.cols());
 
 }
 void GeneratorPCA::calculatePCA(int maxLine, MatrixXd& A){
@@ -246,6 +299,8 @@ void GeneratorPCA::calculatePCA(int maxLine, MatrixXd& A){
 
 
 }
+
+
 /*int main( int argc, char** argv )
 {
 	//std::cout << std::setprecision(6) << std::fixed;
