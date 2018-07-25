@@ -21,6 +21,7 @@ public:
    void calcularAutocorrelacion3(char coordinate, int maxLine, int intervalo,double offset, MatrixXd& A1, MatrixXd& B2);
    void calculateOffset(int maxLine, int intervalo,double offset, MatrixXd& A1, MatrixXd& B2);
    double calcularAutocorrelacion4(int maxLine, int intervalo,double offset, MatrixXd& A, MatrixXd& B);
+   double calculateOffsetXYZ(int maxLine, int interval, double offset, MatrixXd& A1,MatrixXd& B2);
    Vector3d getScalaEigenValues(MatrixXd AA, MatrixXd BB);
    Vector3d getScalaSVD(MatrixXd AA, MatrixXd BB);
 
