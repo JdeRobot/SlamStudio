@@ -1,4 +1,7 @@
-
+/*This class draw every point on 3d world
+ *
+ *
+*/
 #ifndef TETRAHEDRON_H
 #define TETRAHEDRON_H
 
@@ -15,8 +18,11 @@ public:
 Tetrahedron(QWidget *parent = 0);
 void setDataView(Eigen::MatrixXd dataModel);
 void setContaminatedDataView(Eigen::MatrixXd dataModelContaminated);
+void setEstimatedDataView(Eigen::MatrixXd dataModelEstimated);
 void setScala(double X, double Y, double Z);
 void setTrasla(double X, double Y, double Z);
+void setDots();
+void setLines();
 
 protected:
 void initializeGL();
@@ -26,18 +32,28 @@ void mousePressEvent(QMouseEvent *event);
 void mouseMoveEvent(QMouseEvent *event);
 void mouseDoubleClickEvent(QMouseEvent *event);
 void wheelEvent(QWheelEvent *event);
+
+// Data Structure for data model: dataGT , data Contaminated, dataEstimated
+// dataGTxyz is the original data
 double dataGTx[15000]= {0.0};
 double dataGTy[15000]= {0.0};
 double dataGTz[15000]= {0.0};
+// dataContaminatedxyz is the data modified with rotation , scala, traslation
 double dataContaminatedx[15000]= {0.0};
 double dataContaminatedy[15000]= {0.0};
 double dataContaminatedz[15000]= {0.0};
-
+// dataEstimated is the data estimated by register module
+double dataEstimatedx[15000]= {0.0};
+double dataEstimatedy[15000]= {0.0};
+double dataEstimatedz[15000]= {0.0};
+bool dots = true;
+bool lines = false;
 
 
 private:
 int contLin1=0;
 int contLin2=0;//number of lines of contaminated sequence
+int contLin3=0;//number of lines of contaminated sequence
 double scalaX=0.0;
 double scalaY=0.0;
 double scalaZ=0.0;

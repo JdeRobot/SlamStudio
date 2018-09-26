@@ -27,8 +27,12 @@ private:
 
 #include <QMainWindow>
 #include "winslam.h"
+#include "datadialogscalatraslarota.h"
+#include "datadialogshowestimated.h"
 #include "dialogscalatraslarota.h"
+#include "dialogshowestimated.h"
 #include "transformador2/Transformador.h"
+#include "Registrador/Registrador.h"
 #include "Point3D.h"
 class QAction;
 class QActionGroup;
@@ -48,16 +52,43 @@ public:
     void loadFile(const QString &fileName);
     void setScala(double X, double Y, double Z);
     void setTrasla(double X, double Y, double Z);
-    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ);
+    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise,double cNoise);
     QWidget *myWinSlam;
-    QDialog *dialogScalaTraslaRota;
+
+
+
+    //DIALOG that shows parameters of transformation to be performed , scale, traslation , rotation, gaussian and cosmic noise
+    DialogScalaTraslaRota *dialogScalaTraslaRota;
+    DataDialogScalaTraslaRota* dataDialogScalaTraslaRota;
+
+    //DIALOG that show parameters of ESTIMATED transformations, scale, traslation, rotation
+    DialogShowEstimated *dialogShowEstimated;
+    DataDialogShowEstimated *dataDialogShowEstimated;
+
+    //============================== Model Objects to estimate transformation
     Transformador myTransformador;
+    Registrador myRegistrador;
     char * myInputFileName;
     char * myOutputFileName;
+    //==============================
+
+    //============================== Matrix that will store the data model
+    Eigen::MatrixXd readingA;
+    Eigen::MatrixXd readingB;
+    Eigen::MatrixXd dataEstimated;
+    Eigen::MatrixXd rotationEstimated;
+    Eigen::MatrixXd traslationEstimated;
+
+    //===============================
+
     //Point3D * myScala;
 private slots:
     void onOpenFile();
     void onModifySequence();
+    void onEstimateSequence();
+    void onExit();
+    void onSetDots();//Menu View:indicate that dataset will be displayed as 3d points
+    void onSetLines();//Menu View:indicate that dataset will be displayed as 3d lines
 protected:
     //Winslam myWinSlam;
 

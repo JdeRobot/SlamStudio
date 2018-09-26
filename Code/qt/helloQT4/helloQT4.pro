@@ -32,7 +32,11 @@ SOURCES += \
     winslam.cpp \
     dialogscalatraslarota.cpp \
     Point3D.cpp \
-    transformador2/Transformador.cpp
+    transformador2/Transformador.cpp \
+    Registrador/Registrador.cpp \
+    datadialogscalatraslarota.cpp \
+    dialogshowestimated.cpp \
+    datadialogshowestimated.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -45,7 +49,11 @@ HEADERS += \
     transformador2\transformador.h\
     transformador2\Point3D.h \
     Point3D.h \
-    transformador2/Transformador.h
+    transformador2/Transformador.h \
+    Registrador/Registrador.h \
+    datadialogscalatraslarota.h \
+    dialogshowestimated.h \
+    datadialogshowestimated.h
 
 FORMS += \
         mainwindow.ui

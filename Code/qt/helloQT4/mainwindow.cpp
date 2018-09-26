@@ -33,28 +33,71 @@ MainWindow::~MainWindow()
 
 MainWindow::MainWindow()
 {
+    int maxLine = 3000;
+    Eigen::MatrixXd newMatrixA (maxLine,3);
+    readingA = newMatrixA;
+    Eigen::MatrixXd newMatrixB (maxLine,3);
+    readingB = newMatrixB;
+    Eigen::MatrixXd newMatrixEstimated (maxLine,3);
+    dataEstimated = newMatrixEstimated;
     QMenuBar *menuBar = new QMenuBar;
     QMenu *menuWindow = menuBar->addMenu(tr("&File"));
     QAction *openFile = new QAction(menuWindow);
     openFile->setText(tr("Open"));
     menuWindow->addAction(openFile);
     connect(openFile, &QAction::triggered, this, &MainWindow::onOpenFile);
+    QAction *exitApp = new QAction(menuWindow);
+    exitApp->setText(tr("Exit"));
+    menuWindow->addAction(exitApp);
+    connect(exitApp, &QAction::triggered, this, &MainWindow::onExit);
 
     QMenu *menuSequence = menuBar->addMenu(tr("&Sequence Manager"));
     QAction *modifySequence = new QAction(menuWindow);
     modifySequence->setText(tr("Modify sequence"));
     menuSequence->addAction(modifySequence);
     connect(modifySequence, &QAction::triggered, this, &MainWindow::onModifySequence);
-    setMenuBar(menuBar);
+
+    QMenu *menuEstimate = menuBar->addMenu(tr("&Estimator"));
+    QAction *estimateSequence = new QAction(menuWindow);
+    estimateSequence->setText(tr("Estimate sequence"));
+    menuEstimate->addAction(estimateSequence);
+    connect(estimateSequence, &QAction::triggered, this, &MainWindow::onEstimateSequence);
+
+    QMenu *menuView = menuBar->addMenu(tr("&View"));
+    QAction *setDots = new QAction(menuWindow);
+    setDots->setText(tr("3d dots"));
+    menuView->addAction(setDots);
+    connect(setDots, &QAction::triggered, this, &MainWindow::onSetDots);
+    QAction *setLines = new QAction(menuWindow);
+    setLines->setText(tr("3d lines"));
+    menuView->addAction(setLines);
+    connect(setLines, &QAction::triggered, this, &MainWindow::onSetLines);
+
 
     setMenuBar(menuBar);
+
+    //setMenuBar(menuBar);
 
     if (!centralWidget())
         //setCentralWidget(new Window(this));
         myWinSlam=(QWidget*)(new Winslam(this));
         setCentralWidget(myWinSlam);
     //onAddNew();
+    dataDialogScalaTraslaRota= new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
 
+}
+
+void MainWindow::onExit()
+{
+    this->close();
+}
+void MainWindow::onSetDots()
+{
+    ((Winslam*)(myWinSlam))->setDots();
+}
+void MainWindow::onSetLines()
+{
+    ((Winslam*)(myWinSlam))->setLines();
 }
 
 void MainWindow::onOpenFile()
@@ -77,15 +120,50 @@ void MainWindow::onOpenFile()
 void MainWindow::onModifySequence()
 {
      std::cout<< "onModifySequence" <<std::endl;
-    dialogScalaTraslaRota =(QDialog*) (new DialogScalaTraslaRota (this));
+    //dialogScalaTraslaRota =(QDialog*) (new DialogScalaTraslaRota (this));
+    dialogScalaTraslaRota =(new DialogScalaTraslaRota (this));
+    //dialogScalaTraslaRota->setDataDialog(new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0));
+    dialogScalaTraslaRota->setDataDialog(dataDialogScalaTraslaRota);
     dialogScalaTraslaRota->show();
+    dataDialogScalaTraslaRota= dialogScalaTraslaRota->getDataDialog();
+    std::cout<<"onModifySequence.dataDialogScalaTraslaRota->getCosmicNoiseDeviation()"<<dataDialogScalaTraslaRota->getCosmicNoiseDeviation();
     std::cout<< "FIN onModifySequence" <<std::endl;
+}
+
+void MainWindow::onEstimateSequence(){
+    std::cout<<"onEstimateSequence"<<std::endl;
+    //myRegistrador.rigid_transform_3D()
+    myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
+    std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
+    std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
+    myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
+    //std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
+    ((Winslam*)(myWinSlam))->setEstimatedDataView(dataEstimated);
+    dialogShowEstimated =(new DialogShowEstimated (this));
+    //dialogScalaTraslaRota->setDataDialog(new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0));
+    double x1 = rotationEstimated.row(0)(0);
+    double y1 = rotationEstimated.row(0)(1);
+    double z1 = rotationEstimated.row(0)(2);
+
+    double x2 = rotationEstimated.row(1)(0);
+    double y2 = rotationEstimated.row(1)(1);
+    double z2 = rotationEstimated.row(1)(2);
+
+    double x3 = rotationEstimated.row(2)(0);
+    double y3 = rotationEstimated.row(2)(1);
+    double z3 = rotationEstimated.row(2)(2);
+
+    dataDialogShowEstimated= new DataDialogShowEstimated(1.0,1.0,1.0,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3);
+
+    dialogShowEstimated->setDataDialog(dataDialogShowEstimated);
+    dialogShowEstimated->show();
+
 }
 void MainWindow::loadFile(const QString &fileName)
 {
     QFile file(fileName);
     int maxLine = 3000;
-    Eigen::MatrixXd readingA (maxLine,3);
+    //Eigen::MatrixXd readingA (maxLine,3);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, tr("Application"),
                              tr("Cannot read file %1:\n%2.")
@@ -131,10 +209,23 @@ void MainWindow::setScala(double X, double Y, double Z){
 
 void MainWindow::setTrasla(double X, double Y, double Z){
     ((Winslam*)(myWinSlam))->setTrasla(X,Y,Z);
-    performModifySequence(X,Y,Z, X,Y, Z,0,0,0);
+    //performModifySequence(X,Y,Z, X,Y, Z,0,0,0,0,0);
 }
 
-void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ){
+void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise, double cNoise){
+     dataDialogScalaTraslaRota->setScaleX(scalaX);
+     dataDialogScalaTraslaRota->setScaleY(scalaY);
+     dataDialogScalaTraslaRota->setScaleZ(scalaZ);
+     dataDialogScalaTraslaRota->setTraslaX(traslaX);
+     dataDialogScalaTraslaRota->setTraslaY(traslaY);
+     dataDialogScalaTraslaRota->setTraslaZ(traslaZ);
+     dataDialogScalaTraslaRota->setRotaX(rotaX);
+     dataDialogScalaTraslaRota->setRotaY(rotaY);
+     dataDialogScalaTraslaRota->setRotaZ(rotaZ);
+     dataDialogScalaTraslaRota->setGaussianNoiseDeviation(gNoise);
+     dataDialogScalaTraslaRota->setGaussianNoiseDeviation(cNoise);
+
+
      int maxLine = 3000;
      Point3D  myScala;
      myScala.setXYZ(scalaX,scalaY,scalaZ);
@@ -143,11 +234,36 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
      miTraslacion.setXYZ(traslaX,traslaY,traslaZ);
 
      myOutputFileName="miSalidaContaminadaQT.txt";
-     myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,0,'X',0,0,0.0);
+     std::cout <<"mainwindow.performModifySequence  gNoise="<<gNoise<< " cNoise="<<cNoise<<std::endl;
+     char axisToRotate='X';
+     double rotationGrades = 0;
+
+     if (rotaX>0) {
+         rotationGrades = rotaX;
+         axisToRotate = 'X';
+
+     }else if (rotaY>0){
+         rotationGrades = rotaY;
+         axisToRotate = 'Y';
+     }else if (rotaZ>0){
+         rotationGrades = rotaZ;
+         axisToRotate = 'Z';
+     }else {
+         rotationGrades = 0;
+     }
+
+
+     if (gNoise > 0.0 & cNoise >0.0) {
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,1,0.0);
+     } else if (gNoise > 0.0 & cNoise <=0.0) {
+        myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,0,0.0);
+     } else if (gNoise <= 0 & cNoise >0.0){
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,1,0.0);
+     } else  myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,0,0.0);
 
      // Reading input file B, with new dataset contaminated
      std::ifstream infileB( "miSalidaContaminadaQT.txt" );
-     Eigen::MatrixXd readingB (maxLine,3);
+     //Eigen::MatrixXd readingB (maxLine,3);
      double timestamp,rx,ry,rz,q1,q2,q3,q4=0;
      int contLin=0;
 
@@ -159,6 +275,7 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
       }
      infileB.close();
      ((Winslam*)(myWinSlam))->setContaminatedDataView(readingB);
+
 
 }
 

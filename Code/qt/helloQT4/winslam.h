@@ -17,8 +17,11 @@ public:
     Winslam(MainWindow *mw);
     void setDataView(Eigen::MatrixXd dataModel);
     void setContaminatedDataView(Eigen::MatrixXd dataModelContaminated);
+    void setEstimatedDataView(Eigen::MatrixXd dataModelEstimated);
     void setScala(double X, double Y, double Z);
     void setTrasla(double X, double Y, double Z);
+    void setDots();
+    void setLines();
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 

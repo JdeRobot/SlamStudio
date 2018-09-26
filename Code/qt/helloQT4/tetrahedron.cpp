@@ -36,13 +36,31 @@ glEnable(GL_CULL_FACE);
 
 void Tetrahedron::resizeGL(int width, int height)
 {
-glViewport(0, 0, width, height);
+/*glViewport(0, 0, width, height);
 glMatrixMode(GL_PROJECTION);
 glLoadIdentity();
 GLfloat x = GLfloat(width) / height;
 //glFrustum(-x, +x, -1.0, +1.0, 4.0, 15.0);
-glOrtho(-30.0, 30.0, -30.0, 30.0, -30.0, 30.0);;
+//glOrtho(-30.0, 30.0, -30.0, 30.0, -30.0, 30.0);;
+glOrtho(-11.0, 11.0, -11.0, 11.0, -11.0, 11.0);;
 glMatrixMode(GL_MODELVIEW);
+*/
+
+int side = qMin(width, height);
+    glViewport((width - side) / 2, (height - side) / 2, side, side);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+#ifdef QT_OPENGL_ES_1
+    //glOrthof(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
+    glOrthof(-0.5, +0.5, -0.5, +0.5, 1.0, 15.0);
+#else
+    //glOrtho(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
+    //glOrtho(-0.5, +0.5, -0.5, +0.5, 1.0, 15.0);
+    glOrtho(-0.5, +0.5, -0.5, +0.5, 1.0, 15.0);
+#endif
+    glMatrixMode(GL_MODELVIEW);
+
 }
 
 void Tetrahedron::paintGL(){
@@ -96,21 +114,70 @@ for (int i = 0; i < 4; ++i) {
         glEnd();
 
         //DRAW dataView. 3D points
-        glBegin(GL_POINTS);
-        for (int h=0; h < contLin1; h++){// Bucle for, important the < simbol instead of <=
+        if (dots){
+            glBegin(GL_POINTS);
+            //glBegin(GL_LINES);
+            contLin1 --;
+            for (int h=0; h < contLin1; h++){// Bucle for, important the < simbol instead of <=
 
-                                glVertex3f(dataGTx[h],dataGTy[h],dataGTz[h]); // LINEA QUE DIBUJA UNA CURVA
+                                    glVertex3f(dataGTx[h],dataGTy[h],dataGTz[h]); // LINEA QUE DIBUJA UNA CURVA
+                                    glVertex3f(dataGTx[h+1],dataGTy[h+1],dataGTz[h+1]);
+            }
+            contLin1 ++;
+            glColor3f(.3,.3,.6);
+            //glBegin(GL_POINTS);
+            contLin2 --;
+            for (int j=0; j < contLin2; j++){// Bucle for, important the < simbol instead of <=
+
+                                    glVertex3f(dataContaminatedx[j],dataContaminatedy[j],dataContaminatedz[j]); // LINEA QUE DIBUJA UNA CURVA
+                                    glVertex3f(dataContaminatedx[j+1],dataContaminatedy[j+1],dataContaminatedz[j+1]);
+
+            }
+            contLin2 ++;
+            glColor3f(.6,.3,.3);
+            contLin3 --;
+            for (int k=0; k < contLin3; k++){// Bucle for, important the < simbol instead of <=
+
+                                    glVertex3f(dataEstimatedx[k],dataEstimatedy[k],dataEstimatedz[k]); // LINEA QUE DIBUJA UNA CURVA
+                                    glVertex3f(dataEstimatedx[k+1],dataEstimatedy[k+1],dataEstimatedz[k+1]);
+
+            }
+            contLin3 ++;
+            glEnd();
+
+        } else if (lines){
+
+
+            glBegin(GL_LINES);
+            contLin1 --;
+            for (int h=0; h < contLin1; h++){// Bucle for, important the < simbol instead of <=
+
+                                    glVertex3f(dataGTx[h],dataGTy[h],dataGTz[h]); // LINEA QUE DIBUJA UNA CURVA
+                                    glVertex3f(dataGTx[h+1],dataGTy[h+1],dataGTz[h+1]);
+            }
+            contLin1 ++;
+            glColor3f(.3,.3,.6);
+            //glBegin(GL_POINTS);
+            contLin2 --;
+            for (int j=0; j < contLin2; j++){// Bucle for, important the < simbol instead of <=
+
+                                    glVertex3f(dataContaminatedx[j],dataContaminatedy[j],dataContaminatedz[j]); // LINEA QUE DIBUJA UNA CURVA
+                                    glVertex3f(dataContaminatedx[j+1],dataContaminatedy[j+1],dataContaminatedz[j+1]);
+
+            }
+            contLin2 ++;
+            glColor3f(.6,.3,.3);
+            contLin3 --;
+            for (int k=0; k < contLin3; k++){// Bucle for, important the < simbol instead of <=
+
+                                    glVertex3f(dataEstimatedx[k],dataEstimatedy[k],dataEstimatedz[k]); // LINEA QUE DIBUJA UNA CURVA
+                                    glVertex3f(dataEstimatedx[k+1],dataEstimatedy[k+1],dataEstimatedz[k+1]);
+
+            }
+            contLin3 ++;
+            glEnd();
 
         }
-
-        glColor3f(.3,.3,.6);
-        glBegin(GL_POINTS);
-        for (int j=0; j < contLin2; j++){// Bucle for, important the < simbol instead of <=
-
-                                glVertex3f(dataContaminatedx[j],dataContaminatedy[j],dataContaminatedz[j]); // LINEA QUE DIBUJA UNA CURVA
-
-        }
-        glEnd();
 
 }
 
@@ -139,12 +206,13 @@ void Tetrahedron::wheelEvent(QWheelEvent *event){
     std::cout <<"wheelEvent"<<"delta="<<event->delta()<<std::endl;
     if(event->delta() > 0) {
         // Zoom in
-        m_scale +=0.25;
+        m_scale +=0.0025;
 
     } else {
         // Zooming out
-         m_scale -=0.25;
+         m_scale -=0.0025;
     }
+    std::cout <<"wheelEvent"<<"m_scale="<<m_scale<<std::endl;
     update();
 }
 void Tetrahedron::mouseDoubleClickEvent(QMouseEvent *event)
@@ -211,6 +279,16 @@ void Tetrahedron::setContaminatedDataView(Eigen::MatrixXd dataModelContaminated)
 
 }
 
+void Tetrahedron::setEstimatedDataView(Eigen::MatrixXd dataModelEstimated){
+   for (int i=0;i<dataModelEstimated.rows();i++){
+    dataEstimatedx[i]=(dataModelEstimated.row(i))(0);
+    dataEstimatedy[i]=(dataModelEstimated.row(i))(1);
+    dataEstimatedz[i]=(dataModelEstimated.row(i))(2);
+
+   }
+   contLin3=dataModelEstimated.rows();
+   update();
+}
 
 void Tetrahedron::setScala(double X, double Y, double Z){
     std::cout<< "tetrahedron.setScala" <<std::endl;
@@ -230,3 +308,14 @@ void Tetrahedron::setTrasla(double X, double Y, double Z){
 
 }
 
+void Tetrahedron::setDots(){
+    dots=true;
+    lines=false;
+    update();
+}
+
+void Tetrahedron::setLines(){
+    lines=true;
+    dots=false;
+    update();
+}

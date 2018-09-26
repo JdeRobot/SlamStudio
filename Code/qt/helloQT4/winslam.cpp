@@ -79,6 +79,11 @@ void Winslam::setDataView(Eigen::MatrixXd dataModel){
 void Winslam::setContaminatedDataView(Eigen::MatrixXd dataModelContaminated){
     tetrahedron->setContaminatedDataView(dataModelContaminated);
 }
+
+void Winslam::setEstimatedDataView(Eigen::MatrixXd dataModelEstimated){
+    tetrahedron->setEstimatedDataView(dataModelEstimated);
+}
+
 void Winslam::setScala(double X, double Y, double Z){
     std::cout<< "WinSlam.setScala" <<std::endl;
     tetrahedron->setScala(X,Y,Z);
@@ -87,6 +92,14 @@ void Winslam::setScala(double X, double Y, double Z){
 void Winslam::setTrasla(double X, double Y, double Z){
     tetrahedron->setTrasla(X,Y,Z);
 }
+void Winslam::setDots(){
+    tetrahedron->setDots();
+}
+
+void Winslam::setLines(){
+    tetrahedron->setLines();
+}
+
 /*void Winslam::dockUndock()
 {
     if (parent()) {
