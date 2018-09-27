@@ -34,6 +34,8 @@ SOURCES += \
     Point3D.cpp \
     transformador2/Transformador.cpp \
     Registrador/Registrador.cpp \
+    GeneratorPCA/GeneratorPCA.cpp \
+    ModuloEscala/FindScala.cpp \
     datadialogscalatraslarota.cpp \
     dialogshowestimated.cpp \
     datadialogshowestimated.cpp
@@ -51,6 +53,8 @@ HEADERS += \
     Point3D.h \
     transformador2/Transformador.h \
     Registrador/Registrador.h \
+    GeneratorPCA/GeneratorPCA.h \
+    ModuloEscala/FindScala.h \
     datadialogscalatraslarota.h \
     dialogshowestimated.h \
     datadialogshowestimated.h

@@ -33,7 +33,10 @@ private:
 #include "dialogshowestimated.h"
 #include "transformador2/Transformador.h"
 #include "Registrador/Registrador.h"
+#include "GeneratorPCA/GeneratorPCA.h"
+#include "ModuloEscala/FindScala.h"
 #include "Point3D.h"
+#include "Eigen/Dense"
 class QAction;
 class QActionGroup;
 class QLabel;
@@ -66,8 +69,10 @@ public:
     DataDialogShowEstimated *dataDialogShowEstimated;
 
     //============================== Model Objects to estimate transformation
-    Transformador myTransformador;
-    Registrador myRegistrador;
+    Transformador myTransformador; //Perform transformations (Scale,Rotation,Traslation,Gaussian and Cosmic Noise ) over dataset
+    Registrador myRegistrador;  //Estimate Rotation and Traslation over a dataset
+    GeneratorPCA myGeneratorPCA;//Calculate PCA over a dataset
+    FindScala myFindScala; // to find the scala
     char * myInputFileName;
     char * myOutputFileName;
     //==============================

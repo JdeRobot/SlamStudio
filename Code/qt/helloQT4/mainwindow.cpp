@@ -133,10 +133,55 @@ void MainWindow::onModifySequence()
 void MainWindow::onEstimateSequence(){
     std::cout<<"onEstimateSequence"<<std::endl;
     //myRegistrador.rigid_transform_3D()
-    myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
-    std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
-    std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
-    myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
+
+    int contLin = readingB.rows();
+
+    //Begin Try to estimate Scala using PCA
+    //=========================================
+    MatrixXd AA,BB,AApca,BBpca (contLin,3);
+    MatrixXd pcaA,pcaB;
+    //B = readingB.block(0,0,contLin,3);
+    AA = readingA.block(0,0,readingA.rows(),3);//to use with Scale and PCA
+    BB = readingB.block(0,0,readingB.rows(),3);//to use with Scale and PCA
+
+    myGeneratorPCA.calculatePCAbySVD(0,AA, AApca, pcaA);//A is converted to PCA. Important,inside this function also is calculated A.rowwise() - A.colwise().mean(). A is converted to a newA
+    myGeneratorPCA.calculatePCAbySVD(0,BB, BBpca, pcaB);//B is converted to PCA. Important,inside this function also is calculated B.rowwise() - B.colwise().mean(). B is converted to a newB
+
+    Vector3d myScalaSVD = myFindScala.getScalaSVD(AApca,BBpca);
+    std::cout <<"MainWindow::onEstimateSequence myScalaSVD="<<myScalaSVD<<std::endl;
+
+    // End Try to estimate Scala using PCA
+    //==========================================
+
+
+    // Adapt dataB to Scale if necessary
+    //==========================================
+
+    if (myScalaSVD(0) > 1 || myScalaSVD(1) > 1 || myScalaSVD(1) > 1 ){ //if myScaleSVD is not (1,1,1)
+
+        MatrixXd newB(readingB.rows(),3);
+        newB = readingB.block(0,0,readingB.rows(),3);
+        std::cout <<"Scale is greater than 1. Divide by Scale dataset B and datasetBB"<<myScalaSVD<<std::endl;
+        for (int i= 0; i< newB.rows(); i++){
+            VectorXd aRow = newB.row(i);
+            newB.row(i) << aRow(0)/myScalaSVD(0),aRow(1)/myScalaSVD(1),aRow(2)/myScalaSVD(2);
+         }
+
+        myRegistrador.rigid_transform_3D(newB,readingA,rotationEstimated,traslationEstimated);
+        std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
+        std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
+        myRegistrador.applyTransformationsOverData(newB,dataEstimated,rotationEstimated,traslationEstimated);
+    } else{
+
+        myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
+        std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
+        std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
+        myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
+    }
+
+
+
+
     //std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
     ((Winslam*)(myWinSlam))->setEstimatedDataView(dataEstimated);
     dialogShowEstimated =(new DialogShowEstimated (this));
@@ -153,7 +198,7 @@ void MainWindow::onEstimateSequence(){
     double y3 = rotationEstimated.row(2)(1);
     double z3 = rotationEstimated.row(2)(2);
 
-    dataDialogShowEstimated= new DataDialogShowEstimated(1.0,1.0,1.0,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3);
+    dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3);
 
     dialogShowEstimated->setDataDialog(dataDialogShowEstimated);
     dialogShowEstimated->show();
