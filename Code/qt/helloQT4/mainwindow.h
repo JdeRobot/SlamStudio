@@ -35,6 +35,7 @@ private:
 #include "Registrador/Registrador.h"
 #include "GeneratorPCA/GeneratorPCA.h"
 #include "ModuloEscala/FindScala.h"
+#include "AjusteTiempo/AjusteTiempo.h"
 #include "Point3D.h"
 #include "Eigen/Dense"
 class QAction;
@@ -55,7 +56,7 @@ public:
     void loadFile(const QString &fileName);
     void setScala(double X, double Y, double Z);
     void setTrasla(double X, double Y, double Z);
-    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise,double cNoise);
+    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise,double cNoise, double timeOffset);
     QWidget *myWinSlam;
 
 
@@ -73,6 +74,7 @@ public:
     Registrador myRegistrador;  //Estimate Rotation and Traslation over a dataset
     GeneratorPCA myGeneratorPCA;//Calculate PCA over a dataset
     FindScala myFindScala; // to find the scala
+    AjusteTiempo myFindOffset; //to find timeOffset
     char * myInputFileName;
     char * myOutputFileName;
     //==============================
@@ -85,6 +87,8 @@ public:
     Eigen::MatrixXd traslationEstimated;
 
     //===============================
+    double timeOffset;
+    double timeOffsetEstimated;
 
     //Point3D * myScala;
 private slots:

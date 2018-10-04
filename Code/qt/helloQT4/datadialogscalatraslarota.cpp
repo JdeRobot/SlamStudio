@@ -2,7 +2,7 @@
 DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(){
 
 }
-DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN){
+DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN,double tO){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -14,10 +14,11 @@ DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double
     rotaZ=rZ;
     gNoise=gN;
     cNoise=cN;
+    timeOffset=tO;//time offset
 
 }
 
-void DataDialogScalaTraslaRota::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN){
+void DataDialogScalaTraslaRota::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN, double tO){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -29,6 +30,7 @@ void DataDialogScalaTraslaRota::updateData(double sX,double sY, double sZ,double
     rotaZ=rZ;
     gNoise=gN;
     cNoise=cN;
+    timeOffset=tO;
 }
 double DataDialogScalaTraslaRota::getScaleX(){
     return scaleX;
@@ -64,6 +66,10 @@ double DataDialogScalaTraslaRota::getCosmicNoiseDeviation(){
     return cNoise;
 };
 
+double DataDialogScalaTraslaRota::getTimeOffset(){
+    return timeOffset;
+};
+
 void DataDialogScalaTraslaRota::setScaleX(double aValue){
     scaleX=aValue;
 };
@@ -97,3 +103,7 @@ void DataDialogScalaTraslaRota::setGaussianNoiseDeviation(double aValue){
 void DataDialogScalaTraslaRota::setCosmicNoiseDeviation(double aValue){
     cNoise=aValue;
 };
+void DataDialogScalaTraslaRota::setTimeOffset(double aValue){
+    timeOffset=aValue;
+};
+

@@ -2,7 +2,7 @@
 DataDialogShowEstimated::DataDialogShowEstimated(){
 
 }
-DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3){
+DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -18,12 +18,14 @@ DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,
     rotX3=rX3;
     rotY3=rY3;
     rotZ3=rZ3;
+    timeOffset=tOffset;
+    rmax=rm;
 
 
 
 }
 
-void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3){
+void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -39,6 +41,8 @@ void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double t
     rotX3=rX3;
     rotY3=rY3;
     rotZ3=rZ3;
+    timeOffset=tOffset;
+    rmax = rm;
 }
 double DataDialogShowEstimated::getScaleX(){
     return scaleX;
@@ -85,6 +89,13 @@ double DataDialogShowEstimated::getRotaY3(){
 double DataDialogShowEstimated::getRotaZ3(){
     return rotZ3;
 };
+double DataDialogShowEstimated::getTimeOffset(){
+    return timeOffset;
+};
+double DataDialogShowEstimated::getRMax(){
+    return rmax;
+};
+
 
 
 void DataDialogShowEstimated::setScaleX(double aValue){
@@ -132,3 +143,7 @@ void DataDialogShowEstimated::setRotaY3(double aValue){
 void DataDialogShowEstimated::setRotaZ3(double aValue){
     rotZ3=aValue;
 };
+void DataDialogShowEstimated::setRMax(double aValue){
+    rmax=aValue;
+};
+

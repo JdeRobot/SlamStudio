@@ -47,6 +47,9 @@ private:
     QLineEdit *rotaY;
     QLabel *labRotaZ;
     QLineEdit *rotaZ;
+    QLabel *labOffset;
+    QLineEdit *timeOffset;
+
     QLineEdit *gaussianNoiseDeviation;
     QLineEdit *cosmicNoiseDeviation;
     QCheckBox *scaleCheckBox;

@@ -46,7 +46,11 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     traslaZ->setText("0");
     traslaZ->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     traslaZ->setMaximumWidth(100);
-
+    labOffset = new QLabel(tr("Time Offset"));
+    timeOffset = new QLineEdit;
+    timeOffset->setText("0");
+    timeOffset->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    timeOffset->setMaximumWidth(100);
     /*traslaCheckBox = new QCheckBox(tr("Traslation"));
     traslaX = new QLineEdit;
     traslaX->setText("0");
@@ -147,6 +151,8 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     leftLayout->addWidget(traslaY);
     leftLayout->addWidget(labTraslaZ);
     leftLayout->addWidget(traslaZ);
+    leftLayout->addWidget(labOffset);
+    leftLayout->addWidget(timeOffset);
     //leftLayout->addWidget(rotaCheckBox);
     leftLayout->addWidget(rotationGroupBox);
     /*
@@ -197,11 +203,12 @@ void DialogScalaTraslaRota::onOK()
    double rz = rotaZ->text().toDouble();
    double gNoise = gaussianNoiseDeviation->text().toDouble();
    double cNoise = cosmicNoiseDeviation->text().toDouble();
+   double tOffset = timeOffset->text().toDouble();
    std::cout<< "onOK" <<std::endl;
-   ((MainWindow*)(parent))->performModifySequence(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise);
+   ((MainWindow*)(parent))->performModifySequence(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset);
    std::cout<< "onOK:gNoise="<<gNoise<<std::endl;
    //dialogModel = new DataDialogScalaTraslaRota(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise);
-   dialogModel->updateData( sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise);
+   dialogModel->updateData( sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset);
    std::cout<< "onOK:dialogModel->getGaussianNoiseDeviation()="<<dialogModel->getGaussianNoiseDeviation()<<std::endl;
    //((MainWindow*)(parent))->setTrasla(x,y,z);
 
@@ -223,6 +230,7 @@ void DialogScalaTraslaRota::setDataDialog(DataDialogScalaTraslaRota* aModel){
    rotaX->setText( QString::number(dialogModel->getRotaX(), 'f', 6));
    rotaY->setText( QString::number(dialogModel->getRotaY(), 'f', 6));
    rotaZ->setText( QString::number(dialogModel->getRotaZ(), 'f', 6));
+   timeOffset->setText( QString::number(dialogModel->getTimeOffset(), 'f', 6));
    gaussianNoiseDeviation->setText( QString::number(dialogModel->getGaussianNoiseDeviation(), 'f', 6));
    cosmicNoiseDeviation->setText( QString::number(dialogModel->getCosmicNoiseDeviation(), 'f', 6));
     //traslaX=new QString*((dialogModel->getTraslaX()));

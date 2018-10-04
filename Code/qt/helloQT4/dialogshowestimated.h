@@ -39,6 +39,11 @@ private:
     QLineEdit *traslaY;
     QLabel *labTraslaZ;
     QLineEdit *traslaZ;
+    QLabel *labTimeOffset;
+    QLineEdit *timeOffset;
+
+    QLabel *labRMax;
+    QLineEdit *rMax; // to store max correlation value, the one that indicates which is the value of the offset
 
     QLabel *labRotationMatrix;
     QTextEdit *rotationMatrix;

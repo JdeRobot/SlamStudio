@@ -44,7 +44,17 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
     traslaZ->setText("0");
     traslaZ->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     traslaZ->setMaximumWidth(100);
+    labTimeOffset = new QLabel(tr("Time Offset"));
+    timeOffset = new QLineEdit;
+    timeOffset->setText("0");
+    timeOffset->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    timeOffset->setMaximumWidth(100);
 
+    labRMax = new QLabel(tr("Correlation Max value"));
+    rMax = new QLineEdit;
+    rMax->setText("0");
+    rMax->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    rMax->setMaximumWidth(100);
 
     labRotationMatrix = new QLabel(tr("Rotation Matrix Estimated"));
     rotationMatrix = new QTextEdit;
@@ -83,7 +93,10 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
     leftLayout->addWidget(traslaY);
     leftLayout->addWidget(labTraslaZ);
     leftLayout->addWidget(traslaZ);
-
+    leftLayout->addWidget(labTimeOffset);
+    leftLayout->addWidget(timeOffset);
+    leftLayout->addWidget(labRMax);
+    leftLayout->addWidget(rMax);
     leftLayout->addWidget(labRotationMatrix);
     leftLayout->addWidget(rotationMatrix);
 
@@ -123,6 +136,8 @@ void DialogShowEstimated::setDataDialog(DataDialogShowEstimated* aModel){
    scaleX->setText( QString::number(dialogModel->getScaleX(), 'f', 6));
    scaleY->setText( QString::number(dialogModel->getScaleY(), 'f', 6));
    scaleZ->setText( QString::number(dialogModel->getScaleZ(), 'f', 6));
+   timeOffset->setText( QString::number(dialogModel->getTimeOffset(), 'f', 6));
+   rMax->setText( QString::number(dialogModel->getRMax(), 'f', 6));
    rotationMatrix->setText(QString::number(dialogModel->getRotaX1(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY1(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ1(), 'f', 6)+"\n\n"+
                            QString::number(dialogModel->getRotaX2(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY2(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ2(), 'f', 6)+"\n\n"+
                            QString::number(dialogModel->getRotaX3(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY3(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ3(), 'f', 6));

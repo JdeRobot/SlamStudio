@@ -83,7 +83,7 @@ MainWindow::MainWindow()
         myWinSlam=(QWidget*)(new Winslam(this));
         setCentralWidget(myWinSlam);
     //onAddNew();
-    dataDialogScalaTraslaRota= new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+    dataDialogScalaTraslaRota= new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
 
 }
 
@@ -153,6 +153,15 @@ void MainWindow::onEstimateSequence(){
     // End Try to estimate Scala using PCA
     //==========================================
 
+    // Try to find Time offset
+    //==========================================
+    int maxLine = readingA.rows();
+    int interval = 100;
+    double anOffset = timeOffset;
+    double offsetEstimated = 0;
+    double correlationValue = myFindOffset.calculateOffsetXYZ( maxLine,interval, anOffset,offsetEstimated, AApca,  BBpca);//ok
+    timeOffsetEstimated= offsetEstimated;
+    std::cout<<"timeOffsetEstimated="<<timeOffsetEstimated<<std::endl;
 
     // Adapt dataB to Scale if necessary
     //==========================================
@@ -171,6 +180,7 @@ void MainWindow::onEstimateSequence(){
         std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
         std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
         myRegistrador.applyTransformationsOverData(newB,dataEstimated,rotationEstimated,traslationEstimated);
+
     } else{
 
         myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
@@ -198,7 +208,7 @@ void MainWindow::onEstimateSequence(){
     double y3 = rotationEstimated.row(2)(1);
     double z3 = rotationEstimated.row(2)(2);
 
-    dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3);
+    dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,correlationValue);
 
     dialogShowEstimated->setDataDialog(dataDialogShowEstimated);
     dialogShowEstimated->show();
@@ -257,7 +267,7 @@ void MainWindow::setTrasla(double X, double Y, double Z){
     //performModifySequence(X,Y,Z, X,Y, Z,0,0,0,0,0);
 }
 
-void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise, double cNoise){
+void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise, double cNoise, double offset){
      dataDialogScalaTraslaRota->setScaleX(scalaX);
      dataDialogScalaTraslaRota->setScaleY(scalaY);
      dataDialogScalaTraslaRota->setScaleZ(scalaZ);
@@ -269,6 +279,7 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
      dataDialogScalaTraslaRota->setRotaZ(rotaZ);
      dataDialogScalaTraslaRota->setGaussianNoiseDeviation(gNoise);
      dataDialogScalaTraslaRota->setGaussianNoiseDeviation(cNoise);
+     dataDialogScalaTraslaRota->setTimeOffset(offset);
 
 
      int maxLine = 3000;
@@ -299,12 +310,12 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
 
 
      if (gNoise > 0.0 & cNoise >0.0) {
-         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,1,0.0);
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,1,offset);
      } else if (gNoise > 0.0 & cNoise <=0.0) {
-        myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,0,0.0);
+        myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,0,offset);
      } else if (gNoise <= 0 & cNoise >0.0){
-         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,1,0.0);
-     } else  myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,0,0.0);
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,1,offset);
+     } else  myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,0,offset);
 
      // Reading input file B, with new dataset contaminated
      std::ifstream infileB( "miSalidaContaminadaQT.txt" );
@@ -320,7 +331,7 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
       }
      infileB.close();
      ((Winslam*)(myWinSlam))->setContaminatedDataView(readingB);
-
+     timeOffset=offset;
 
 }
 

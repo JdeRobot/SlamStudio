@@ -36,6 +36,8 @@ SOURCES += \
     Registrador/Registrador.cpp \
     GeneratorPCA/GeneratorPCA.cpp \
     ModuloEscala/FindScala.cpp \
+    AjusteTiempo/AjusteTiempo.cpp \
+    Interpolator/Interpolator.cpp \
     datadialogscalatraslarota.cpp \
     dialogshowestimated.cpp \
     datadialogshowestimated.cpp
@@ -47,14 +49,16 @@ HEADERS += \
     window.h \
     winslam.h \
     tetrahedron.h \
-    dialogscalatraslarota.h\
-    transformador2\transformador.h\
+    dialogscalatraslarota.h \
+    transformador2\transformador.h \
     transformador2\Point3D.h \
     Point3D.h \
     transformador2/Transformador.h \
     Registrador/Registrador.h \
     GeneratorPCA/GeneratorPCA.h \
     ModuloEscala/FindScala.h \
+    AjusteTiempo/AjusteTiempo.h \
+    Interpolator/Interpolator.h \
     datadialogscalatraslarota.h \
     dialogshowestimated.h \
     datadialogshowestimated.h

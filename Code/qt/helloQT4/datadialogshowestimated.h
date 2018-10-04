@@ -26,13 +26,15 @@ double rotY3;
 double rotZ1;
 double rotZ2;
 double rotZ3;
+double timeOffset;
+double rmax;
 
 
 
 public:
 DataDialogShowEstimated();
-DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3);
-void updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3);
+DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm);
+void updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm);
 //DataDialogScalaTraslaRota(char* sX, char* sY, char* sZ,char* tX,char* tY, char* tZ, char* rX, char* rY, char* rZ);
 double getScaleX();
 double getScaleY();
@@ -49,6 +51,8 @@ double getRotaY3();
 double getRotaZ1();
 double getRotaZ2();
 double getRotaZ3();
+double getRMax();
+double getTimeOffset();
 
 void setScaleX(double aValue);
 void setScaleY(double aValue);
@@ -65,6 +69,8 @@ void setRotaY3(double aValue);
 void setRotaZ1(double aValue);
 void setRotaZ2(double aValue);
 void setRotaZ3(double aValue);
+void setTimeOffset(double aValue);
+void setRMax(double aValue);
 
 
 
