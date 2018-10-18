@@ -23,6 +23,9 @@ public:
    double calcularAutocorrelacion4(int maxLine, int intervalo,double offset, MatrixXd& A, MatrixXd& B);
    //double calculateOffsetXYZ(int maxLine, int interval, double offset, MatrixXd& A1,MatrixXd& B2);
    double calculateOffsetXYZ(int maxLine, int interval, double offset, double& offsetEstimated, MatrixXd A1,MatrixXd B2);
+
+   //to calculate offset with 4 coordinates Time, x, y ,z
+   double calculateOffsetTXYZ(int maxLine, int interval, double offset, double& offsetEstimated, MatrixXd A1,MatrixXd B2);
    Vector3d getScalaEigenValues(MatrixXd AA, MatrixXd BB);
    Vector3d getScalaSVD(MatrixXd AA, MatrixXd BB);
 
