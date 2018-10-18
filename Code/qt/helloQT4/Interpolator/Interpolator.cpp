@@ -13,8 +13,8 @@ using namespace Eigen;
 #include <limits>
 #include <stdbool.h>
 #include "Interpolator.h"
-//#include "../AjusteTiempo/AjusteTiempo.h"
-#include "AjusteTiempo.h"
+#include "../AjusteTiempo/AjusteTiempo.h"
+//#include "AjusteTiempo.h"
 
 
 /* This class interpolates 2 data of series
@@ -340,9 +340,10 @@ void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 	newContB++;
     int interpolated=0,endInterpolate = 0;
     long actB,actA,antB;
+    //std::cout<<"Brows="<<B.rows()<<" Arows="<<A.rows()<<std::endl;
 	//while ( (contB) <= B.rows() && (contA ) < A.rows()){// begin while 1
     while ( !endInterpolate && contA  < A.rows() && contB < B.rows()){// begin while 1
-		//std::cout<<"Brows="<<B.rows()<<"ActValueA="<<ActValueA<<" ActValueB="<<ActValueB<<" AntValueB="<<AntValueB<< " contB="<<contB<<" contA="<<contA<<" newContB="<<newContB<<std::endl;
+        //std::cout<<"Brows="<<B.rows()<<"ActValueA="<<ActValueA<<" ActValueB="<<ActValueB<<" AntValueB="<<AntValueB<< " contB="<<contB<<" contA="<<contA<<" newContB="<<newContB<<std::endl;
 		interpolated = 0;
 		actB = ActValueB*10000;
 		actA = ActValueA*10000;
@@ -355,7 +356,7 @@ void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 			double y3= (B.row(contB))(1);
 			double x3= (B.row(contB))(0);
 			double xCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
-			//std::cout<< "interpolo X"<<std::endl;
+            //std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>interpolo X"<<std::endl;
 			//interpolate Y coordinate
 			y2= (B.row(contB-1))(2);
 			x = (A.row(contA-1))(0);
@@ -363,7 +364,7 @@ void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 			y3= (B.row(contB))(2);
 			x3= (B.row(contB))(0);
 			double yCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
-			//std::cout<< "interpolo Y"<<std::endl;
+            //std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>interpolo Y"<<std::endl;
 			//interpolate Z coordinate
 			y2= (B.row(contB-1))(3);
 			x = (A.row(contA-1))(0);
@@ -371,9 +372,9 @@ void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 			y3= (B.row(contB))(3);
 			x3= (B.row(contB))(0);
 			double zCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
-			//std::cout<< "interpolo X,y,Z"<<std::endl;
+            //std::cout<< ">>>>>>>>>>>>>>>>>>>>>>>>interpolo X,y,Z"<<std::endl;
 			Vector4d myNewVector(x,xCoordinate,yCoordinate,zCoordinate);
-			//std::cout<< "myNewVector="<<myNewVector<<std::endl;
+            //std::cout<< "myNewVector="<<myNewVector<<std::endl;
 			//contAddedValues++;
             newBMatrix.row(newContB)<< myNewVector.transpose();
             newContB ++;
@@ -389,7 +390,7 @@ void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 			//if  ( ActValueA <= AntValueB) {
 			if  ( actA <= antB) {
 					//AntValueA=ActValueA;
-				    //std::cout<< "ActValueA <= AntValueB"<<std::endl;
+                    //std::cout<< "ActValueA <= AntValueB"<<std::endl;
 				    if (contA < A.rows()){
 						ActValueA=A.row(contA)(0);
 						contA++;
@@ -433,7 +434,7 @@ void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 			   //else if ( ActValueA >= ActValueB ){
 			 else if ( actA >= actB ){
 			  //	if ( ActValueA >= ActValueB ){
-				   //std::cout<< "ActValueA > ActValueB"<<std::endl;
+                   //std::cout<< "ActValueA > ActValueB"<<std::endl;
 				   newBMatrix.row(newContB) << B.row(contB);
 				   //std::cout<< "newBMatrix="<<newBMatrix<<std::endl;
 				   newContB++;
@@ -582,7 +583,7 @@ void Interpolator::interpolate2Series(int maxLine, MatrixXd& A, MatrixXd& B){
 		//j=i-1;
 		while (j< Asize  && (A.row(j)(0) < B.row(i)(0)) ){
 
-			//std::cout<< "i="<<i<< "j="<<j<<" (A.row(j)(0)="<<(A.row(j))(0)<<" B.row(i)(0)="<<(B.row(i))(0)<<" Asize="<<Asize<<"Bsize="<<Bsize<< "contNewMatrix="<<contNewMatrix<<std::endl;
+            std::cout<< "i="<<i<< "j="<<j<<" (A.row(j)(0)="<<(A.row(j))(0)<<" B.row(i)(0)="<<(B.row(i))(0)<<" Asize="<<Asize<<"Bsize="<<Bsize<< "contNewMatrix="<<contNewMatrix<<std::endl;
 			std::cout<< "antes del if"<<std::endl;
 			if ((A.row(j)(0) > B.row(i-1)(0)) ) {
 				std::cout<< "dentro del if"<<std::endl;
@@ -717,6 +718,10 @@ void Interpolator::reduceSequence(int step, MatrixXd& aMatrix){
 	 *
 	 *
 	 *  */
+    std::cout <<"inside interpolator::ReduceSequece encontrado="<<std::endl;
+    std::cout <<"inside interpolator::ReduceSequece aMatrix.rows()="<<aMatrix.rows()<<std::endl;
+    std::cout <<"inside interpolator::ReduceSequece aMatrix.cols()="<<aMatrix.cols()<<std::endl;
+
 	if (step < 2) {
 		std::cout <<"Error:ReduceSequence: parameter step must be greater than 1, step ="<<step<<std::endl;
 
@@ -757,7 +762,7 @@ void Interpolator::reduceSequence(int maxLine, MatrixXd& aMatrix , int numberToD
 	 * Select randomly the rows to delete and set to MaxValue
 	 * At the end create a new matrix without the rows that contain MaxValue
 	 */
-
+    std::cout <<"inside interpolator::ReduceSequece encontrado="<<std::endl;
 	int iSecret;
     const double MaxValue=99999999999;
 	/* initialize random seed: */
@@ -777,7 +782,7 @@ void Interpolator::reduceSequence(int maxLine, MatrixXd& aMatrix , int numberToD
     for (int i=0;i<aMatrix.rows();i++){
     	std::cout <<"aMatrix(i,0)="<<aMatrix(i,0)<<std::endl;
     	if (aMatrix(i,0)< MaxValue){
-    		std::cout <<"encontrado="<<aMatrix(i,0)<<std::endl;
+            std::cout <<"interpolator::ReduceSequece encontrado="<<aMatrix(i,0)<<std::endl;
     		myNewMatrix.row(cont) <<  aMatrix.row(i);
     		cont++;
     	}
@@ -793,7 +798,104 @@ void Interpolator::reduceSequence(int maxLine, MatrixXd& aMatrix , int numberToD
 
 }
 
+double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval, double offset, double& offsetEstimated, MatrixXd Apca,MatrixXd Bpca){
+    std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation"<<std::endl;
+    std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation Apca.rows()"<<Apca.rows()<<std::endl;
+    std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation Bpca.rows()"<<Bpca.rows()<<std::endl;
+    std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation Bpca.cols()"<<Bpca.cols()<<std::endl;
+    AjusteTiempo myCorrelator;
+    std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation, before reduceSequence(2,Bpca)"<<std::endl;
+    this->reduceSequence(2,Bpca);
+    std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation, after reduceSequence(2,Bpca)"<<std::endl;
 
+
+    std::cout <<"before interpolate "<<std::endl;
+
+
+    std::cout << std::setprecision(4) << std::fixed;
+    std::ofstream outRegresion( "/home/tfm3/workspace/Interpolator/miSalidaRegresion.txt" );
+    outRegresion << std::setprecision(4) << std::fixed;
+    std::cout <<"3="<<std::endl;
+
+    double step = 0.1;
+    double limit = 20;
+    double delayMax=0, rMax=0;
+    MatrixXd finalBMatrix (Apca.rows()+Apca.rows(),Bpca.cols());
+    double i = 0;
+
+    /*
+    MatrixXd newBMatrix (B.rows()+A.rows(),B.cols());
+    MatrixXd newAMatrix (A.rows()+B.rows(),A.cols());
+    newBMatrix= B.block(0,0,B.rows(),4);
+    newAMatrix= A.block(0,0,A.rows(),4);
+    myInterpolator.interpolate2SeriesB(maxLine, A,newBMatrix);
+    myInterpolator.interpolate2SeriesB(maxLine,B,newAMatrix);
+    A=newAMatrix.block(0,0,newAMatrix.rows(),4);
+    B=newBMatrix.block(0,0,newBMatrix.rows(),4);
+    */
+
+
+    //calculating regresion
+    for (double i =-limit;i<limit;i+=step){
+
+        //Start calculating crossCorrelation
+        //First: make a copy of B matrix.
+        //In this case we move Data B , on each iteration , from -limit to limit, trying to find the best correlation value
+        MatrixXd newBMatrix (Bpca.rows()+Apca.rows(),Bpca.cols());
+        MatrixXd newInterpolated (Bpca.rows()+Apca.rows(),Bpca.cols());
+        newBMatrix= Bpca.block(0,0,Bpca.rows(),4);
+        //myInterpolator.modifyTime(i,B);
+        this->modifyTime(i,newBMatrix);
+        std::cout <<"Antes de interpolar:newBMatrix.rows()="<<newBMatrix.rows()<<std::endl;
+        std::cout <<"Antes de interpolar:Apca.rows()="<<Apca.rows()<<std::endl;
+        //myInterpolator.interpolate2Series(maxLine, A,B);
+        this->interpolate2SeriesB(maxLine, Apca,newBMatrix);
+        //myInterpolator.interpolate2Series(maxLine, A,newBMatrix);
+        //newInterpolated=myInterpolator.interpolateAoverB(A,newBMatrix);
+        //newBMatrix= newInterpolated.block(0,0,newInterpolated.rows(),4);
+        std::cout <<"+++++++++++Despues de interpolar:Apca.rows()="<<Apca.rows()<<std::endl;
+        std::cout <<"+++++++++++Despues de interpolar:newBMatrix.rows()="<<newBMatrix.rows()<<std::endl;
+        std::cout <<"+++++++++++after interpolate"<<std::endl;
+        std::cout <<"+++++++++++newBMatrix has"<<newBMatrix.rows()<<"rows"<<std::endl;
+        //double r=micorrelador.calcularAutocorrelacion4(A.rows(), 100,step, A,  newBMatrix);
+        //double r=micorrelador.calcularAutocorrelacion4(Apca.rows(), 100,0, Apca,  newBMatrix);
+        double anOffset = 0;
+        double r=myCorrelator.calculateOffsetTXYZ(maxLine,interval, anOffset,offsetEstimated, Apca,  newBMatrix);
+        std::cout <<"regresion="<<r<<std::endl;
+        outRegresion<< r << " " << i << std::endl;
+        std::cout <<"newBMatrix after regresion"<<newBMatrix.rows()<<"rows"<<std::endl;
+        std::cout <<"fabs(r)"<<fabs(r)<<std::endl;
+        std::cout <<"rMax"<<rMax<<std::endl;
+
+        if ((fabs(r) <= 1 )&& (fabs(r) >= rMax)){
+
+                      rMax=r;
+                      delayMax=i;
+                      finalBMatrix=newBMatrix.block(0,0,newBMatrix.rows(),4);
+                      //std::cout << std::cout << std::setprecision(4) << std::fixed;
+                      std::ofstream outRegresion( "/home/tfm3/workspace/Interpolator/miSalidaRegresion.txt" );
+                      outRegresion << std::setprecision(4) << std::fixed;
+                      //std::cout <<"3="<<std::endl;<"finalBMatrixafter regresion++++++++++++++++++++++++++++++"<<finalBMatrix.rows()<<"rows"<<std::endl;
+
+        }
+
+
+        std::cout <<"i----------------------------------------------------"<<i<<std::endl;
+    }
+
+    MatrixXd B=finalBMatrix.block(0,0,finalBMatrix.rows(),4);
+    std::cout <<"rMax="<<rMax<<std::endl;
+    std::cout <<"delayMax="<<delayMax<<std::endl;
+    std::cout <<"b.rows()="<<B.rows()<<std::endl;
+    std::cout <<"a.rows()="<<Apca.rows()<<std::endl;
+    outRegresion.close();
+    offsetEstimated=delayMax;
+    return rMax;
+    // end calculating REGRESSION
+
+}
+
+/*
 int main(){
 
 	std::cout <<"	Starting main of  Interpolator="<<std::endl;
@@ -863,13 +965,7 @@ int main(){
 
 
 
-	/*MatrixXd m(4,4);
-    m <<  1, 2, 3, 4,
-	      5, 6, 7, 8,
-	      9,10,11, 8,
-          12,13,14, 15;
-    Vector4d v(4,4,4,4);
-    */
+
 
     //MatrixXd newMatrix (5,3);
 
@@ -927,16 +1023,16 @@ int main(){
     MatrixXd finalBMatrix (B.rows()+A.rows(),B.cols());
     double i = 0;
 
-    /*
-    MatrixXd newBMatrix (B.rows()+A.rows(),B.cols());
-    MatrixXd newAMatrix (A.rows()+B.rows(),A.cols());
-    newBMatrix= B.block(0,0,B.rows(),4);
-    newAMatrix= A.block(0,0,A.rows(),4);
-    myInterpolator.interpolate2SeriesB(maxLine, A,newBMatrix);
-    myInterpolator.interpolate2SeriesB(maxLine,B,newAMatrix);
-    A=newAMatrix.block(0,0,newAMatrix.rows(),4);
-    B=newBMatrix.block(0,0,newBMatrix.rows(),4);
-    */
+    //
+    //MatrixXd newBMatrix (B.rows()+A.rows(),B.cols());
+    //MatrixXd newAMatrix (A.rows()+B.rows(),A.cols());
+    //newBMatrix= B.block(0,0,B.rows(),4);
+    //newAMatrix= A.block(0,0,A.rows(),4);
+    //myInterpolator.interpolate2SeriesB(maxLine, A,newBMatrix);
+    //myInterpolator.interpolate2SeriesB(maxLine,B,newAMatrix);
+    //A=newAMatrix.block(0,0,newAMatrix.rows(),4);
+    //B=newBMatrix.block(0,0,newBMatrix.rows(),4);
+    //
 
 
     //calculating regresion
@@ -1015,6 +1111,6 @@ int main(){
 
 
 	std::cout <<"FIN PROGRAMA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<"b.rows()="<<B.rows()<<"a.rows()="<<A.rows()<<std::endl;
-}
+}*/
 
 
