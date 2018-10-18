@@ -135,7 +135,7 @@ void MainWindow::onEstimateSequence(){
     //myRegistrador.rigid_transform_3D()
 
     int contLin = readingB.rows();
-
+    std::cout <<"MainWindow::onEstimateSequence contLin="<<contLin<<std::endl;
     //Begin Try to estimate Scala using PCA
     //=========================================
     MatrixXd AA,BB,AApca,BBpca (contLin,3);
@@ -155,13 +155,41 @@ void MainWindow::onEstimateSequence(){
 
     // Try to find Time offset
     //==========================================
-    int maxLine = readingA.rows();
-    int interval = 100;
-    double anOffset = timeOffset;
-    double offsetEstimated = 0;
-    double correlationValue = myFindOffset.calculateOffsetXYZ( maxLine,interval, anOffset,offsetEstimated, AApca,  BBpca);//ok
+        int maxLine = readingA.rows();
+        int interval = 10;
+        double anOffset = timeOffset;
+        double offsetEstimated = 0;
+        double correlationValue = 0;
+        //double correlationValue = myFindOffset.calculateOffsetXYZ( maxLine,interval, anOffset,offsetEstimated, AApca,  BBpca);//ok
+        //timeOffsetEstimated= offsetEstimated;
+        //std::cout<<"timeOffsetEstimated="<<timeOffsetEstimated<<std::endl;
+
+    // Calculate interpolation with AApca and BBpca
+    // But AApca and BBpca has only 3 coordinates, needs to add the 4th coordinate , which is TIME
+
+    //anOffset=0;
+    MatrixXd tAApca(contLin,4),tBBpca (contLin,4);// store aapca and bbpca with time
+    for (int i =0; i < contLin; i ++){
+        std::cout<<"inside the for i="<<i<<std::endl;
+        //tAApca(i,0)=AA(i,0);
+        tAApca(i,0)=timeA[i];
+        tAApca(i,1)=AApca(i,0);
+        tAApca(i,2)=AApca(i,1);
+        tAApca(i,3)=AApca(i,2);
+        //tBBpca(i,0)=BB(i,0);
+        tBBpca(i,0)=timeB[i];
+        tBBpca(i,1)=BBpca(i,0);
+        tBBpca(i,2)=BBpca(i,1);
+        tBBpca(i,3)=BBpca(i,2);
+
+    }
+    rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
     timeOffsetEstimated= offsetEstimated;
-    std::cout<<"timeOffsetEstimated="<<timeOffsetEstimated<<std::endl;
+    std::cout<<"timeOffsetEstimated2="<<timeOffsetEstimated<<std::endl;
+    std::cout<<"timeOffset EXPECTED="<<timeOffset<<std::endl;
+
+
+
 
     // Adapt dataB to Scale if necessary
     //==========================================
@@ -208,7 +236,7 @@ void MainWindow::onEstimateSequence(){
     double y3 = rotationEstimated.row(2)(1);
     double z3 = rotationEstimated.row(2)(2);
 
-    dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,correlationValue);
+    dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax);
 
     dialogShowEstimated->setDataDialog(dataDialogShowEstimated);
     dialogShowEstimated->show();
@@ -230,14 +258,19 @@ void MainWindow::loadFile(const QString &fileName)
         double timestamp,rx,ry,rz,q1,q2,q3,q4=0;
         int contLin=0;
 
+        MatrixXd newA(maxLine,3);
         while ( (infileA >> timestamp >> rx >> ry >> rz >> q1 >> q2 >> q3 >> q4) && contLin<maxLine ){
                     std::cout <<"contLin="<<contLin<<std::endl;
-                    readingA.row(contLin)<< rx,ry,rz;
+                    newA.row(contLin)<< rx,ry,rz;
+                    timeA[contLin]= timestamp;
                     std::cout <<"contLin="<<contLin<<std::endl;
                     contLin ++;
 
 
         }
+
+
+        readingA=newA.block(0,0,contLin,3);
         infileA.close();
 
         std::cout <<"fin leyendo Archivo"<<std::endl;
@@ -323,12 +356,20 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
      double timestamp,rx,ry,rz,q1,q2,q3,q4=0;
      int contLin=0;
 
+     MatrixXd newB(maxLine,3);
      while ( (infileB >> timestamp >> rx >> ry >> rz >> q1 >> q2 >> q3 >> q4) && contLin<maxLine ){
-                         readingB.row(contLin)<<rx,ry,rz;
+                 //std::cout <<"contLin="<<contLin<<std::endl;
+                 newB.row(contLin)<< rx,ry,rz;
+                 timeB[contLin]= timestamp;
+                 std::cout <<"contLin="<<contLin<<std::endl;
+                 contLin ++;
 
-                         contLin ++;
 
-      }
+     }
+
+
+     readingB=newB.block(0,0,contLin,3);
+
      infileB.close();
      ((Winslam*)(myWinSlam))->setContaminatedDataView(readingB);
      timeOffset=offset;

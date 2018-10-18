@@ -36,6 +36,7 @@ private:
 #include "GeneratorPCA/GeneratorPCA.h"
 #include "ModuloEscala/FindScala.h"
 #include "AjusteTiempo/AjusteTiempo.h"
+#include "Interpolator/Interpolator.h"
 #include "Point3D.h"
 #include "Eigen/Dense"
 class QAction;
@@ -75,6 +76,7 @@ public:
     GeneratorPCA myGeneratorPCA;//Calculate PCA over a dataset
     FindScala myFindScala; // to find the scala
     AjusteTiempo myFindOffset; //to find timeOffset
+    Interpolator myInterpolator;// to interpolate
     char * myInputFileName;
     char * myOutputFileName;
     //==============================
@@ -85,10 +87,13 @@ public:
     Eigen::MatrixXd dataEstimated;
     Eigen::MatrixXd rotationEstimated;
     Eigen::MatrixXd traslationEstimated;
+    double timeA [3000];
+    double timeB [3000];
 
     //===============================
     double timeOffset;
     double timeOffsetEstimated;
+    double rMax;
 
     //Point3D * myScala;
 private slots:
