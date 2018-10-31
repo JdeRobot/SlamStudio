@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <ctime>
 #include <unistd.h>
@@ -161,6 +162,21 @@ void GeneratorPCA::calculatePCAbySVD(int maxLine, MatrixXd& A){
 
 }
 
+void GeneratorPCA::setPcaA(MatrixXd aMatrix){
+    pcaA=aMatrix;
+}
+void GeneratorPCA::setPcaB(MatrixXd aMatrix){
+    pcaB=aMatrix;
+}
+
+MatrixXd GeneratorPCA::getPcaB(){
+   return pcaB;
+}
+MatrixXd GeneratorPCA::getPcaA(){
+   return pcaA;
+}
+
+
 void GeneratorPCA::calculatePCAbySVD( int rotation,MatrixXd& A , MatrixXd& A2 ,MatrixXd& PCA){
 	/*
 	 * based on code
@@ -180,6 +196,7 @@ void GeneratorPCA::calculatePCAbySVD( int rotation,MatrixXd& A , MatrixXd& A2 ,M
 	// and here is the question what is the basis matrix and how can i reduce it
 	// in my understanding it should be:
 	Eigen::MatrixXd pcaTransform = svd.matrixV().leftCols(3);
+    PCA=pcaTransform.block(0,0,3,3);
 	//Eigen::MatrixXd pcaTransform = svd.matrixV().rightCols(3);
 
 	// then to project the data:
@@ -212,6 +229,7 @@ void GeneratorPCA::calculatePCAbySVD( int rotation,MatrixXd& A , MatrixXd& A2 ,M
     A2=projected.block(0,0,projected.rows(),projected.cols());
 
 }
+
 void GeneratorPCA::calculatePCA(int maxLine, MatrixXd& A){
 
 
