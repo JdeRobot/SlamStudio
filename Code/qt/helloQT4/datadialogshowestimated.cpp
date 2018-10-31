@@ -2,7 +2,7 @@
 DataDialogShowEstimated::DataDialogShowEstimated(){
 
 }
-DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm){
+DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm,int diType,Eigen::MatrixXd mpcaA,Eigen::MatrixXd mpcaB){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -20,12 +20,16 @@ DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,
     rotZ3=rZ3;
     timeOffset=tOffset;
     rmax=rm;
+    dialogType=diType;
+
+    mPcaA=mpcaA;
+    mPcaB=mpcaB;
 
 
 
 }
 
-void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm){
+void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm,int diType,Eigen::MatrixXd mpcaA,Eigen::MatrixXd mpcaB){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -43,6 +47,10 @@ void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double t
     rotZ3=rZ3;
     timeOffset=tOffset;
     rmax = rm;
+    dialogType=diType;
+    mPcaA=mpcaA;
+    mPcaB=mpcaB;
+
 }
 double DataDialogShowEstimated::getScaleX(){
     return scaleX;
@@ -96,6 +104,20 @@ double DataDialogShowEstimated::getRMax(){
     return rmax;
 };
 
+int DataDialogShowEstimated::getDialogType(){
+    return dialogType;
+};
+
+
+Eigen::MatrixXd DataDialogShowEstimated::getPcaA(){
+    return mPcaA;
+}
+Eigen::MatrixXd DataDialogShowEstimated::getPcaB(){
+    return mPcaB;
+}
+
+
+
 
 
 void DataDialogShowEstimated::setScaleX(double aValue){
@@ -147,3 +169,13 @@ void DataDialogShowEstimated::setRMax(double aValue){
     rmax=aValue;
 };
 
+void DataDialogShowEstimated::setDialogType(int aValue){
+    dialogType=aValue;
+}
+void DataDialogShowEstimated::setPcaA(Eigen::MatrixXd aMatrix){
+    mPcaA=aMatrix;
+}
+
+void DataDialogShowEstimated::setPcaB(Eigen::MatrixXd aMatrix){
+    mPcaB=aMatrix;
+}

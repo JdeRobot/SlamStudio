@@ -1,7 +1,8 @@
 #ifndef DATADIALOGSHOWESTIMATED_H
 #define DATADIALOGSHOWESTIMATED_H
 #include <string>
-//class QString;
+#include "Eigen/Dense"
+class QString;
 class DataDialogShowEstimated{
 private:
 
@@ -28,13 +29,16 @@ double rotZ2;
 double rotZ3;
 double timeOffset;
 double rmax;
+int dialogType; //if 1 Dialog will show estimated transformation from DatasetA to new DataSetB
+                //if 2 Dialog will show estimated transformation from new DatasetB to  DataSetA
 
-
+Eigen::MatrixXd mPcaA;
+Eigen::MatrixXd mPcaB;
 
 public:
 DataDialogShowEstimated();
-DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm);
-void updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm);
+DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm,int labelTitle,Eigen::MatrixXd mPcaA,Eigen::MatrixXd mPcaB);
+void updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm,int labelTitle,Eigen::MatrixXd mPcaA,Eigen::MatrixXd mPcaB);
 //DataDialogScalaTraslaRota(char* sX, char* sY, char* sZ,char* tX,char* tY, char* tZ, char* rX, char* rY, char* rZ);
 double getScaleX();
 double getScaleY();
@@ -53,6 +57,10 @@ double getRotaZ2();
 double getRotaZ3();
 double getRMax();
 double getTimeOffset();
+int getDialogType();
+
+Eigen::MatrixXd getPcaA();
+Eigen::MatrixXd getPcaB();
 
 void setScaleX(double aValue);
 void setScaleY(double aValue);
@@ -71,6 +79,13 @@ void setRotaZ2(double aValue);
 void setRotaZ3(double aValue);
 void setTimeOffset(double aValue);
 void setRMax(double aValue);
+void setDialogType(int aValue);
+
+void setPcaA(Eigen::MatrixXd aMatrix);
+void setPcaB(Eigen::MatrixXd aMatrix);
+
+
+
 
 
 

@@ -58,10 +58,15 @@ MainWindow::MainWindow()
     connect(modifySequence, &QAction::triggered, this, &MainWindow::onModifySequence);
 
     QMenu *menuEstimate = menuBar->addMenu(tr("&Estimator"));
-    QAction *estimateSequence = new QAction(menuWindow);
-    estimateSequence->setText(tr("Estimate sequence"));
-    menuEstimate->addAction(estimateSequence);
-    connect(estimateSequence, &QAction::triggered, this, &MainWindow::onEstimateSequence);
+    QAction *estimateSequenceAtoB = new QAction(menuWindow);
+    estimateSequenceAtoB->setText(tr("Estimate sequence A to B"));
+    menuEstimate->addAction(estimateSequenceAtoB);
+    connect(estimateSequenceAtoB, &QAction::triggered, this, &MainWindow::onEstimateSequenceAtoB);
+    QAction *estimateSequenceBtoA = new QAction(menuWindow);
+    estimateSequenceBtoA->setText(tr("Estimate sequence B to A"));
+    menuEstimate->addAction(estimateSequenceBtoA);
+    connect(estimateSequenceBtoA, &QAction::triggered, this, &MainWindow::onEstimateSequenceBtoA);
+
 
     QMenu *menuView = menuBar->addMenu(tr("&View"));
     QAction *setDots = new QAction(menuWindow);
@@ -72,6 +77,10 @@ MainWindow::MainWindow()
     setLines->setText(tr("3d lines"));
     menuView->addAction(setLines);
     connect(setLines, &QAction::triggered, this, &MainWindow::onSetLines);
+    QAction *setViewJustEstimated = new QAction(menuWindow);
+    setViewJustEstimated->setText(tr("show only data estimated"));
+    menuView->addAction(setViewJustEstimated);
+    connect(setViewJustEstimated, &QAction::triggered, this, &MainWindow::onViewJustEstimated);
 
 
     setMenuBar(menuBar);
@@ -83,7 +92,7 @@ MainWindow::MainWindow()
         myWinSlam=(QWidget*)(new Winslam(this));
         setCentralWidget(myWinSlam);
     //onAddNew();
-    dataDialogScalaTraslaRota= new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+    dataDialogScalaTraslaRota= new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0);
 
 }
 
@@ -98,6 +107,10 @@ void MainWindow::onSetDots()
 void MainWindow::onSetLines()
 {
     ((Winslam*)(myWinSlam))->setLines();
+}
+void MainWindow::onViewJustEstimated()
+{
+    ((Winslam*)(myWinSlam))->setViewJustEstimated();
 }
 
 void MainWindow::onOpenFile()
@@ -116,6 +129,7 @@ void MainWindow::onOpenFile()
     if (!fileName.isEmpty())
         loadFile(fileName);
 }
+//================================================================================================================
 
 void MainWindow::onModifySequence()
 {
@@ -130,7 +144,9 @@ void MainWindow::onModifySequence()
     std::cout<< "FIN onModifySequence" <<std::endl;
 }
 
-void MainWindow::onEstimateSequence(){
+//================================================================================================================
+
+void MainWindow::onEstimateSequenceAtoB(){
     std::cout<<"onEstimateSequence"<<std::endl;
     //myRegistrador.rigid_transform_3D()
 
@@ -146,6 +162,8 @@ void MainWindow::onEstimateSequence(){
 
     myGeneratorPCA.calculatePCAbySVD(0,AA, AApca, pcaA);//A is converted to PCA. Important,inside this function also is calculated A.rowwise() - A.colwise().mean(). A is converted to a newA
     myGeneratorPCA.calculatePCAbySVD(0,BB, BBpca, pcaB);//B is converted to PCA. Important,inside this function also is calculated B.rowwise() - B.colwise().mean(). B is converted to a newB
+    myGeneratorPCA.setPcaA(pcaA);
+    myGeneratorPCA.setPcaB(pcaB);
 
     Vector3d myScalaSVD = myFindScala.getScalaSVD(AApca,BBpca);
     std::cout <<"MainWindow::onEstimateSequence myScalaSVD="<<myScalaSVD<<std::endl;
@@ -155,59 +173,83 @@ void MainWindow::onEstimateSequence(){
 
     // Try to find Time offset
     //==========================================
-        int maxLine = readingA.rows();
-        int interval = 10;
-        double anOffset = timeOffset;
-        double offsetEstimated = 0;
-        double correlationValue = 0;
-        //double correlationValue = myFindOffset.calculateOffsetXYZ( maxLine,interval, anOffset,offsetEstimated, AApca,  BBpca);//ok
-        //timeOffsetEstimated= offsetEstimated;
-        //std::cout<<"timeOffsetEstimated="<<timeOffsetEstimated<<std::endl;
+    if (timeOffset > 0) {
+            int maxLine = readingA.rows();
+            int interval = 10;
+            double anOffset = timeOffset;
+            double offsetEstimated = 0;
+            double correlationValue = 0;
+            //double correlationValue = myFindOffset.calculateOffsetXYZ( maxLine,interval, anOffset,offsetEstimated, AApca,  BBpca);//ok
+            //timeOffsetEstimated= offsetEstimated;
+            //std::cout<<"timeOffsetEstimated="<<timeOffsetEstimated<<std::endl;
 
-    // Calculate interpolation with AApca and BBpca
-    // But AApca and BBpca has only 3 coordinates, needs to add the 4th coordinate , which is TIME
+        // Calculate interpolation with AApca and BBpca
+        // But AApca and BBpca has only 3 coordinates, needs to add the 4th coordinate , which is TIME
 
-    //anOffset=0;
-    MatrixXd tAApca(contLin,4),tBBpca (contLin,4);// store aapca and bbpca with time
-    for (int i =0; i < contLin; i ++){
-        std::cout<<"inside the for i="<<i<<std::endl;
-        //tAApca(i,0)=AA(i,0);
-        tAApca(i,0)=timeA[i];
-        tAApca(i,1)=AApca(i,0);
-        tAApca(i,2)=AApca(i,1);
-        tAApca(i,3)=AApca(i,2);
-        //tBBpca(i,0)=BB(i,0);
-        tBBpca(i,0)=timeB[i];
-        tBBpca(i,1)=BBpca(i,0);
-        tBBpca(i,2)=BBpca(i,1);
-        tBBpca(i,3)=BBpca(i,2);
+        //anOffset=0;
+        MatrixXd tAApca(contLin,4),tBBpca (contLin,4);// store aapca and bbpca with time
+        for (int i =0; i < contLin; i ++){
+            std::cout<<"inside the for i="<<i<<std::endl;
+            //tAApca(i,0)=AA(i,0);
+            tAApca(i,0)=timeA[i];
+            tAApca(i,1)=AApca(i,0);
+            tAApca(i,2)=AApca(i,1);
+            tAApca(i,3)=AApca(i,2);
+            //tBBpca(i,0)=BB(i,0);
+            tBBpca(i,0)=timeB[i];
+            tBBpca(i,1)=BBpca(i,0);
+            tBBpca(i,2)=BBpca(i,1);
+            tBBpca(i,3)=BBpca(i,2);
 
-    }
-    rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
-    timeOffsetEstimated= offsetEstimated;
-    std::cout<<"timeOffsetEstimated2="<<timeOffsetEstimated<<std::endl;
-    std::cout<<"timeOffset EXPECTED="<<timeOffset<<std::endl;
+        }
+        rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
+        timeOffsetEstimated= offsetEstimated;
+        std::cout<<"timeOffsetEstimated2="<<timeOffsetEstimated<<std::endl;
+        std::cout<<"timeOffset EXPECTED="<<timeOffset<<std::endl;
 
-
+    } else timeOffsetEstimated=0;
 
 
     // Adapt dataB to Scale if necessary
     //==========================================
-
-    if (myScalaSVD(0) > 1 || myScalaSVD(1) > 1 || myScalaSVD(1) > 1 ){ //if myScaleSVD is not (1,1,1)
-
+    double medScala;//To store the medium value of the estimated scale
+    if (myScalaSVD(0) > 1 || myScalaSVD(1) > 1 || myScalaSVD(2) > 1 ){ //if myScaleSVD is not (1,1,1)
+        medScala = (myScalaSVD(0)+myScalaSVD(1)+myScalaSVD(2))/3;
+        std::cout<< "MainWindow::onEstimateSequence medScala="<< medScala  <<std::endl;
         MatrixXd newB(readingB.rows(),3);
         newB = readingB.block(0,0,readingB.rows(),3);
         std::cout <<"Scale is greater than 1. Divide by Scale dataset B and datasetBB"<<myScalaSVD<<std::endl;
         for (int i= 0; i< newB.rows(); i++){
             VectorXd aRow = newB.row(i);
-            newB.row(i) << aRow(0)/myScalaSVD(0),aRow(1)/myScalaSVD(1),aRow(2)/myScalaSVD(2);
+            //newB.row(i) << aRow(0)/myScalaSVD(0),aRow(1)/myScalaSVD(1),aRow(2)/myScalaSVD(2);
+            newB.row(i)<< aRow(0)/medScala,aRow(1)/medScala,aRow(2)/medScala;
          }
 
-        myRegistrador.rigid_transform_3D(newB,readingA,rotationEstimated,traslationEstimated);
+        //myRegistrador.rigid_transform_3D(newB,readingA,rotationEstimated,traslationEstimated);ok
+        myRegistrador.rigid_transform_3D(readingA,newB,rotationEstimated,traslationEstimated);
         std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
         std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
-        myRegistrador.applyTransformationsOverData(newB,dataEstimated,rotationEstimated,traslationEstimated);
+        //myRegistrador.applyTransformationsOverData(newB,dataEstimated,rotationEstimated,traslationEstimated);ok
+
+        /*MatrixXd newA(readingA.rows(),3);
+        newA = readingA.block(0,0,readingA.rows(),3);
+
+        for (int i= 0; i< newA.rows(); i++){
+            VectorXd aRow = newA.row(i);
+            newA.row(i)<< aRow(0)*medScala,aRow(1)*medScala,aRow(2)*medScala;
+         }
+         */
+        myRegistrador.applyTransformationsOverData(readingA,dataEstimated,rotationEstimated,traslationEstimated);
+        MatrixXd newA(dataEstimated.rows(),3);
+        newA = dataEstimated.block(0,0,dataEstimated.rows(),3);
+
+        for (int i= 0; i< newA.rows(); i++){
+            VectorXd aRow = newA.row(i);
+            newA.row(i)<< aRow(0)*medScala,aRow(1)*medScala,aRow(2)*medScala;
+         }
+         dataEstimated = newA.block(0,0,newA.rows(),3);
+        //myRegistrador.applyTransformationsOverData(newA,dataEstimated,rotationEstimated,traslationEstimated);
+
 
     } else{
 
@@ -217,7 +259,7 @@ void MainWindow::onEstimateSequence(){
         myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
     }
 
-
+    std::cout <<"TRASLATION ESTIMATED----------------------------->"<<traslationEstimated<<std::endl;
 
 
     //std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
@@ -236,12 +278,154 @@ void MainWindow::onEstimateSequence(){
     double y3 = rotationEstimated.row(2)(1);
     double z3 = rotationEstimated.row(2)(2);
 
-    dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax);
+    //dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax);
+    dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax,1,myGeneratorPCA.getPcaA(),myGeneratorPCA.getPcaB());
 
     dialogShowEstimated->setDataDialog(dataDialogShowEstimated);
     dialogShowEstimated->show();
 
 }
+//============================================================================================================
+void MainWindow::onEstimateSequenceBtoA(){
+    std::cout<<"onEstimateSequence"<<std::endl;
+    //myRegistrador.rigid_transform_3D()
+
+    int contLin = readingB.rows();
+    std::cout <<"MainWindow::onEstimateSequence contLin="<<contLin<<std::endl;
+    //Begin Try to estimate Scala using PCA
+    //=========================================
+    MatrixXd AA,BB,AApca,BBpca (contLin,3);
+    MatrixXd pcaA,pcaB;
+    //B = readingB.block(0,0,contLin,3);
+    AA = readingA.block(0,0,readingA.rows(),3);//to use with Scale and PCA
+    BB = readingB.block(0,0,readingB.rows(),3);//to use with Scale and PCA
+
+    myGeneratorPCA.calculatePCAbySVD(0,AA, AApca, pcaA);//A is converted to PCA. Important,inside this function also is calculated A.rowwise() - A.colwise().mean(). A is converted to a newA
+    std::cout <<"MainWindow::pcaA)))))))))))))))))))))))))))))))))))))))))))))))))))))))))="<<pcaA<<std::endl;
+    myGeneratorPCA.calculatePCAbySVD(0,BB, BBpca, pcaB);//B is converted to PCA. Important,inside this function also is calculated B.rowwise() - B.colwise().mean(). B is converted to a newB
+    std::cout <<"MainWindow::pcaB)))))))))))))))))))))))))))))))))))))))))))))))))))))))))="<<pcaB<<std::endl;
+    myGeneratorPCA.setPcaA(pcaA);
+    myGeneratorPCA.setPcaB(pcaB);
+
+
+    Vector3d myScalaSVD = myFindScala.getScalaSVD(AApca,BBpca);
+    std::cout <<"MainWindow::onEstimateSequence myScalaSVD="<<myScalaSVD<<std::endl;
+
+    // End Try to estimate Scala using PCA
+    //==========================================
+
+    // Try to find Time offset
+    //==========================================
+    if (timeOffset > 0) {
+            int maxLine = readingA.rows();
+            int interval = 10;
+            double anOffset = timeOffset;
+            double offsetEstimated = 0;
+            double correlationValue = 0;
+            //double correlationValue = myFindOffset.calculateOffsetXYZ( maxLine,interval, anOffset,offsetEstimated, AApca,  BBpca);//ok
+            //timeOffsetEstimated= offsetEstimated;
+            //std::cout<<"timeOffsetEstimated="<<timeOffsetEstimated<<std::endl;
+
+        // Calculate interpolation with AApca and BBpca
+        // But AApca and BBpca has only 3 coordinates, needs to add the 4th coordinate , which is TIME
+
+        //anOffset=0;
+        MatrixXd tAApca(contLin,4),tBBpca (contLin,4);// store aapca and bbpca with time
+        for (int i =0; i < contLin; i ++){
+            std::cout<<"inside the for i="<<i<<std::endl;
+            //tAApca(i,0)=AA(i,0);
+            tAApca(i,0)=timeA[i];
+            tAApca(i,1)=AApca(i,0);
+            tAApca(i,2)=AApca(i,1);
+            tAApca(i,3)=AApca(i,2);
+            //tBBpca(i,0)=BB(i,0);
+            tBBpca(i,0)=timeB[i];
+            tBBpca(i,1)=BBpca(i,0);
+            tBBpca(i,2)=BBpca(i,1);
+            tBBpca(i,3)=BBpca(i,2);
+
+        }
+        rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
+        timeOffsetEstimated= offsetEstimated;
+        std::cout<<"timeOffsetEstimated2="<<timeOffsetEstimated<<std::endl;
+        std::cout<<"timeOffset EXPECTED="<<timeOffset<<std::endl;
+
+   } else timeOffsetEstimated=0;
+
+
+
+
+    // Adapt dataB to Scale if necessary
+    //==========================================
+    double medScala;//To store the medium value of the estimated scale
+    if (myScalaSVD(0) > 1 || myScalaSVD(1) > 1 || myScalaSVD(2) > 1 ){ //if myScaleSVD is not (1,1,1)
+        medScala = (myScalaSVD(0)+myScalaSVD(1)+myScalaSVD(2))/3;
+        std::cout<< "MainWindow::onEstimateSequence medScala="<< medScala  <<std::endl;
+        MatrixXd newB(readingB.rows(),3);
+        newB = readingB.block(0,0,readingB.rows(),3);
+        std::cout <<"Scale is greater than 1. Divide by Scale dataset B and datasetBB"<<myScalaSVD<<std::endl;
+        for (int i= 0; i< newB.rows(); i++){
+            VectorXd aRow = newB.row(i);
+            //newB.row(i) << aRow(0)/myScalaSVD(0),aRow(1)/myScalaSVD(1),aRow(2)/myScalaSVD(2);
+            newB.row(i)<< aRow(0)/medScala,aRow(1)/medScala,aRow(2)/medScala;
+         }
+
+        myRegistrador.rigid_transform_3D(newB,readingA,rotationEstimated,traslationEstimated);
+        //myRegistrador.rigid_transform_3D(readingA,newB,rotationEstimated,traslationEstimated);
+        std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
+        std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
+        myRegistrador.applyTransformationsOverData(newB,dataEstimated,rotationEstimated,traslationEstimated);
+
+
+        //myRegistrador.applyTransformationsOverData(readingA,dataEstimated,rotationEstimated,traslationEstimated);
+        /*
+        MatrixXd newA(dataEstimated.rows(),3);
+        newA = dataEstimated.block(0,0,dataEstimated.rows(),3);
+
+        for (int i= 0; i< newA.rows(); i++){
+            VectorXd aRow = newA.row(i);
+            newA.row(i)<< aRow(0)*medScala,aRow(1)*medScala,aRow(2)*medScala;
+         }
+         dataEstimated = newA.block(0,0,newA.rows(),3);
+        */
+        //myRegistrador.applyTransformationsOverData(newA,dataEstimated,rotationEstimated,traslationEstimated);
+
+
+    } else{
+
+        myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
+        std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
+        std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
+        myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
+    }
+
+    std::cout <<"TRASLATION ESTIMATED----------------------------->"<<traslationEstimated<<std::endl;
+
+
+    //std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
+    ((Winslam*)(myWinSlam))->setEstimatedDataView(dataEstimated);
+    dialogShowEstimated =(new DialogShowEstimated (this));
+    //dialogScalaTraslaRota->setDataDialog(new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0));
+    double x1 = rotationEstimated.row(0)(0);
+    double y1 = rotationEstimated.row(0)(1);
+    double z1 = rotationEstimated.row(0)(2);
+
+    double x2 = rotationEstimated.row(1)(0);
+    double y2 = rotationEstimated.row(1)(1);
+    double z2 = rotationEstimated.row(1)(2);
+
+    double x3 = rotationEstimated.row(2)(0);
+    double y3 = rotationEstimated.row(2)(1);
+    double z3 = rotationEstimated.row(2)(2);
+
+    //dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax);
+    dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax,2,myGeneratorPCA.getPcaA(),myGeneratorPCA.getPcaB());
+
+    dialogShowEstimated->setDataDialog(dataDialogShowEstimated);
+    dialogShowEstimated->show();
+
+}
+//============================================================================================================
 void MainWindow::loadFile(const QString &fileName)
 {
     QFile file(fileName);
@@ -289,18 +473,18 @@ void MainWindow::loadFile(const QString &fileName)
     statusBar()->showMessage(tr("File loaded"), 2000);
     ((Winslam*)(myWinSlam))->setDataView(readingA);
 }
-
+//============================================================================================================
 void MainWindow::setScala(double X, double Y, double Z){
      std::cout<< "MainWindow.setScala" <<std::endl;
     ((Winslam*)(myWinSlam))->setScala(X,Y,Z);
 }
-
+//============================================================================================================
 void MainWindow::setTrasla(double X, double Y, double Z){
     ((Winslam*)(myWinSlam))->setTrasla(X,Y,Z);
     //performModifySequence(X,Y,Z, X,Y, Z,0,0,0,0,0);
 }
-
-void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise, double cNoise, double offset){
+//============================================================================================================
+void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise, double cNoise, double offset,int pcaIndex){
      dataDialogScalaTraslaRota->setScaleX(scalaX);
      dataDialogScalaTraslaRota->setScaleY(scalaY);
      dataDialogScalaTraslaRota->setScaleZ(scalaZ);
@@ -313,6 +497,7 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
      dataDialogScalaTraslaRota->setGaussianNoiseDeviation(gNoise);
      dataDialogScalaTraslaRota->setGaussianNoiseDeviation(cNoise);
      dataDialogScalaTraslaRota->setTimeOffset(offset);
+     dataDialogScalaTraslaRota->setPcaIndex(pcaIndex);
 
 
      int maxLine = 3000;
@@ -343,12 +528,12 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
 
 
      if (gNoise > 0.0 & cNoise >0.0) {
-         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,1,offset);
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,1,offset,pcaIndex);
      } else if (gNoise > 0.0 & cNoise <=0.0) {
-        myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,0,offset);
+        myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,0,offset,pcaIndex);
      } else if (gNoise <= 0 & cNoise >0.0){
-         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,1,offset);
-     } else  myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,0,offset);
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,1,offset,pcaIndex);
+     } else  myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,0,offset,pcaIndex);
 
      // Reading input file B, with new dataset contaminated
      std::ifstream infileB( "miSalidaContaminadaQT.txt" );

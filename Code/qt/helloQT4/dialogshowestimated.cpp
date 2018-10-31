@@ -8,7 +8,7 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
 {
     this->parent=(MainWindow *)parent;
     std::cout<< "constructor DialogShowEstimated" <<std::endl;
-    label = new QLabel(tr("Show ESTIMATED transformations:"));
+    labelTitle = new QLabel(tr("Show ESTIMATED transformations:"));
     //lineEdit = new QLineEdit;
     //label->setBuddy(lineEdit);
 
@@ -59,7 +59,22 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
     labRotationMatrix = new QLabel(tr("Rotation Matrix Estimated"));
     rotationMatrix = new QTextEdit;
     rotationMatrix->setText("0 0 0 \n 0 0 0 \n 0 0 0\n");
+    rotationMatrix->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    rotationMatrix->setMaximumHeight(130);
+    rotationMatrix->setMaximumWidth(230);
 
+    labPcaA = new QLabel(tr("PCA A"));
+    pcaA = new QTextEdit;
+    pcaA->setText("0 0 0");
+    pcaA->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    pcaA->setMaximumHeight(130);
+    pcaA->setMaximumWidth(230);
+    labPcaB = new QLabel(tr("PCA B"));
+    pcaB = new QTextEdit;
+    pcaB->setText("0 0 0");
+    pcaB->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    pcaB->setMaximumHeight(130);
+    pcaB->setMaximumWidth(230);
 
 
 
@@ -71,10 +86,11 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
     connect(buttonOK, SIGNAL(clicked()), this, SLOT(onOK()));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(onCancel()));
 
+    std::cout<< "2 constructor  DialogShowEstimated" <<std::endl;
 
 
     QHBoxLayout *topLeftLayout = new QHBoxLayout;
-    topLeftLayout->addWidget(label);
+    topLeftLayout->addWidget(labelTitle);
     //topLeftLayout->addWidget(lineEdit);
 
     QVBoxLayout *leftLayout = new QVBoxLayout;
@@ -99,6 +115,12 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
     leftLayout->addWidget(rMax);
     leftLayout->addWidget(labRotationMatrix);
     leftLayout->addWidget(rotationMatrix);
+    leftLayout->addWidget(labPcaA);
+    leftLayout->addWidget(pcaA);
+    leftLayout->addWidget(labPcaB);
+    leftLayout->addWidget(pcaB);
+
+
 
 
 
@@ -119,6 +141,7 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
 
     setWindowTitle(tr("Show Estimated transformations"));
     //extension->hide();
+    std::cout<< "FIN constructor DialogShowEstimated" <<std::endl;
 }
 
 void DialogShowEstimated::onOK()
@@ -130,9 +153,20 @@ void DialogShowEstimated::onOK()
 void DialogShowEstimated::setDataDialog(DataDialogShowEstimated* aModel){
     dialogModel = aModel;
     double value = 0.0;
-   traslaX->setText( QString::number(dialogModel->getTraslaX(), 'f', 6));
-   traslaY->setText( QString::number(dialogModel->getTraslaY(), 'f', 6));
-   traslaZ->setText( QString::number(dialogModel->getTraslaZ(), 'f', 6));
+    std::cout<< "DialogShowEstimated::setDataDialog " <<  dialogModel->getDialogType() <<std::endl;
+    if (dialogModel->getDialogType() == 1){
+
+        labelTitle->setText("Show ESTIMATED transformations A TO B:");
+
+    } else if (dialogModel->getDialogType()==2) {
+
+
+        labelTitle->setText("Show ESTIMATED transformations B TO A:");
+    }
+   double myScale=dialogModel->getScaleX();
+   traslaX->setText( QString::number((dialogModel->getTraslaX()*myScale), 'f', 6));
+   traslaY->setText( QString::number((dialogModel->getTraslaY()*myScale), 'f', 6));
+   traslaZ->setText( QString::number((dialogModel->getTraslaZ()*myScale), 'f', 6));
    scaleX->setText( QString::number(dialogModel->getScaleX(), 'f', 6));
    scaleY->setText( QString::number(dialogModel->getScaleY(), 'f', 6));
    scaleZ->setText( QString::number(dialogModel->getScaleZ(), 'f', 6));
@@ -141,7 +175,24 @@ void DialogShowEstimated::setDataDialog(DataDialogShowEstimated* aModel){
    rotationMatrix->setText(QString::number(dialogModel->getRotaX1(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY1(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ1(), 'f', 6)+"\n\n"+
                            QString::number(dialogModel->getRotaX2(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY2(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ2(), 'f', 6)+"\n\n"+
                            QString::number(dialogModel->getRotaX3(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY3(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ3(), 'f', 6));
-
+   pcaA->setText(QString::number (dialogModel->getPcaA().row(0)(0),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaA().row(0)(1),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaA().row(0)(2),'f',6)+ "\n\n "+
+                 QString::number (dialogModel->getPcaA().row(1)(0),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaA().row(1)(1),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaA().row(1)(2),'f',6)+ "\n\n"+
+                 QString::number (dialogModel->getPcaA().row(2)(0),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaA().row(2)(1),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaA().row(2)(2),'f',6)+ "  ");
+   pcaB->setText(QString::number (dialogModel->getPcaB().row(0)(0),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaB().row(0)(1),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaB().row(0)(2),'f',6)+ "\n\n "+
+                 QString::number (dialogModel->getPcaB().row(1)(0),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaB().row(1)(1),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaB().row(1)(2),'f',6)+ "\n\n"+
+                 QString::number (dialogModel->getPcaB().row(2)(0),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaB().row(2)(1),'f',6)+ "  "+
+                 QString::number (dialogModel->getPcaB().row(2)(2),'f',6)+ "  ");
 }
 
 

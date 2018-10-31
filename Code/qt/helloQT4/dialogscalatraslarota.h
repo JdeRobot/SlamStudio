@@ -50,6 +50,8 @@ private:
     QLabel *labOffset;
     QLineEdit *timeOffset;
 
+    QLabel *labPCAIndex;
+    QLineEdit *pcaIndex;
     QLineEdit *gaussianNoiseDeviation;
     QLineEdit *cosmicNoiseDeviation;
     QCheckBox *scaleCheckBox;

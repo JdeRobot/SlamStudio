@@ -51,6 +51,11 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     timeOffset->setText("0");
     timeOffset->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     timeOffset->setMaximumWidth(100);
+    labPCAIndex = new QLabel(tr("PCA index"));
+    pcaIndex=new QLineEdit;
+    pcaIndex->setText("0");
+    pcaIndex->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    pcaIndex->setMaximumWidth(100);
     /*traslaCheckBox = new QCheckBox(tr("Traslation"));
     traslaX = new QLineEdit;
     traslaX->setText("0");
@@ -153,6 +158,8 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     leftLayout->addWidget(traslaZ);
     leftLayout->addWidget(labOffset);
     leftLayout->addWidget(timeOffset);
+    leftLayout->addWidget(labPCAIndex);
+    leftLayout->addWidget(pcaIndex);
     //leftLayout->addWidget(rotaCheckBox);
     leftLayout->addWidget(rotationGroupBox);
     /*
@@ -204,11 +211,12 @@ void DialogScalaTraslaRota::onOK()
    double gNoise = gaussianNoiseDeviation->text().toDouble();
    double cNoise = cosmicNoiseDeviation->text().toDouble();
    double tOffset = timeOffset->text().toDouble();
+   int pcaI = pcaIndex->text().toInt();
    std::cout<< "onOK" <<std::endl;
-   ((MainWindow*)(parent))->performModifySequence(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset);
+   ((MainWindow*)(parent))->performModifySequence(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset,pcaI);
    std::cout<< "onOK:gNoise="<<gNoise<<std::endl;
    //dialogModel = new DataDialogScalaTraslaRota(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise);
-   dialogModel->updateData( sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset);
+   dialogModel->updateData( sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset,pcaI);
    std::cout<< "onOK:dialogModel->getGaussianNoiseDeviation()="<<dialogModel->getGaussianNoiseDeviation()<<std::endl;
    //((MainWindow*)(parent))->setTrasla(x,y,z);
 

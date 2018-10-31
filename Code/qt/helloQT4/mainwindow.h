@@ -57,7 +57,7 @@ public:
     void loadFile(const QString &fileName);
     void setScala(double X, double Y, double Z);
     void setTrasla(double X, double Y, double Z);
-    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise,double cNoise, double timeOffset);
+    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise,double cNoise, double timeOffset,int pcaIndex);
     QWidget *myWinSlam;
 
 
@@ -99,10 +99,12 @@ public:
 private slots:
     void onOpenFile();
     void onModifySequence();
-    void onEstimateSequence();
+    void onEstimateSequenceAtoB();
+    void onEstimateSequenceBtoA();
     void onExit();
     void onSetDots();//Menu View:indicate that dataset will be displayed as 3d points
     void onSetLines();//Menu View:indicate that dataset will be displayed as 3d lines
+    void onViewJustEstimated();//Menu View; indicate that only estimated dataset will be shown
 protected:
     //Winslam myWinSlam;
 

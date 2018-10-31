@@ -99,7 +99,9 @@ void Winslam::setDots(){
 void Winslam::setLines(){
     tetrahedron->setLines();
 }
-
+void Winslam::setViewJustEstimated(){
+    tetrahedron->setViewJustEstimated();
+}
 /*void Winslam::dockUndock()
 {
     if (parent()) {

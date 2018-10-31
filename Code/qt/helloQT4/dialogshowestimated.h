@@ -22,7 +22,7 @@ public:
     MainWindow *parent;
 
 private:
-    QLabel *label;
+    QLabel *labelTitle;
     QLabel *label2;
     QLabel *labelGaussNoise;
     QLabel *labelCosmicNoise;
@@ -47,6 +47,10 @@ private:
 
     QLabel *labRotationMatrix;
     QTextEdit *rotationMatrix;
+    QLabel *labPcaA;
+    QTextEdit *pcaA;
+    QLabel *labPcaB;
+    QTextEdit *pcaB;
 
 
     QPushButton *buttonOK;

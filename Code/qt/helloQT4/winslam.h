@@ -22,6 +22,7 @@ public:
     void setTrasla(double X, double Y, double Z);
     void setDots();
     void setLines();
+    void setViewJustEstimated();
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 

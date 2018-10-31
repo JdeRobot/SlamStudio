@@ -23,6 +23,7 @@ void setScala(double X, double Y, double Z);
 void setTrasla(double X, double Y, double Z);
 void setDots();
 void setLines();
+void setViewJustEstimated();
 
 protected:
 void initializeGL();
@@ -48,6 +49,7 @@ double dataEstimatedy[15000]= {0.0};
 double dataEstimatedz[15000]= {0.0};
 bool dots = true;
 bool lines = false;
+bool viewJustEstimated = false; //Show just estimated dataset
 
 
 private:

@@ -117,13 +117,15 @@ for (int i = 0; i < 4; ++i) {
         if (dots){
             glBegin(GL_POINTS);
             //glBegin(GL_LINES);
-            contLin1 --;
-            for (int h=0; h < contLin1; h++){// Bucle for, important the < simbol instead of <=
+            if (!viewJustEstimated) {
+                contLin1 --;
+                for (int h=0; h < contLin1; h++){// Bucle for, important the < simbol instead of <=
 
-                                    glVertex3f(dataGTx[h],dataGTy[h],dataGTz[h]); // LINEA QUE DIBUJA UNA CURVA
-                                    glVertex3f(dataGTx[h+1],dataGTy[h+1],dataGTz[h+1]);
+                                        glVertex3f(dataGTx[h],dataGTy[h],dataGTz[h]); // LINEA QUE DIBUJA UNA CURVA
+                                        glVertex3f(dataGTx[h+1],dataGTy[h+1],dataGTz[h+1]);
+                }
+                contLin1 ++;
             }
-            contLin1 ++;
             glColor3f(.3,.3,.6);
             //glBegin(GL_POINTS);
             contLin2 --;
@@ -149,14 +151,18 @@ for (int i = 0; i < 4; ++i) {
 
 
             glBegin(GL_LINES);
-            contLin1 --;
-            for (int h=0; h < contLin1; h++){// Bucle for, important the < simbol instead of <=
+            if (!viewJustEstimated) {
+                contLin1 --;
+                for (int h=0; h < contLin1; h++){// Bucle for, important the < simbol instead of <=
 
-                                    glVertex3f(dataGTx[h],dataGTy[h],dataGTz[h]); // LINEA QUE DIBUJA UNA CURVA
-                                    glVertex3f(dataGTx[h+1],dataGTy[h+1],dataGTz[h+1]);
+                                        glVertex3f(dataGTx[h],dataGTy[h],dataGTz[h]); // LINEA QUE DIBUJA UNA CURVA
+                                        glVertex3f(dataGTx[h+1],dataGTy[h+1],dataGTz[h+1]);
+                }
+                contLin1 ++;
             }
-            contLin1 ++;
             glColor3f(.3,.3,.6);
+
+
             //glBegin(GL_POINTS);
             contLin2 --;
             for (int j=0; j < contLin2; j++){// Bucle for, important the < simbol instead of <=
@@ -166,6 +172,7 @@ for (int i = 0; i < 4; ++i) {
 
             }
             contLin2 ++;
+
             glColor3f(.6,.3,.3);
             contLin3 --;
             for (int k=0; k < contLin3; k++){// Bucle for, important the < simbol instead of <=
@@ -317,5 +324,10 @@ void Tetrahedron::setDots(){
 void Tetrahedron::setLines(){
     lines=true;
     dots=false;
+    update();
+}
+
+void Tetrahedron::setViewJustEstimated(){
+    viewJustEstimated=!viewJustEstimated;
     update();
 }
