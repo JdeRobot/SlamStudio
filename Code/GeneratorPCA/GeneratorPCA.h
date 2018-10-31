@@ -8,7 +8,8 @@ using namespace Eigen;
 class GeneratorPCA {
 private:
 	MatrixXd m;
-
+    MatrixXd pcaA;
+    MatrixXd pcaB;
 public:
    GeneratorPCA ();
    //void genera2Series(int maxLine, double proporcionFrecuencia,double offset, MatrixXd& A, MatrixXd& B);
@@ -19,5 +20,9 @@ public:
    void calculatePCAbySVD(int maxLine,MatrixXd& A1);
    void calculatePCAbySVD(int rotation,MatrixXd& A, MatrixXd& A2, MatrixXd& PCA);
    void rotatePCA (int cont,MatrixXd& PCA);
+   MatrixXd getPcaA();
+   MatrixXd getPcaB();
+   void setPcaA(MatrixXd aMatrix);
+   void setPcaB(MatrixXd aMatrix);
 };
 #endif
