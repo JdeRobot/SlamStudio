@@ -405,7 +405,7 @@ double Transformador::generateGaussianNoise(double mu, double sigma, int CNoise)
 	//return z0 * sigma + mu;
 }
 
-void Transformador::createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise, int CNoise, double offset){
+void Transformador::createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise, int CNoise, double offset,int pcaIndex){
 	// This function modify an input dataset or sequence, and create another new dataset or sequence modified
 	// traslacion: is the traslation value (X,Y,Z)
 	// escala    : is the scale value (X,Y,Z)
