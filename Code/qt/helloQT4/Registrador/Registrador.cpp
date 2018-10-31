@@ -64,7 +64,8 @@ void Registrador::rigid_transform_3D_normalized(MatrixXd A, MatrixXd B , MatrixX
 		Vector3d centroidA = A.colwise().mean();
 		Vector3d centroidB = B.colwise().mean();
 
-		t = -R * centroidA + centroidB;
+        //t = -R * centroidA + centroidB;
+        t = R * centroidB - centroidA;
 		std::cout <<"t \n"<< t <<std:: endl;
 
 		//return R, t
