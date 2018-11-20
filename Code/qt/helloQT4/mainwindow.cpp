@@ -146,9 +146,11 @@ void MainWindow::onModifySequence()
 
 //================================================================================================================
 
-void MainWindow::onEstimateSequenceAtoB(){
+void MainWindow::onEstimateSequenceAtoB(){//Estimate transformations from dataset A to dataset B
     std::cout<<"onEstimateSequence"<<std::endl;
     //myRegistrador.rigid_transform_3D()
+    readingA=readingAbkp.block(0,0,readingAbkp.rows(),3);//to use with Scale and PCA
+    readingB=readingBbkp.block(0,0,readingBbkp.rows(),3);
 
     int contLin = readingB.rows();
     std::cout <<"MainWindow::onEstimateSequence contLin="<<contLin<<std::endl;
@@ -173,11 +175,11 @@ void MainWindow::onEstimateSequenceAtoB(){
 
     // Try to find Time offset
     //==========================================
+    double offsetEstimated = 0;
     if (timeOffset > 0) {
             int maxLine = readingA.rows();
             int interval = 10;
             double anOffset = timeOffset;
-            double offsetEstimated = 0;
             double correlationValue = 0;
             //double correlationValue = myFindOffset.calculateOffsetXYZ( maxLine,interval, anOffset,offsetEstimated, AApca,  BBpca);//ok
             //timeOffsetEstimated= offsetEstimated;
@@ -202,14 +204,60 @@ void MainWindow::onEstimateSequenceAtoB(){
             tBBpca(i,3)=BBpca(i,2);
 
         }
-        rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
+        //rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
+        rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval,offsetEstimated, tAApca,  tBBpca);
         timeOffsetEstimated= offsetEstimated;
         std::cout<<"timeOffsetEstimated2="<<timeOffsetEstimated<<std::endl;
         std::cout<<"timeOffset EXPECTED="<<timeOffset<<std::endl;
 
+        //Apply estimated offset over B
+        for (int i=0; i< tBBpca.rows(); i++){
+            Vector4d myNewVector(((tBBpca.row(i))(0) + offsetEstimated),(tBBpca.row(i))(1),(tBBpca.row(i))(2),(tBBpca.row(i))(3));
+            //contAddedValues++;
+
+
+
+            tBBpca.row(i)<<myNewVector.transpose();
+         }
+         myInterpolator.interpolateSerieToFrequency(0.007, tAApca);
+        //Check if the time is aligned for A and B
+         for (int t=0; t<100; t++){
+                std::cout<<"================================================================timeA["<<t<<"]="<<tAApca(t,0)<<"  timeB["<<t<<"]="<<tBBpca(t,0)<<std::endl;
+         }
+
     } else timeOffsetEstimated=0;
 
+   // Correct offset of dataB
 
+    MatrixXd dataA(contLin,4),dataB (contLin,4);// store dataA and dataB time
+    for (int i =0; i < contLin; i ++){
+        std::cout<<"inside the for i="<<i<<std::endl;
+
+        dataA(i,0)=timeA[i];
+        dataA(i,1)=readingA(i,0);
+        dataA(i,2)=readingA(i,1);
+        dataA(i,3)=readingA(i,2);
+
+        dataB(i,0)=timeB[i];
+        dataB(i,1)=readingB(i,0);
+        dataB(i,2)=readingB(i,1);
+        dataB(i,3)=readingB(i,2);
+
+    }
+    std::cout<< "MainWindow::offsetEstimated=== ="<< offsetEstimated <<std::endl;
+    for (int i=0; i< dataB.rows(); i++){
+        Vector4d myNewVector(((dataB.row(i))(0) + offsetEstimated),(dataB.row(i))(1),(dataB.row(i))(2),(dataB.row(i))(3));
+        //contAddedValues++;
+        dataB.row(i)<<myNewVector.transpose();
+     }
+    myInterpolator.interpolateSerieToFrequency(0.007, dataA);
+    myInterpolator.interpolate2SeriesB(dataA.cols(), dataA, dataB);
+   //Check if the time is aligned for A and B
+    for (int t=0; t<100; t++){
+           std::cout<<"================================================================dataAtime["<<t<<"]="<<dataA(t,0)<<"  dataBtime["<<t<<"]="<<dataB(t,0)<<std::endl;
+    }
+    readingB=dataB.block(0,1,dataB.rows(),3);
+    readingA=dataA.block(0,1,dataA.rows(),3);
     // Adapt dataB to Scale if necessary
     //==========================================
     double medScala;//To store the medium value of the estimated scale
@@ -253,10 +301,12 @@ void MainWindow::onEstimateSequenceAtoB(){
 
     } else{
 
-        myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
+        //myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
+        myRegistrador.rigid_transform_3D(readingA,readingB,rotationEstimated,traslationEstimated);
         std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
         std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
-        myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
+        //myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
+        myRegistrador.applyTransformationsOverData(readingA,dataEstimated,rotationEstimated,traslationEstimated);
     }
 
     std::cout <<"TRASLATION ESTIMATED----------------------------->"<<traslationEstimated<<std::endl;
@@ -286,10 +336,11 @@ void MainWindow::onEstimateSequenceAtoB(){
 
 }
 //============================================================================================================
-void MainWindow::onEstimateSequenceBtoA(){
+void MainWindow::onEstimateSequenceBtoA(){//estimate transformations from dataset B to dataset A
     std::cout<<"onEstimateSequence"<<std::endl;
     //myRegistrador.rigid_transform_3D()
-
+    readingA=readingAbkp.block(0,0,readingAbkp.rows(),3);//to use with Scale and PCA
+    readingB=readingBbkp.block(0,0,readingBbkp.rows(),3);
     int contLin = readingB.rows();
     std::cout <<"MainWindow::onEstimateSequence contLin="<<contLin<<std::endl;
     //Begin Try to estimate Scala using PCA
@@ -316,11 +367,11 @@ void MainWindow::onEstimateSequenceBtoA(){
 
     // Try to find Time offset
     //==========================================
+    double offsetEstimated = 0;
     if (timeOffset > 0) {
             int maxLine = readingA.rows();
             int interval = 10;
             double anOffset = timeOffset;
-            double offsetEstimated = 0;
             double correlationValue = 0;
             //double correlationValue = myFindOffset.calculateOffsetXYZ( maxLine,interval, anOffset,offsetEstimated, AApca,  BBpca);//ok
             //timeOffsetEstimated= offsetEstimated;
@@ -345,13 +396,61 @@ void MainWindow::onEstimateSequenceBtoA(){
             tBBpca(i,3)=BBpca(i,2);
 
         }
-        rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
+        //rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
+        rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval,offsetEstimated, tAApca,  tBBpca);
         timeOffsetEstimated= offsetEstimated;
         std::cout<<"timeOffsetEstimated2="<<timeOffsetEstimated<<std::endl;
         std::cout<<"timeOffset EXPECTED="<<timeOffset<<std::endl;
 
+        //Apply estimated offset over B
+        for (int i=0; i< tBBpca.rows(); i++){
+            Vector4d myNewVector(((tBBpca.row(i))(0) + offsetEstimated),(tBBpca.row(i))(1),(tBBpca.row(i))(2),(tBBpca.row(i))(3));
+            //contAddedValues++;
+
+
+
+            tBBpca.row(i)<<myNewVector.transpose();
+         }
+        myInterpolator.interpolateSerieToFrequency(0.007, tAApca);
+       //Check if the time is aligned for A and B
+        for (int t=0; t<100; t++){
+               std::cout<<"================================================================timeA["<<t<<"]="<<tAApca(t,0)<<"  timeB["<<t<<"]="<<tBBpca(t,0)<<std::endl;
+        }
+
    } else timeOffsetEstimated=0;
 
+
+    // Correct offset of dataB
+
+     MatrixXd dataA(contLin,4),dataB (contLin,4);// store dataA and dataB time
+     for (int i =0; i < contLin; i ++){
+         std::cout<<"inside the for i="<<i<<std::endl;
+
+         dataA(i,0)=timeA[i];
+         dataA(i,1)=readingA(i,0);
+         dataA(i,2)=readingA(i,1);
+         dataA(i,3)=readingA(i,2);
+
+         dataB(i,0)=timeB[i];
+         dataB(i,1)=readingB(i,0);
+         dataB(i,2)=readingB(i,1);
+         dataB(i,3)=readingB(i,2);
+
+     }
+     std::cout<< "MainWindow::offsetEstimated=== ="<< offsetEstimated <<std::endl;
+     for (int i=0; i< dataB.rows(); i++){
+         Vector4d myNewVector(((dataB.row(i))(0) + offsetEstimated),(dataB.row(i))(1),(dataB.row(i))(2),(dataB.row(i))(3));
+         //contAddedValues++;
+         dataB.row(i)<<myNewVector.transpose();
+      }
+     myInterpolator.interpolateSerieToFrequency(0.007, dataA);
+     myInterpolator.interpolate2SeriesB(dataA.cols(), dataA, dataB);
+    //Check if the time is aligned for A and B
+     for (int t=0; t<100; t++){
+            std::cout<<"================================================================dataAtime["<<t<<"]="<<dataA(t,0)<<"  dataBtime["<<t<<"]="<<dataB(t,0)<<std::endl;
+     }
+     readingB=dataB.block(0,1,dataB.rows(),3);
+     readingA=dataA.block(0,1,dataA.rows(),3);
 
 
 
@@ -455,6 +554,7 @@ void MainWindow::loadFile(const QString &fileName)
 
 
         readingA=newA.block(0,0,contLin,3);
+        readingAbkp=newA.block(0,0,contLin,3);
         infileA.close();
 
         std::cout <<"fin leyendo Archivo"<<std::endl;
@@ -554,7 +654,7 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
 
 
      readingB=newB.block(0,0,contLin,3);
-
+     readingBbkp=newB.block(0,0,contLin,3);
      infileB.close();
      ((Winslam*)(myWinSlam))->setContaminatedDataView(readingB);
      timeOffset=offset;

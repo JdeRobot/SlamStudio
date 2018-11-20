@@ -12,40 +12,52 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     //lineEdit = new QLineEdit;
     //label->setBuddy(lineEdit);
 
-    scaleCheckBox = new QCheckBox(tr("Scale"));
-    labScaleX = new QLabel(tr("scale X"));
+    //scaleCheckBox = new QCheckBox(tr("Scale"));
+    labScaleX = new QLabel(tr("SCALE X Y Z "));
     scaleX = new QLineEdit;
     scaleX->setText("0");
     scaleX->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     scaleX->setMaximumWidth(100);
-    labScaleY = new QLabel(tr("scale Y"));
+    //labScaleY = new QLabel(tr("scale Y"));
     scaleY = new QLineEdit;
     scaleY->setText("0");
     scaleY->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     scaleY->setMaximumWidth(100);
-    labScaleZ = new QLabel(tr("scale X"));
+    //labScaleZ = new QLabel(tr("scale X"));
     scaleZ = new QLineEdit;
     scaleZ->setText("0");
     scaleZ->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     scaleZ->setMaximumWidth(100);
 
 
-    traslaCheckBox = new QCheckBox(tr("trasla"));
-    labTraslaX = new QLabel(tr("trasla X"));
+    QGroupBox *traslationGroupBox = new QGroupBox(tr("TRASLATION"));
+    QVBoxLayout *traslationVBox = new QVBoxLayout;
+    //traslaCheckBox = new QCheckBox(tr("TRASLATION"));
+    labTraslaX = new QLabel(tr("X"));
     traslaX = new QLineEdit;
     traslaX->setText("0");
     traslaX->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     traslaX->setMaximumWidth(100);
-    labTraslaY = new QLabel(tr("trasla Y"));
+    labTraslaY = new QLabel(tr("Y"));
     traslaY = new QLineEdit;
     traslaY->setText("0");
     traslaY->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     traslaY->setMaximumWidth(100);
-    labTraslaZ = new QLabel(tr("trasla Z"));
+    labTraslaZ = new QLabel(tr("Z"));
     traslaZ = new QLineEdit;
     traslaZ->setText("0");
     traslaZ->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     traslaZ->setMaximumWidth(100);
+
+    traslationVBox->addWidget(labTraslaX);
+    traslationVBox->addWidget(traslaX);
+    traslationVBox->addWidget(labTraslaY);
+    traslationVBox->addWidget(traslaY);
+    traslationVBox->addWidget(labTraslaZ);
+    traslationVBox->addWidget(traslaZ);
+    traslationVBox->addStretch(1);
+    traslationGroupBox->setLayout(traslationVBox);
+
     labOffset = new QLabel(tr("Time Offset"));
     timeOffset = new QLineEdit;
     timeOffset->setText("0");
@@ -102,6 +114,7 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     buttonOK = new QPushButton(tr("&OK"));
 
     buttonCancel = new QPushButton(tr("&Cancel"));
+    std::cout<< "constructor dialogScalaTraslaRota after Button Cancel" <<std::endl;
 
     connect(buttonOK, SIGNAL(clicked()), this, SLOT(onOK()));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(onCancel()));
@@ -136,37 +149,50 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     //extensionLayout->addWidget(searchSelectionCheckBox);
     //extension->setLayout(extensionLayout);
 
+    std::cout<< "constructor dialogTraslaRota beforeLayout" <<std::endl;
+
     QHBoxLayout *topLeftLayout = new QHBoxLayout;
     topLeftLayout->addWidget(label);
     //topLeftLayout->addWidget(lineEdit);
 
     QVBoxLayout *leftLayout = new QVBoxLayout;
     leftLayout->addLayout(topLeftLayout);
-    leftLayout->addWidget(scaleCheckBox);
+    //leftLayout->addWidget(scaleCheckBox);
     leftLayout->addWidget(labScaleX);
     leftLayout->addWidget(scaleX);
+    /*
     leftLayout->addWidget(labScaleY);
     leftLayout->addWidget(scaleY);
     leftLayout->addWidget(labScaleZ);
     leftLayout->addWidget(scaleZ);
+    */
+
     //leftLayout->addWidget(traslaCheckBox);
+    /*
     leftLayout->addWidget(labTraslaX);
     leftLayout->addWidget(traslaX);
     leftLayout->addWidget(labTraslaY);
     leftLayout->addWidget(traslaY);
     leftLayout->addWidget(labTraslaZ);
     leftLayout->addWidget(traslaZ);
-    leftLayout->addWidget(labOffset);
-    leftLayout->addWidget(timeOffset);
-    leftLayout->addWidget(labPCAIndex);
-    leftLayout->addWidget(pcaIndex);
+    */
+
+    leftLayout->addWidget(traslationGroupBox);
+
+
     //leftLayout->addWidget(rotaCheckBox);
+
     leftLayout->addWidget(rotationGroupBox);
     /*
     leftLayout->addWidget(rotaX);
     leftLayout->addWidget(rotaY);
     leftLayout->addWidget(rotaZ);
     */
+
+    leftLayout->addWidget(labOffset);
+    leftLayout->addWidget(timeOffset);
+    leftLayout->addWidget(labPCAIndex);
+    leftLayout->addWidget(pcaIndex);
 
     leftLayout->addWidget(label2);
     leftLayout->addWidget(labelGaussNoise);
@@ -194,6 +220,7 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
 
     setWindowTitle(tr("sequence manager"));
     //extension->hide();
+    std::cout<< "end constructor scalatraslaRota" <<std::endl;
 }
 
 void DialogScalaTraslaRota::onOK()
@@ -203,8 +230,8 @@ void DialogScalaTraslaRota::onOK()
    double ty = traslaY->text().toDouble();
    double tz = traslaZ->text().toDouble();
    double sx = scaleX->text().toDouble();
-   double sy = scaleY->text().toDouble();
-   double sz = scaleZ->text().toDouble();
+   double sy = sx;//scaleY->text().toDouble();
+   double sz = sx;//scaleZ->text().toDouble();
    double rx = rotaX->text().toDouble();
    double ry = rotaY->text().toDouble();
    double rz = rotaZ->text().toDouble();
@@ -233,8 +260,8 @@ void DialogScalaTraslaRota::setDataDialog(DataDialogScalaTraslaRota* aModel){
    traslaY->setText( QString::number(dialogModel->getTraslaY(), 'f', 6));
    traslaZ->setText( QString::number(dialogModel->getTraslaZ(), 'f', 6));
    scaleX->setText( QString::number(dialogModel->getScaleX(), 'f', 6));
-   scaleY->setText( QString::number(dialogModel->getScaleY(), 'f', 6));
-   scaleZ->setText( QString::number(dialogModel->getScaleZ(), 'f', 6));
+   scaleY->setText( QString::number(dialogModel->getScaleX(), 'f', 6));//setText( QString::number(dialogModel->getScaleY(), 'f', 6));
+   scaleZ->setText( QString::number(dialogModel->getScaleX(), 'f', 6));//setText( QString::number(dialogModel->getScaleZ(), 'f', 6));
    rotaX->setText( QString::number(dialogModel->getRotaX(), 'f', 6));
    rotaY->setText( QString::number(dialogModel->getRotaY(), 'f', 6));
    rotaZ->setText( QString::number(dialogModel->getRotaZ(), 'f', 6));

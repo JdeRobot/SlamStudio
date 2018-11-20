@@ -84,6 +84,8 @@ public:
     //============================== Matrix that will store the data model
     Eigen::MatrixXd readingA;
     Eigen::MatrixXd readingB;
+    Eigen::MatrixXd readingAbkp;
+    Eigen::MatrixXd readingBbkp;
     Eigen::MatrixXd dataEstimated;
     Eigen::MatrixXd rotationEstimated;
     Eigen::MatrixXd traslationEstimated;
