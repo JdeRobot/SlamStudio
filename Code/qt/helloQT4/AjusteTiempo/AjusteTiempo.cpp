@@ -779,7 +779,7 @@ double AjusteTiempo::calculateOffsetXYZ(int maxLine, int interval, double offset
 
 }
 
-double AjusteTiempo::calculateOffsetTXYZ(int maxLine, int interval, double offset, double& offsetEstimated, MatrixXd A1,MatrixXd B2){
+double AjusteTiempo::calculateOffsetTXYZ(int maxLine, int interval, MatrixXd A1,MatrixXd B2){
     //Calculate Correlation for 2 matrix, each has 3 columns and maxLine rows. Use with 3d datasets
     //offset: defines gap between second matrix and first matrix
     //maxLine: number of lines
@@ -803,13 +803,15 @@ double AjusteTiempo::calculateOffsetTXYZ(int maxLine, int interval, double offse
 
     std::cout <<"contLin2"<<B2.rows()<<std::endl;
 
-    MatrixXd readingB= MatrixXd::Zero((B2.rows()+offset),B2.cols());
+    MatrixXd readingB= MatrixXd::Zero((B2.rows()),B2.cols());
     //for (int h=0; h<( maxLine-10);h++){
-    for (int h=0; h<B2.rows() ; h++){
+    //for (int h=0; h<B2.rows() ; h++){
 
-        readingB.row(int(h+offset)) = B2.row(h);
+        //readingB.row(int(h+offset)) = B2.row(h);
+        //readingB.row(h) = B2.row(h);
         //std::cout <<"h==="<<h<<std::endl;
-    }
+    //}
+    readingB=B2.block(0,0,B2.rows(),B2.cols());
     std::cout <<"fin bucle h"<<std::endl;
 
     //mediaSerieA = A1.col(1).mean();
@@ -875,7 +877,8 @@ double AjusteTiempo::calculateOffsetTXYZ(int maxLine, int interval, double offse
     while (i < maxRowsA && j < maxRowsB){
 
 
-             j = i + offset;
+             //j = i + offset;
+             j=i;
              if (j < 0 || j >= maxRowsB)
                 continue;
              else
@@ -897,7 +900,7 @@ double AjusteTiempo::calculateOffsetTXYZ(int maxLine, int interval, double offse
 
           // r is the correlation coefficient at "delay"
           std::cout <<"r ="<<fabs(r)<<std::endl;
-          std::cout <<"delay ="<<offset<<std::endl;
+          //std::cout <<"delay ="<<offset<<std::endl;
           return r;
 
 
