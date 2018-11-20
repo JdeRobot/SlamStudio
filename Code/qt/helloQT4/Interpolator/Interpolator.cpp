@@ -75,9 +75,7 @@ void Interpolator::insertRowInSequence (MatrixXd& m, VectorXd myVector, int posi
 
 double Interpolator::interpolateValue (double x,double x2,double y2,double x3,double y3) {
 
-	double y;
-	y= y2 + (x-x2)*((y3-y2)/(x3-x2));
-
+    double y= y2 + (x-x2)*((y3-y2)/(x3-x2));
 	return y;
 }
 
@@ -322,6 +320,7 @@ void Interpolator::interpolateSerieToFrequency(float frequency, MatrixXd& B){
 
 
 }
+//=============================================================================================================
 void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 
 	// Supposed B less values than A
@@ -401,35 +400,7 @@ void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 
 			   }
 
-			    /*
 
-			      else if ( ActValueA == ActValueB  ){
-					//if (contB < B.rows()){
-					//	newBMatrix.row(newContB) << B.row(contB-1);
-					//	newContB++;
-					//	AntValueB=ActValueB;
-					//	ActValueB=B.row(contB)(0);
-					//	contB++;
-					//}
-				    newBMatrix.row(newContB) << B.row(contB);
-				   	newContB++;
-				   	AntValueB=ActValueB;
-				   	contB++;
-				    if (contB < B.rows()){
-						ActValueB=B.row(contB)(0);
-				   	} else {
-				   		endInterpolate=1;
-				   	}
-				    //std::cout<< "ActValueA == ActValueB"<<std::endl;
-
-                    //if (contA < A.rows()){
-					//	ActValueA=A.row(contA)(0);
-					//	contA++;
-                    //}else{
-                    //	endInterpolate=1;
-                    //}
-
-               */
 
 			   //else if ( ActValueA >= ActValueB ){
 			 else if ( actA >= actB ){
@@ -480,86 +451,7 @@ void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
 	B= newBMatrix.block(0,0,newContB,4);
 	}
 
-	/*
-	int Bsize= B.rows();
-	std::cout<< "Bsize="<<Bsize<<std::endl;
-	int Asize= A.rows();
-	std::cout<< "Asize="<<Asize<<std::endl;
-	int i =1;
-	int j , contAddedValues= 0;
-	MatrixXd newBMatrix (A.rows()+B.rows(),A.cols());
-    int contNewMatrix =0;
-	while (i < Bsize ){
-		std::cout<< "i="<<i<<std::endl;
-		newBMatrix.row(contNewMatrix)<< B.row(i-1);
-		contNewMatrix++;
-		//std::cout<< "contNewMatrix="<<contNewMatrix<<std::endl;
-		//std::cout<< "B.row(i-1)(0)="<<B.row(i-1)(0)<<std::endl;
-		contAddedValues = 0;
-		//j=i-1;
-		while (j< Asize  && (A.row(j)(0) < B.row(i)(0)) ){
-
-			//std::cout<< "i="<<i<< "j="<<j<<" (A.row(j)(0)="<<(A.row(j))(0)<<" B.row(i)(0)="<<(B.row(i))(0)<<" Asize="<<Asize<<"Bsize="<<Bsize<< "contNewMatrix="<<contNewMatrix<<std::endl;
-			std::cout<< "antes del if"<<std::endl;
-			if ((A.row(j)(0) > B.row(i-1)(0)) ) {
-				std::cout<< "dentro del if"<<std::endl;
-				//interpolate X coordinate
-				double y2= (B.row(i-1))(1);
-				double x = (A.row(j))(0);
-				double x2= (B.row(i-1))(0);
-				double y3= (B.row(i))(1);
-				double x3= (B.row(i))(0);
-				double xCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
-				std::cout<< "interpolo X"<<std::endl;
-				//interpolate Y coordinate
-				y2= (B.row(i-1))(2);
-				x = (A.row(j))(0);
-				x2= (B.row(i-1))(0);
-				y3= (B.row(i))(2);
-				x3= (B.row(i))(0);
-				double yCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
-				std::cout<< "interpolo Y"<<std::endl;
-				//interpolate Z coordinate
-				y2= (B.row(i-1))(3);
-				x = (A.row(j))(0);
-				x2= (B.row(i-1))(0);
-				y3= (B.row(i))(3);
-				x3= (B.row(i))(0);
-				double zCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
-				std::cout<< "interpolo Z"<<std::endl;
-				Vector4d myNewVector(x,xCoordinate,yCoordinate,zCoordinate);
-				std::cout<< "myNewVector="<<myNewVector<<std::endl;
-				//contAddedValues++;
-
-				newBMatrix.row(contNewMatrix) << myNewVector.transpose();
-				contNewMatrix++;
-				std::cout<< "contNewMatrix="<<contNewMatrix<<std::endl;
-			} else {
-
-				std::cout<< "(A.row(j)(0) > B.row(i-1)(0) NO ES MENOR"<<std::endl;
-			}
-			std::cout<< "despues del if"<<std::endl;
-			j++;
-		}
-		i++;
-
-	}
-	//std::cout<< "contNewMatrix="<<contNewMatrix<<std::endl;
-
-
-	//std::cout<< "A="<<A<<std::endl;
-	//std::cout<< "B="<<B<<std::endl;
-
-	newBMatrix.row(contNewMatrix)<<B.row(i-1);
-	contNewMatrix ++;
-	//std::cout<< "newBMatrix="<<newBMatrix<<std::endl;
-
-	B= newBMatrix.block(0,0,contNewMatrix,4);
-	//std::cout<< "new B Matrix="<<B<<std::endl;
-
-
-}
-*/
+//=============================================================================================================================
 
 
 void Interpolator::interpolate2Series(int maxLine, MatrixXd& A, MatrixXd& B){
@@ -645,55 +537,7 @@ void Interpolator::interpolate2Series(int maxLine, MatrixXd& A, MatrixXd& B){
 
 }
 
-/*
-void Interpolator::interpolate2Series(int maxLine, MatrixXd& A, MatrixXd& B){
-
- //testing inserting row
-  std::cout <<"interpolate"<<std::endl;
-  int sizeB = B.rows();
-  double timeBPrevious = 0;
-  MatrixXd myNewBMatrix (A.rows(),A.cols());
-  int cont=0;
-  std::cout <<"cont="<<cont<<std::endl;
-  myNewBMatrix.row(0)<< B.row(0);
-  std::cout <<"cont="<<cont<<std::endl;
-  for (int i=1;i< sizeB ;i++){
-	  //std::cout <<"i="<<i<<std::endl;
-	  if ((B.row(i))(0) > (A.row(i))(0)){
-
-		  //for x coordinate
-		  double y2= (B.row(i-1))(1);
-		  double x = (A.row(i))(0);
-		  double x2= (B.row(i-1))(0);
-		  double y3= (B.row(i))(1);
-		  double x3= (B.row(i))(0);
-		  double y = this->interpolateValue(x,x2,y2,x3,y3);
-		  Vector4d myNewVector(x,y,y,y);
-		  //this->insertRowInSequence(B,myNewVector,i);
-          myNewBMatrix.row(i)<< myNewVector.transpose();
-          myNewBMatrix.row(i+1)<< B.row(i);
-          cont++;
-          //std::cout <<"iSecret="<<iSecret<<std::endl;
-		  //double newTimeB= (B.row(i-1).(0) + B.row(i).(0))/2;
-		  //double newX = (B.row(i-1).(1) + B.row(i).(1))/2;
-		  //double newY = (B.row(i-1).(2) + B.row(i).(2))/2;
-		  //double newZ = (B.row(i-1).(3) + B.row(i).(3))/2;
-		  //VectorX4d myNewVector(newTimeB,newX,newY,newZ);
-		  //this.insertRowInSequence(B,myNewVector,i);
-
-
-	  } else {
-		  //myNewBMatrix.row(cont)<< B.row(i);
-		  myNewBMatrix.row(i+cont)<< B.row(i);
-	  }
-	  //cont++;
-  }
-  std::cout <<"cont="<<cont<<std::endl;
-  B = myNewBMatrix.block(0,0,myNewBMatrix.rows(),4);
-
-
-}
-*/
+//=============================================================================================================
 
 void Interpolator::modifyTime (double valueToAdd, MatrixXd& aMatrix){
 	// aMatrix has 4 cols (time, x , y ,z) and N rows
@@ -709,6 +553,7 @@ void Interpolator::modifyTime (double valueToAdd, MatrixXd& aMatrix){
 	}
 }
 
+//=============================================================================================================
 
 void Interpolator::reduceSequence(int step, MatrixXd& aMatrix){
 	/* This method deletes a number on lines of a matrix
@@ -753,7 +598,7 @@ void Interpolator::reduceSequence(int step, MatrixXd& aMatrix){
 
 }
 
-
+//=============================================================================================================
 void Interpolator::reduceSequence(int maxLine, MatrixXd& aMatrix , int numberToDelete){
 	/*This method deletes a number of lines of a matrix
 	 * The lines are selected randomly
@@ -797,15 +642,15 @@ void Interpolator::reduceSequence(int maxLine, MatrixXd& aMatrix , int numberToD
 
 
 }
-
-double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval, double offset, double& offsetEstimated, MatrixXd Apca,MatrixXd Bpca){
+//=============================================================================================================
+double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval, double& offsetEstimated, MatrixXd Apca,MatrixXd Bpca){
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation"<<std::endl;
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation Apca.rows()"<<Apca.rows()<<std::endl;
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation Bpca.rows()"<<Bpca.rows()<<std::endl;
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation Bpca.cols()"<<Bpca.cols()<<std::endl;
     AjusteTiempo myCorrelator;
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation, before reduceSequence(2,Bpca)"<<std::endl;
-    this->reduceSequence(2,Bpca);
+    this->reduceSequence(4,Bpca);
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation, after reduceSequence(2,Bpca)"<<std::endl;
 
 
@@ -822,17 +667,6 @@ double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval,
     double delayMax=0, rMax=0;
     MatrixXd finalBMatrix (Apca.rows()+Apca.rows(),Bpca.cols());
     double i = 0;
-
-    /*
-    MatrixXd newBMatrix (B.rows()+A.rows(),B.cols());
-    MatrixXd newAMatrix (A.rows()+B.rows(),A.cols());
-    newBMatrix= B.block(0,0,B.rows(),4);
-    newAMatrix= A.block(0,0,A.rows(),4);
-    myInterpolator.interpolate2SeriesB(maxLine, A,newBMatrix);
-    myInterpolator.interpolate2SeriesB(maxLine,B,newAMatrix);
-    A=newAMatrix.block(0,0,newAMatrix.rows(),4);
-    B=newBMatrix.block(0,0,newBMatrix.rows(),4);
-    */
 
 
     //calculating regresion
@@ -860,7 +694,7 @@ double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval,
         //double r=micorrelador.calcularAutocorrelacion4(A.rows(), 100,step, A,  newBMatrix);
         //double r=micorrelador.calcularAutocorrelacion4(Apca.rows(), 100,0, Apca,  newBMatrix);
         double anOffset = 0;
-        double r=myCorrelator.calculateOffsetTXYZ(maxLine,interval, anOffset,offsetEstimated, Apca,  newBMatrix);
+        double r=myCorrelator.calculateOffsetTXYZ(maxLine,interval,  Apca,  newBMatrix);
         std::cout <<"regresion="<<r<<std::endl;
         outRegresion<< r << " " << i << std::endl;
         std::cout <<"newBMatrix after regresion"<<newBMatrix.rows()<<"rows"<<std::endl;
