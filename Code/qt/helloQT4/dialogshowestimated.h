@@ -51,6 +51,9 @@ private:
     QTextEdit *pcaA;
     QLabel *labPcaB;
     QTextEdit *pcaB;
+    QLabel *labFrequency;
+    QTextEdit *frequency;
+
 
 
     QPushButton *buttonOK;

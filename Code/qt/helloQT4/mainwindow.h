@@ -57,7 +57,7 @@ public:
     void loadFile(const QString &fileName);
     void setScala(double X, double Y, double Z);
     void setTrasla(double X, double Y, double Z);
-    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise,double cNoise, double timeOffset,int pcaIndex);
+    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise,double cNoise, double timeOffset,int pcaIndex,double frequency);
     QWidget *myWinSlam;
 
 
@@ -96,6 +96,7 @@ public:
     double timeOffset;
     double timeOffsetEstimated;
     double rMax;
+    double frequency;
 
     //Point3D * myScala;
 private slots:

@@ -111,6 +111,10 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     cosmicNoiseDeviation = new QLineEdit;
     cosmicNoiseDeviation->setText("0");
 
+    labFrequency = new QLabel(tr("Frequency "));
+    frequency = new QLineEdit;
+    frequency->setText("0.0");
+
     buttonOK = new QPushButton(tr("&OK"));
 
     buttonCancel = new QPushButton(tr("&Cancel"));
@@ -200,6 +204,8 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     leftLayout->addWidget(gaussianNoiseDeviation);
     leftLayout->addWidget(labelCosmicNoise);
     leftLayout->addWidget(cosmicNoiseDeviation);
+    leftLayout->addWidget(labFrequency);
+    leftLayout->addWidget(frequency);
 
 
 
@@ -239,11 +245,12 @@ void DialogScalaTraslaRota::onOK()
    double cNoise = cosmicNoiseDeviation->text().toDouble();
    double tOffset = timeOffset->text().toDouble();
    int pcaI = pcaIndex->text().toInt();
+   double freq = frequency->text().toDouble();
    std::cout<< "onOK" <<std::endl;
-   ((MainWindow*)(parent))->performModifySequence(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset,pcaI);
+   ((MainWindow*)(parent))->performModifySequence(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset,pcaI,freq);
    std::cout<< "onOK:gNoise="<<gNoise<<std::endl;
    //dialogModel = new DataDialogScalaTraslaRota(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise);
-   dialogModel->updateData( sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset,pcaI);
+   dialogModel->updateData( sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset,pcaI,freq);
    std::cout<< "onOK:dialogModel->getGaussianNoiseDeviation()="<<dialogModel->getGaussianNoiseDeviation()<<std::endl;
    //((MainWindow*)(parent))->setTrasla(x,y,z);
 
@@ -268,6 +275,7 @@ void DialogScalaTraslaRota::setDataDialog(DataDialogScalaTraslaRota* aModel){
    timeOffset->setText( QString::number(dialogModel->getTimeOffset(), 'f', 6));
    gaussianNoiseDeviation->setText( QString::number(dialogModel->getGaussianNoiseDeviation(), 'f', 6));
    cosmicNoiseDeviation->setText( QString::number(dialogModel->getCosmicNoiseDeviation(), 'f', 6));
+   frequency->setText(QString::number(dialogModel->getFrequency(),'f',6));
     //traslaX=new QString*((dialogModel->getTraslaX()));
 /*
        double ty = traslaY->text().toDouble();

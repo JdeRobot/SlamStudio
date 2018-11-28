@@ -92,7 +92,7 @@ MainWindow::MainWindow()
         myWinSlam=(QWidget*)(new Winslam(this));
         setCentralWidget(myWinSlam);
     //onAddNew();
-    dataDialogScalaTraslaRota= new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0);
+    dataDialogScalaTraslaRota= new DataDialogScalaTraslaRota(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.005);
 
 }
 
@@ -147,7 +147,8 @@ void MainWindow::onModifySequence()
 //================================================================================================================
 
 void MainWindow::onEstimateSequenceAtoB(){//Estimate transformations from dataset A to dataset B
-    std::cout<<"onEstimateSequence"<<std::endl;
+    //frequency=0.005;
+    std::cout<<"onEstimateSequenceAtoB frequency="<<frequency<<std::endl;
     //myRegistrador.rigid_transform_3D()
     readingA=readingAbkp.block(0,0,readingAbkp.rows(),3);//to use with Scale and PCA
     readingB=readingBbkp.block(0,0,readingBbkp.rows(),3);
@@ -219,7 +220,7 @@ void MainWindow::onEstimateSequenceAtoB(){//Estimate transformations from datase
 
             tBBpca.row(i)<<myNewVector.transpose();
          }
-         myInterpolator.interpolateSerieToFrequency(0.007, tAApca);
+         myInterpolator.interpolateSerieToFrequency2(frequency, tAApca);
         //Check if the time is aligned for A and B
          for (int t=0; t<100; t++){
                 std::cout<<"================================================================timeA["<<t<<"]="<<tAApca(t,0)<<"  timeB["<<t<<"]="<<tBBpca(t,0)<<std::endl;
@@ -250,7 +251,8 @@ void MainWindow::onEstimateSequenceAtoB(){//Estimate transformations from datase
         //contAddedValues++;
         dataB.row(i)<<myNewVector.transpose();
      }
-    myInterpolator.interpolateSerieToFrequency(0.007, dataA);
+    myInterpolator.interpolateSerieToFrequency2(frequency, dataA);
+    myInterpolator.interpolateSerieToFrequency2(frequency, dataB);
     myInterpolator.interpolate2SeriesB(dataA.cols(), dataA, dataB);
    //Check if the time is aligned for A and B
     for (int t=0; t<100; t++){
@@ -337,7 +339,8 @@ void MainWindow::onEstimateSequenceAtoB(){//Estimate transformations from datase
 }
 //============================================================================================================
 void MainWindow::onEstimateSequenceBtoA(){//estimate transformations from dataset B to dataset A
-    std::cout<<"onEstimateSequence"<<std::endl;
+    //frequency=0.005;
+    std::cout<<"onEstimateSequenceBtoA frequency="<<frequency<<std::endl;
     //myRegistrador.rigid_transform_3D()
     readingA=readingAbkp.block(0,0,readingAbkp.rows(),3);//to use with Scale and PCA
     readingB=readingBbkp.block(0,0,readingBbkp.rows(),3);
@@ -411,7 +414,7 @@ void MainWindow::onEstimateSequenceBtoA(){//estimate transformations from datase
 
             tBBpca.row(i)<<myNewVector.transpose();
          }
-        myInterpolator.interpolateSerieToFrequency(0.007, tAApca);
+        myInterpolator.interpolateSerieToFrequency2(frequency, tAApca);
        //Check if the time is aligned for A and B
         for (int t=0; t<100; t++){
                std::cout<<"================================================================timeA["<<t<<"]="<<tAApca(t,0)<<"  timeB["<<t<<"]="<<tBBpca(t,0)<<std::endl;
@@ -443,7 +446,9 @@ void MainWindow::onEstimateSequenceBtoA(){//estimate transformations from datase
          //contAddedValues++;
          dataB.row(i)<<myNewVector.transpose();
       }
-     myInterpolator.interpolateSerieToFrequency(0.007, dataA);
+
+     myInterpolator.interpolateSerieToFrequency2(frequency, dataA);
+     myInterpolator.interpolateSerieToFrequency2(frequency, dataB);
      myInterpolator.interpolate2SeriesB(dataA.cols(), dataA, dataB);
     //Check if the time is aligned for A and B
      for (int t=0; t<100; t++){
@@ -584,7 +589,7 @@ void MainWindow::setTrasla(double X, double Y, double Z){
     //performModifySequence(X,Y,Z, X,Y, Z,0,0,0,0,0);
 }
 //============================================================================================================
-void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise, double cNoise, double offset,int pcaIndex){
+void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise, double cNoise, double offset,int pcaIndex,double freq){
      dataDialogScalaTraslaRota->setScaleX(scalaX);
      dataDialogScalaTraslaRota->setScaleY(scalaY);
      dataDialogScalaTraslaRota->setScaleZ(scalaZ);
@@ -598,6 +603,7 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
      dataDialogScalaTraslaRota->setGaussianNoiseDeviation(cNoise);
      dataDialogScalaTraslaRota->setTimeOffset(offset);
      dataDialogScalaTraslaRota->setPcaIndex(pcaIndex);
+     dataDialogScalaTraslaRota->setFrequency(freq);
 
 
      int maxLine = 3000;
@@ -658,6 +664,7 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
      infileB.close();
      ((Winslam*)(myWinSlam))->setContaminatedDataView(readingB);
      timeOffset=offset;
+     frequency=freq;
 
 }
 

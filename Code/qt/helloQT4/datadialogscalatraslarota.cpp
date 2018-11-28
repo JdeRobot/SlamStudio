@@ -2,7 +2,7 @@
 DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(){
 
 }
-DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN,double tO, int pca){
+DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN,double tO, int pca,double freq){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -16,10 +16,11 @@ DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double
     cNoise=cN;
     timeOffset=tO;//time offset
     pcaIndex = pca;
+    frequency = freq;
 
 }
 
-void DataDialogScalaTraslaRota::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN, double tO,int pca){
+void DataDialogScalaTraslaRota::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN, double tO,int pca,double freq){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -74,6 +75,9 @@ double DataDialogScalaTraslaRota::getTimeOffset(){
 int DataDialogScalaTraslaRota::getPcaIndex(){
     return pcaIndex;
 };
+double DataDialogScalaTraslaRota::getFrequency(){
+    return frequency;
+};
 
 void DataDialogScalaTraslaRota::setScaleX(double aValue){
     scaleX=aValue;
@@ -114,3 +118,7 @@ void DataDialogScalaTraslaRota::setTimeOffset(double aValue){
 void DataDialogScalaTraslaRota::setPcaIndex(int aValue){
     pcaIndex=aValue;
 };
+void DataDialogScalaTraslaRota::setFrequency(double aValue){
+    frequency=aValue;
+};
+

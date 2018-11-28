@@ -49,14 +49,13 @@ private:
     QLineEdit *rotaZ;
     QLabel *labOffset;
     QLineEdit *timeOffset;
-
+    QLabel *labFrequency;
+    QLineEdit *frequency;//for interpolation to a given frequency
     QLabel *labPCAIndex;
     QLineEdit *pcaIndex;
     QLineEdit *gaussianNoiseDeviation;
     QLineEdit *cosmicNoiseDeviation;
-    QCheckBox *scaleCheckBox;
-    QCheckBox *traslaCheckBox;
-    QCheckBox *rotaCheckBox;
+
     //QCheckBox *Gaussian_Noise;
     //QCheckBox *Cosmic_Noise;
     QDialogButtonBox *buttonBox;
