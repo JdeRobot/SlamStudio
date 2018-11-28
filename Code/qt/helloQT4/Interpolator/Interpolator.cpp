@@ -202,7 +202,126 @@ MatrixXd Interpolator::interpolateAoverB(MatrixXd& A, MatrixXd& B) {
 }
 
 
+void Interpolator::interpolateSerieToFrequency2(float frequency, MatrixXd& B){
+    /*
+     * This method interpolates a matrix with a given frequency
+     * For instance: Matrix 1,2,3,4,5
+     * Given frequency: 0.7
+     * Result of interpolation : Matrix 1.4 , 2.1 , 2.8, 3.5 , 4.2 , 4.9
+     */
+    double AntValueB=0,ActValueA=0,ActValueB=0;
+    int contA=0,contB = 0, newContB=0;
 
+    AntValueB=B.row(0)(0);
+    //ActValueA += frequency;
+    ActValueB=B.row(1)(0);
+    ActValueA = ActValueB;//the frequency starts with the same value that the first element of the serie B. Later it will be increased by frequency
+
+    contB=1;
+
+    double newValue=0;
+    MatrixXd newBMatrix (3*B.rows(),B.cols());
+    newBMatrix.row(newContB)<< B.row(0);
+    newContB++;
+    int interpolated=0,endInterpolate = 0;
+    long actB,actA,antB;
+    //while ( (contB) <= B.rows() && (contA ) < A.rows()){// begin while 1
+    while ( !endInterpolate &&  contB < B.rows()){
+        interpolated = 0;
+        std::cout<< "1 ActValueA="<<ActValueA<<"ActValueB="<<ActValueB<<"AntValueB="<<AntValueB<<std::endl;
+        //while ((float(ActValueA)< float(ActValueB)) && (float(ActValueA) > float(AntValueB))  ) { //begin while 2
+        //while (((ActValueB - ActValueA) > 0 ) && ((ActValueA - AntValueB) >0)  ) { //begin while 2
+
+        actB = ActValueB*10000;
+        actA = ActValueA*10000;
+        antB = AntValueB*10000;
+        std::cout<< "1 actB="<<actB<<"actA="<<actA<<"antB="<<antB<<std::endl;
+        while (actA < actB && actA > antB ) { //begin while 2
+            std::cout<< "2 ActValueA="<<ActValueA<<"ActValueB="<<ActValueB<<"AntValueB="<<AntValueB<<std::endl;
+            double y2= (B.row(contB-1))(1);
+            double x = (ActValueA);
+            double x2= (B.row(contB-1))(0);
+            double y3= (B.row(contB))(1);
+            double x3= (B.row(contB))(0);
+            double xCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+            //std::cout<< "interpolo X"<<std::endl;
+            //interpolate Y coordinate
+            y2= (B.row(contB-1))(2);
+            x = (ActValueA);
+            x2= (B.row(contB-1))(0);
+            y3= (B.row(contB))(2);
+            x3= (B.row(contB))(0);
+            double yCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+            //std::cout<< "interpolo Y"<<std::endl;
+            //interpolate Z coordinate
+            y2= (B.row(contB-1))(3);
+            x = (ActValueA);
+            x2= (B.row(contB-1))(0);
+            y3= (B.row(contB))(3);
+            x3= (B.row(contB))(0);
+            double zCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+            //std::cout<< "interpolo X,y,Z"<<std::endl;
+            Vector4d myNewVector(x,xCoordinate,yCoordinate,zCoordinate);
+
+            std::cout<< "myNewVector="<<myNewVector.transpose()<<std::endl;
+
+            //contAddedValues++;
+            newBMatrix.row(newContB)<< myNewVector.transpose();
+            newContB ++;
+
+            ActValueA += frequency;
+
+            interpolated = true;
+            //actB = ActValueB*10000;
+            actA = ActValueA*10000;
+            //antB = AntValueB*10000;
+        } //end while 2
+        if ( ! interpolated ) {
+                     std::cout<< "not interpolated"<<std::endl;
+                     if (actA <= antB){
+                     //if (actA < antB){
+                            //AntValueA=ActValueA;
+                            std::cout<< "ActValueA <= AntValueB"<<std::endl;
+                            ActValueA +=frequency;
+                            std::cout<< "ActValueA="<< ActValueA<<std::endl;
+
+
+                      } else if (actA == actB){
+                         std::cout<< "ActValueA == AntValueB"<<std::endl;
+                         newBMatrix.row(newContB) << B.row(contB);
+                         newContB++;
+                         AntValueB=ActValueB;
+                         contB++;
+                         if (contB < B.rows()){
+                             std::cout<< "B.row(contB)(0)="<<B.row(contB)(0)<<std::endl;
+                             ActValueB=B.row(contB)(0);
+                         }else{
+                                 endInterpolate = 1;
+                             }
+                       //} else if ( actA >= actB ){
+                         } else if ( actA > actB ){
+                           std::cout<< "ActValueA > AntValueB"<<std::endl;
+                           AntValueB=ActValueB;
+                           contB++;
+                           std::cout<< "contB++="<<contB<<std::endl;
+                           if (contB < B.rows()){
+                               std::cout<< "B.row(contB)(0)="<<B.row(contB)(0)<<std::endl;
+                               ActValueB=B.row(contB)(0);
+                           }else{
+                                   endInterpolate = 1;
+                               }
+
+
+                           }
+
+
+                }
+
+    }
+    B= newBMatrix.block(0,0,newContB,4);
+
+
+}
 void Interpolator::interpolateSerieToFrequency(float frequency, MatrixXd& B){
 
 	/*
@@ -281,17 +400,18 @@ void Interpolator::interpolateSerieToFrequency(float frequency, MatrixXd& B){
 		} //end while 2
 		if ( ! interpolated ) {
 
-					//if  ( ActValueA <= AntValueB) {
-			        if (actA <= antB){
+                     if (actA <= antB){
+                     //if (actA < antB){
 							//AntValueA=ActValueA;
 						    std::cout<< "ActValueA <= AntValueB"<<std::endl;
 						    ActValueA +=frequency;
 						    std::cout<< "ActValueA="<< ActValueA<<std::endl;
 
 
-					  // } else if ( ActValueA >= ActValueB ){
-					   } else if ( actA >= actB ){
-					  //	if ( ActValueA >= ActValueB ){
+
+                       //} else if ( actA >= actB ){
+                         } else if ( actA >= actB ){
+
 						  std::cout<< "ActValueA > ActValueB"<<std::endl;
 						   newBMatrix.row(newContB) << B.row(contB);
 						   std::cout<< "added B.row="<<B.row(contB)<<std::endl;
@@ -322,6 +442,8 @@ void Interpolator::interpolateSerieToFrequency(float frequency, MatrixXd& B){
 }
 //=============================================================================================================
 void Interpolator::interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B){
+
+
 
 	// Supposed B less values than A
 	double AntValueA=0,AntValueB=0,ActValueA=0,ActValueB=0;

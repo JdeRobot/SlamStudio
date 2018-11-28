@@ -27,6 +27,7 @@ public:
    void interpolate2SeriesB(int maxLine, MatrixXd& A, MatrixXd& B);
    MatrixXd interpolateAoverB(MatrixXd& A, MatrixXd& B);
    void interpolateSerieToFrequency(float frequency, MatrixXd& B);
+   void interpolateSerieToFrequency2(float frequency, MatrixXd& B);
    double calculateOffsetWithInterpolation(int maxLine, int interval, double& offsetEstimated, MatrixXd A1,MatrixXd B2);
 
 
