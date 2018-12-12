@@ -27,6 +27,7 @@ MainWindow::~MainWindow()
 #include <QDialog>
 #include "Eigen/Dense"
 #include "transformador2/Transformador.h"
+#include "Statistics/Statistics.h"
 //#include "transformador2/Point3D.h"
 //#include <QGLWidget>
 
@@ -253,13 +254,27 @@ void MainWindow::onEstimateSequenceAtoB(){//Estimate transformations from datase
      }
     myInterpolator.interpolateSerieToFrequency2(frequency, dataA);
     myInterpolator.interpolateSerieToFrequency2(frequency, dataB);
-    myInterpolator.interpolate2SeriesB(dataA.cols(), dataA, dataB);
+    myInterpolator.reduceSequence(3,dataA);
+    std::cout<< "1 lines dataA="<< dataA.rows() <<std::endl;
+    std::cout<< "1 lines dataB="<< dataB.rows() <<std::endl;
+    myInterpolator.interpolate2SeriesFMin(dataB.cols(),dataA,dataB);
+    std::cout<< "2 lines dataA="<< dataA.rows() <<std::endl;
+    std::cout<< "2 lines dataB="<< dataB.rows() <<std::endl;
+
+    //myInterpolator.interpolate2SeriesB(dataA.cols(), dataA, dataB);
    //Check if the time is aligned for A and B
     for (int t=0; t<100; t++){
            std::cout<<"================================================================dataAtime["<<t<<"]="<<dataA(t,0)<<"  dataBtime["<<t<<"]="<<dataB(t,0)<<std::endl;
     }
-    readingB=dataB.block(0,1,dataB.rows(),3);
-    readingA=dataA.block(0,1,dataA.rows(),3);
+    int numRows;
+    if (dataB.rows() > dataA.rows()){ //after interpolation to fmin it might be possible to adjust number of cols
+        numRows= dataA.rows();
+
+    }else numRows=dataB.rows();
+    readingB=dataB.block(0,1,numRows,3);
+    readingA=dataA.block(0,1,numRows,3);
+
+
     // Adapt dataB to Scale if necessary
     //==========================================
     double medScala;//To store the medium value of the estimated scale
@@ -289,6 +304,7 @@ void MainWindow::onEstimateSequenceAtoB(){//Estimate transformations from datase
             newA.row(i)<< aRow(0)*medScala,aRow(1)*medScala,aRow(2)*medScala;
          }
          */
+
         myRegistrador.applyTransformationsOverData(readingA,dataEstimated,rotationEstimated,traslationEstimated);
         MatrixXd newA(dataEstimated.rows(),3);
         newA = dataEstimated.block(0,0,dataEstimated.rows(),3);
@@ -329,9 +345,24 @@ void MainWindow::onEstimateSequenceAtoB(){//Estimate transformations from datase
     double x3 = rotationEstimated.row(2)(0);
     double y3 = rotationEstimated.row(2)(1);
     double z3 = rotationEstimated.row(2)(2);
-
+    Statistics* myStatistics ;
+    myStatistics = new Statistics(readingB,dataEstimated);
+    double RMSE = myStatistics->RMSE(myStatistics->getErrorRows());
+    std::cout<< "MainWindow:: Statistics----->> R M S E = "<<RMSE <<std::endl;
     //dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax);
-    dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax,1,myGeneratorPCA.getPcaA(),myGeneratorPCA.getPcaB());
+    //dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax,1,myGeneratorPCA.getPcaA(),myGeneratorPCA.getPcaB());
+
+    //Calculate Yaw Pitch and Roll from the Rotation Matrix
+    Matrix3d myRotationEstimated(3, 3);
+    myRotationEstimated = rotationEstimated.block(0,0,3,3);
+    Eigen::Matrix< double, 3, 1> ypr=myRotationEstimated.eulerAngles(2,1,0);
+    double y= ypr(0);//yaw
+    double p= ypr(1);//pitch
+    double r= ypr(2);//roll
+    std::cout<<"rpy====================================================================="<<ypr<<std::endl;
+
+    //dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax,1,RMSE);
+    dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),y,p,r,timeOffsetEstimated,rMax,1,RMSE);
 
     dialogShowEstimated->setDataDialog(dataDialogShowEstimated);
     dialogShowEstimated->show();
@@ -449,13 +480,24 @@ void MainWindow::onEstimateSequenceBtoA(){//estimate transformations from datase
 
      myInterpolator.interpolateSerieToFrequency2(frequency, dataA);
      myInterpolator.interpolateSerieToFrequency2(frequency, dataB);
-     myInterpolator.interpolate2SeriesB(dataA.cols(), dataA, dataB);
+     myInterpolator.reduceSequence(3,dataA);
+     std::cout<< "1 lines dataA="<< dataA.rows() <<std::endl;
+     std::cout<< "1 lines dataB="<< dataB.rows() <<std::endl;
+     myInterpolator.interpolate2SeriesFMin(dataB.cols(),dataA,dataB);
+     std::cout<< "2 lines dataA="<< dataA.rows() <<std::endl;
+     std::cout<< "2 lines dataB="<< dataB.rows() <<std::endl;
+     //myInterpolator.interpolate2SeriesB(dataA.cols(), dataA, dataB);
     //Check if the time is aligned for A and B
      for (int t=0; t<100; t++){
             std::cout<<"================================================================dataAtime["<<t<<"]="<<dataA(t,0)<<"  dataBtime["<<t<<"]="<<dataB(t,0)<<std::endl;
      }
-     readingB=dataB.block(0,1,dataB.rows(),3);
-     readingA=dataA.block(0,1,dataA.rows(),3);
+     int numRows;
+     if (dataB.rows() > dataA.rows()){ //after interpolation to fmin it might be possible to adjust number of cols
+         numRows= dataA.rows();
+
+     }else numRows=dataB.rows();
+     readingB=dataB.block(0,1,numRows,3);
+     readingA=dataA.block(0,1,numRows,3);
 
 
 
@@ -521,12 +563,28 @@ void MainWindow::onEstimateSequenceBtoA(){//estimate transformations from datase
     double x3 = rotationEstimated.row(2)(0);
     double y3 = rotationEstimated.row(2)(1);
     double z3 = rotationEstimated.row(2)(2);
-
+    Statistics* myStatistics ;
+    myStatistics = new Statistics(readingA,dataEstimated);
+    double RMSE = myStatistics->RMSE(myStatistics->getErrorRows());
+    std::cout<< "MainWindow:: Statistics----->> R M S E = "<<RMSE <<std::endl;
     //dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax);
-    dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax,2,myGeneratorPCA.getPcaA(),myGeneratorPCA.getPcaB());
+    //dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax,1,myGeneratorPCA.getPcaA(),myGeneratorPCA.getPcaB());
+    //dataDialogShowEstimated= new DataDialogShowEstimated(myScalaSVD(0),myScalaSVD(1),myScalaSVD(2),traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax);
+    //Calculate Yaw Pitch and Roll from the Rotation Matrix
+    Matrix3d myRotationEstimated(3, 3);
+    myRotationEstimated = rotationEstimated.block(0,0,3,3);
+    Eigen::Matrix< double, 3, 1> ypr=myRotationEstimated.eulerAngles(2,1,0);
+    double y= ypr(0);//yaw
+    double p= ypr(1);//pitch
+    double r= ypr(2);//roll
+    std::cout<<"rpy====================================================================="<<ypr<<std::endl;
+
+    dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),y,p,r,timeOffsetEstimated,rMax,2,RMSE);
 
     dialogShowEstimated->setDataDialog(dataDialogShowEstimated);
     dialogShowEstimated->show();
+
+
 
 }
 //============================================================================================================

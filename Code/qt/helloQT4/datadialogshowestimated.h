@@ -29,6 +29,10 @@ double rotZ2;
 double rotZ3;
 double timeOffset;
 double rmax;
+double yaw;
+double pitch;
+double roll;
+double RMSE; //Root Mean Square Error
 int dialogType; //if 1 Dialog will show estimated transformation from DatasetA to new DataSetB
                 //if 2 Dialog will show estimated transformation from new DatasetB to  DataSetA
 
@@ -38,7 +42,11 @@ Eigen::MatrixXd mPcaB;
 public:
 DataDialogShowEstimated();
 DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm,int labelTitle,Eigen::MatrixXd mPcaA,Eigen::MatrixXd mPcaB);
+DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm,int labelTitle,double rmse);
+DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double Yaw, double Pitch,double Roll, double tOffset,double rm,int labelTitle,double rmse);
+
 void updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3, double tOffset,double rm,int labelTitle,Eigen::MatrixXd mPcaA,Eigen::MatrixXd mPcaB);
+void updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double y,double p, double r, double tOffset,double rm,int labelTitle,double rmse);
 //DataDialogScalaTraslaRota(char* sX, char* sY, char* sZ,char* tX,char* tY, char* tZ, char* rX, char* rY, char* rZ);
 double getScaleX();
 double getScaleY();
@@ -58,6 +66,10 @@ double getRotaZ3();
 double getRMax();
 double getTimeOffset();
 int getDialogType();
+double getRMSE();
+double getYaw();
+double getPitch();
+double getRoll();
 
 Eigen::MatrixXd getPcaA();
 Eigen::MatrixXd getPcaB();
@@ -79,6 +91,10 @@ void setRotaZ2(double aValue);
 void setRotaZ3(double aValue);
 void setTimeOffset(double aValue);
 void setRMax(double aValue);
+void setRMSE(double aValue);
+void setYaw(double aValue);
+void setPitch(double aValue);
+void setRoll(double aValue);
 void setDialogType(int aValue);
 
 void setPcaA(Eigen::MatrixXd aMatrix);

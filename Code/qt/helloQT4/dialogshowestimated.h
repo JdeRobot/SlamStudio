@@ -45,6 +45,16 @@ private:
     QLabel *labRMax;
     QLineEdit *rMax; // to store max correlation value, the one that indicates which is the value of the offset
 
+    QLabel *labYaw;
+    QLineEdit *yaw;
+    QLabel *labPitch;
+    QLineEdit *pitch;
+    QLabel *labRoll;
+    QLineEdit *roll;
+
+    QLabel *labRMSE;
+    QLineEdit *RMSE;
+
     QLabel *labRotationMatrix;
     QTextEdit *rotationMatrix;
     QLabel *labPcaA;

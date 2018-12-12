@@ -24,10 +24,56 @@ DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,
 
     mPcaA=mpcaA;
     mPcaB=mpcaB;
+}
+
+DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm,int diType,double rmse){
+    scaleX=sX;
+    scaleY=sY;
+    scaleZ=sZ;
+    traslaX=tX;
+    traslaY=tY;
+    traslaZ=tZ;
+    rotX1=rX1;
+    rotY1=rY1;
+    rotZ1=rZ1;
+    rotX2=rX2;
+    rotY2=rY2;
+    rotZ2=rZ2;
+    rotX3=rX3;
+    rotY3=rY3;
+    rotZ3=rZ3;
+    timeOffset=tOffset;
+    rmax=rm;
+    RMSE=rmse;
+    dialogType=diType;
+
+
 
 
 
 }
+
+DataDialogShowEstimated::DataDialogShowEstimated(double sX,double sY, double sZ,double tX,double tY, double tZ, double y, double p, double r,double tOffset,double rm,int diType,double rmse){
+    scaleX=sX;
+    scaleY=sY;
+    scaleZ=sZ;
+    traslaX=tX;
+    traslaY=tY;
+    traslaZ=tZ;
+    yaw=y;
+    pitch=p;
+    roll=r;
+    timeOffset=tOffset;
+    rmax=rm;
+    RMSE=rmse;
+    dialogType=diType;
+
+
+
+
+
+}
+
 
 void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm,int diType,Eigen::MatrixXd mpcaA,Eigen::MatrixXd mpcaB){
     scaleX=sX;
@@ -52,6 +98,43 @@ void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double t
     mPcaB=mpcaB;
 
 }
+/*void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX1, double rY1, double rZ1,double rX2, double rY2, double rZ2,double rX3, double rY3, double rZ3,double tOffset,double rm,int diType,double rmse){
+    scaleX=sX;
+    scaleY=sY;
+    scaleZ=sZ;
+    traslaX=tX;
+    traslaY=tY;
+    traslaZ=tZ;
+    rotX1=rX1;
+    rotY1=rY1;
+    rotZ1=rZ1;
+    rotX2=rX2;
+    rotY2=rY2;
+    rotZ2=rZ2;
+    rotX3=rX3;
+    rotY3=rY3;
+    rotZ3=rZ3;
+    timeOffset=tOffset;
+    rmax = rm;
+    dialogType=diType;
+    RMSE=rmse;
+}*/
+void DataDialogShowEstimated::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double y,double p , double r,double tOffset,double rm,int diType,double rmse){
+    scaleX=sX;
+    scaleY=sY;
+    scaleZ=sZ;
+    traslaX=tX;
+    traslaY=tY;
+    traslaZ=tZ;
+    yaw=y;
+    pitch=p;
+    roll=r;
+    timeOffset=tOffset;
+    rmax = rm;
+    dialogType=diType;
+    RMSE=rmse;
+}
+
 double DataDialogShowEstimated::getScaleX(){
     return scaleX;
 };
@@ -102,6 +185,18 @@ double DataDialogShowEstimated::getTimeOffset(){
 };
 double DataDialogShowEstimated::getRMax(){
     return rmax;
+};
+double DataDialogShowEstimated::getRMSE(){
+    return RMSE;
+};
+double DataDialogShowEstimated::getYaw(){
+    return yaw;
+};
+double DataDialogShowEstimated::getPitch(){
+    return pitch;
+};
+double DataDialogShowEstimated::getRoll(){
+    return roll;
 };
 
 int DataDialogShowEstimated::getDialogType(){
@@ -167,6 +262,18 @@ void DataDialogShowEstimated::setRotaZ3(double aValue){
 };
 void DataDialogShowEstimated::setRMax(double aValue){
     rmax=aValue;
+};
+void DataDialogShowEstimated::setRMSE(double aValue){
+    RMSE=aValue;
+};
+void DataDialogShowEstimated::setYaw(double aValue){
+    yaw=aValue;
+};
+void DataDialogShowEstimated::setPitch(double aValue){
+    pitch=aValue;
+};
+void DataDialogShowEstimated::setRoll(double aValue){
+    roll=aValue;
 };
 
 void DataDialogShowEstimated::setDialogType(int aValue){

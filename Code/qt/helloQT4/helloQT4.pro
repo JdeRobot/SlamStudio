@@ -40,7 +40,8 @@ SOURCES += \
     Interpolator/Interpolator.cpp \
     datadialogscalatraslarota.cpp \
     dialogshowestimated.cpp \
-    datadialogshowestimated.cpp
+    datadialogshowestimated.cpp \
+    Statistics/Statistics.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -61,7 +62,8 @@ HEADERS += \
     Interpolator/Interpolator.h \
     datadialogscalatraslarota.h \
     dialogshowestimated.h \
-    datadialogshowestimated.h
+    datadialogshowestimated.h \
+    Statistics/Statistics.h
 
 FORMS += \
         mainwindow.ui

@@ -63,7 +63,28 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
     rotationMatrix->setMaximumHeight(130);
     rotationMatrix->setMaximumWidth(230);
 
-    labPcaA = new QLabel(tr("PCA A"));
+    labYaw = new QLabel(tr("Yaw"));
+    yaw = new QLineEdit;
+    yaw->setText("0");
+    yaw->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    yaw->setMaximumWidth(100);
+    labPitch = new QLabel(tr("Pitch"));
+    pitch = new QLineEdit;
+    pitch->setText("0");
+    pitch->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    pitch->setMaximumWidth(100);
+    labRoll = new QLabel(tr("Roll"));
+    roll = new QLineEdit;
+    roll->setText("0");
+    roll->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    roll->setMaximumWidth(100);
+
+    labRMSE = new QLabel(tr("RMSE"));
+    RMSE = new QLineEdit;
+    RMSE->setText("0");
+    RMSE->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    RMSE->setMaximumWidth(100);
+    /*labPcaA = new QLabel(tr("PCA A"));
     pcaA = new QTextEdit;
     pcaA->setText("0 0 0");
     pcaA->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
@@ -75,6 +96,7 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
     pcaB->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     pcaB->setMaximumHeight(130);
     pcaB->setMaximumWidth(230);
+    */
 
 
 
@@ -113,12 +135,23 @@ DialogShowEstimated::DialogShowEstimated(QWidget *parent)
     leftLayout->addWidget(timeOffset);
     leftLayout->addWidget(labRMax);
     leftLayout->addWidget(rMax);
-    leftLayout->addWidget(labRotationMatrix);
-    leftLayout->addWidget(rotationMatrix);
+    //leftLayout->addWidget(labRotationMatrix);
+    //leftLayout->addWidget(rotationMatrix);
+    leftLayout->addWidget(labYaw);
+    leftLayout->addWidget(yaw);
+    leftLayout->addWidget(labPitch);
+    leftLayout->addWidget(pitch);
+    leftLayout->addWidget(labRoll);
+    leftLayout->addWidget(roll);
+
+    leftLayout->addWidget(labRMSE);
+    leftLayout->addWidget(RMSE);
+    /*
     leftLayout->addWidget(labPcaA);
     leftLayout->addWidget(pcaA);
     leftLayout->addWidget(labPcaB);
     leftLayout->addWidget(pcaB);
+    */
 
 
 
@@ -172,9 +205,17 @@ void DialogShowEstimated::setDataDialog(DataDialogShowEstimated* aModel){
    scaleZ->setText( QString::number(dialogModel->getScaleZ(), 'f', 6));
    timeOffset->setText( QString::number(dialogModel->getTimeOffset(), 'f', 6));
    rMax->setText( QString::number(dialogModel->getRMax(), 'f', 6));
+   /*
    rotationMatrix->setText(QString::number(dialogModel->getRotaX1(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY1(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ1(), 'f', 6)+"\n\n"+
                            QString::number(dialogModel->getRotaX2(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY2(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ2(), 'f', 6)+"\n\n"+
                            QString::number(dialogModel->getRotaX3(), 'f', 6)+"  "+QString::number(dialogModel->getRotaY3(), 'f', 6)+"  "+QString::number(dialogModel->getRotaZ3(), 'f', 6));
+   */
+   yaw->setText(QString::number(dialogModel->getYaw(),'f',6));
+   pitch->setText(QString::number(dialogModel->getPitch(),'f',6));
+   roll->setText(QString::number(dialogModel->getRoll(),'f',6));
+
+   RMSE->setText(QString::number(dialogModel->getRMSE(),'f',6));
+   /*
    pcaA->setText(QString::number (dialogModel->getPcaA().row(0)(0),'f',6)+ "  "+
                  QString::number (dialogModel->getPcaA().row(0)(1),'f',6)+ "  "+
                  QString::number (dialogModel->getPcaA().row(0)(2),'f',6)+ "\n\n "+
@@ -193,6 +234,7 @@ void DialogShowEstimated::setDataDialog(DataDialogShowEstimated* aModel){
                  QString::number (dialogModel->getPcaB().row(2)(0),'f',6)+ "  "+
                  QString::number (dialogModel->getPcaB().row(2)(1),'f',6)+ "  "+
                  QString::number (dialogModel->getPcaB().row(2)(2),'f',6)+ "  ");
+   */
 }
 
 
