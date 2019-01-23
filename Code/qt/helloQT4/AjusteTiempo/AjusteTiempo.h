@@ -26,6 +26,9 @@ public:
 
    //to calculate offset with 4 coordinates Time, x, y ,z
    double calculateOffsetTXYZ(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
+   double calculateOffsetTXYZ2(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
+   double calculateOffsetTXYZ3(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
+   double calculateOffsetTXYZ5(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
    Vector3d getScalaEigenValues(MatrixXd AA, MatrixXd BB);
    Vector3d getScalaSVD(MatrixXd AA, MatrixXd BB);
 
