@@ -74,7 +74,7 @@ public:
     void setInitTime(double initialValue);
     double getInitTime();
     //void createContaminatedSequence(char* inputFileName,char* outputFileName,int GNoise);
-    void createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise,int CNoise,double offset,int pcaIndex);
+    void createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise,int CNoise,double offset,int freqType,double frequency);
 
 
 };
