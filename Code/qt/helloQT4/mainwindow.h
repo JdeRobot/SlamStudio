@@ -97,11 +97,13 @@ public:
     double timeOffsetEstimated;
     double rMax;
     double frequency;
+    int ftype;
 
     //Point3D * myScala;
 private slots:
     void onOpenFile();
     void onModifySequence();
+    void onEstimateSequence(int way); // way==0 means A to B .  way==1 means B to A
     void onEstimateSequenceAtoB();
     void onEstimateSequenceBtoA();
     void onExit();

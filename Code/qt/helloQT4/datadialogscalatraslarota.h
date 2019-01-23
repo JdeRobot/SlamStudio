@@ -26,11 +26,12 @@ double cNoise;
 double timeOffset;
 int pcaIndex;
 double frequency;
+int frequencyType; // 0 maxFrequency, 1 MinFrequency ,2 customFrequency
 
 public:
 DataDialogScalaTraslaRota();
-DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gNoise, double cNoise ,double tO,int pca,double frequency);
-void updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN, double tO,int pca,double frequency);
+DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gNoise, double cNoise ,double tO,int frequencyType,double frequency);
+void updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN, double tO,int frequencyType,double frequency);
 //DataDialogScalaTraslaRota(char* sX, char* sY, char* sZ,char* tX,char* tY, char* tZ, char* rX, char* rY, char* rZ);
 double getScaleX();
 double getScaleY();
@@ -44,7 +45,7 @@ double getRotaZ();
 double getGaussianNoiseDeviation();
 double getCosmicNoiseDeviation();
 double getTimeOffset();
-int getPcaIndex();
+int getFrequencyType();
 double getFrequency();
 
 void setScaleX(double aValue);
@@ -59,7 +60,7 @@ void setRotaZ(double aValue);
 void setGaussianNoiseDeviation(double aValue);
 void setCosmicNoiseDeviation(double aValue);
 void setTimeOffset(double aValue);
-void setPcaIndex(int aValue);
+void setFrequencyType(int aValue);
 void setFrequency(double aValue);
 };
 #endif // DATADIALOGSCALATRASLAROTA_H

@@ -13,6 +13,7 @@ class QLineEdit;
 class QPushButton;
 class QTextBox;
 class MainWindow;
+class QRadioButton;
 
 class DialogScalaTraslaRota : public QDialog
 {
@@ -51,10 +52,14 @@ private:
     QLineEdit *timeOffset;
     QLabel *labFrequency;
     QLineEdit *frequency;//for interpolation to a given frequency
-    QLabel *labPCAIndex;
-    QLineEdit *pcaIndex;
+    //QLabel *labPCAIndex;
+    //QLineEdit *pcaIndex;
     QLineEdit *gaussianNoiseDeviation;
     QLineEdit *cosmicNoiseDeviation;
+
+    QRadioButton *freqMaxRadioButton;
+    QRadioButton *freqMinRadioButton;
+    QRadioButton *freqCustomizedRadioButton;
 
     //QCheckBox *Gaussian_Noise;
     //QCheckBox *Cosmic_Noise;
@@ -68,6 +73,9 @@ private:
 public slots:
     void onOK();
     void onCancel();
+    void onPressCustomizedFrequency();
+    void onPressMaxFrequency();
+    void onPressMinFrequency();
 
 
  public:

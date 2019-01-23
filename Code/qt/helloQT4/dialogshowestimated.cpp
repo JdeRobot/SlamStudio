@@ -187,11 +187,11 @@ void DialogShowEstimated::setDataDialog(DataDialogShowEstimated* aModel){
     dialogModel = aModel;
     double value = 0.0;
     std::cout<< "DialogShowEstimated::setDataDialog " <<  dialogModel->getDialogType() <<std::endl;
-    if (dialogModel->getDialogType() == 1){
+    if (dialogModel->getDialogType() == 0){
 
         labelTitle->setText("Show ESTIMATED transformations A TO B:");
 
-    } else if (dialogModel->getDialogType()==2) {
+    } else if (dialogModel->getDialogType()==1) {
 
 
         labelTitle->setText("Show ESTIMATED transformations B TO A:");

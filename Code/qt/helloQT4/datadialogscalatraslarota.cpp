@@ -2,7 +2,7 @@
 DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(){
 
 }
-DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN,double tO, int pca,double freq){
+DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN,double tO, int freqType,double freq){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -15,12 +15,12 @@ DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double
     gNoise=gN;
     cNoise=cN;
     timeOffset=tO;//time offset
-    pcaIndex = pca;
+    frequencyType = freqType;
     frequency = freq;
 
 }
 
-void DataDialogScalaTraslaRota::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN, double tO,int pca,double freq){
+void DataDialogScalaTraslaRota::updateData(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN, double tO,int freqType,double freq){
     scaleX=sX;
     scaleY=sY;
     scaleZ=sZ;
@@ -33,7 +33,8 @@ void DataDialogScalaTraslaRota::updateData(double sX,double sY, double sZ,double
     gNoise=gN;
     cNoise=cN;
     timeOffset=tO;
-    pcaIndex = pca;
+    frequencyType = freqType;
+    frequency=freq;
 }
 double DataDialogScalaTraslaRota::getScaleX(){
     return scaleX;
@@ -72,8 +73,8 @@ double DataDialogScalaTraslaRota::getCosmicNoiseDeviation(){
 double DataDialogScalaTraslaRota::getTimeOffset(){
     return timeOffset;
 };
-int DataDialogScalaTraslaRota::getPcaIndex(){
-    return pcaIndex;
+int DataDialogScalaTraslaRota::getFrequencyType(){
+    return frequencyType;
 };
 double DataDialogScalaTraslaRota::getFrequency(){
     return frequency;
@@ -115,8 +116,8 @@ void DataDialogScalaTraslaRota::setCosmicNoiseDeviation(double aValue){
 void DataDialogScalaTraslaRota::setTimeOffset(double aValue){
     timeOffset=aValue;
 };
-void DataDialogScalaTraslaRota::setPcaIndex(int aValue){
-    pcaIndex=aValue;
+void DataDialogScalaTraslaRota::setFrequencyType(int aValue){
+    frequencyType=aValue;
 };
 void DataDialogScalaTraslaRota::setFrequency(double aValue){
     frequency=aValue;
