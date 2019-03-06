@@ -28,7 +28,7 @@ public:
    double calculateOffsetTXYZ(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
    double calculateOffsetTXYZ2(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
    double calculateOffsetTXYZ3(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
-   double calculateOffsetTXYZ5(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
+   double calculateOffsetTXYZ5(int maxLine,  MatrixXd A1,MatrixXd B2);
    Vector3d getScalaEigenValues(MatrixXd AA, MatrixXd BB);
    Vector3d getScalaSVD(MatrixXd AA, MatrixXd BB);
 

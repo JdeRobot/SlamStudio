@@ -1203,12 +1203,12 @@ double AjusteTiempo::calculateOffsetTXYZ3(int maxLine, int interval, MatrixXd A1
 
 }
 
-double AjusteTiempo::calculateOffsetTXYZ5(int maxLine, int interval, MatrixXd A1,MatrixXd B2){
+double AjusteTiempo::calculateOffsetTXYZ5(int maxLine,  MatrixXd A1,MatrixXd B2){
     //Calculate Correlation for 2 matrix, each has 3 columns and maxLine rows. Use with 3d datasets
     //offset: defines gap between second matrix and first matrix
     //maxLine: number of lines
     //interval: defines variation to calculate offset. If interval = 100, then calculate offset from -100 to 100
-    std::cout<<" CALCULATE OFFSET TXYZ3......................................."<<std::endl;
+    std::cout<<" CALCULATE OFFSET TXYZ5......................................."<<std::endl;
     std::cout << std::setprecision(6) << std::fixed;
     std::ofstream outA( "/home/tfm3/workspace/AjusteTiempo/miSalidaA.txt" );
     outA << std::setprecision(6) << std::fixed;
@@ -1218,7 +1218,7 @@ double AjusteTiempo::calculateOffsetTXYZ5(int maxLine, int interval, MatrixXd A1
     outB << std::setprecision(6) << std::fixed;
 
     std::cout << std::setprecision(6) << std::fixed;
-    //std::ofstream outRegresion( "/home/tfm3/workspace/AjusteTiempo/miSalidaRegresion.txt" );
+    std::ofstream outRegresion( "/home/tfm3/workspace/AjusteTiempo/miSalidaRegresion.txt" );
     //outRegresion << std::setprecision(6) << std::fixed;
 
     int contLin=maxLine;
@@ -1345,10 +1345,11 @@ double AjusteTiempo::calculateOffsetTXYZ5(int maxLine, int interval, MatrixXd A1
               double rz = sxy2/denom2z;
               //double r = sxy / sqrt(sx*sy);
               double r2 = (rx+ry+rz)/3;
-
+              r= fabs(r);
+              r2=fabs(r2);
               // r is the correlation coefficient at "delay"
-              std::cout <<"r ="<<fabs(r)<<std::endl;
-              std::cout <<"r2 ="<<fabs(r2)<<std::endl;
+              std::cout <<"r ="<<r<<std::endl;
+              std::cout <<"r2 ="<<r2<<std::endl;
               //std::cout <<"delay ="<<offset<<std::endl;
 //              if ((fabs(r) <= 1 )&& (fabs(r) > rMax)){
 
@@ -1357,6 +1358,7 @@ double AjusteTiempo::calculateOffsetTXYZ5(int maxLine, int interval, MatrixXd A1
 
 //              }
               if (r > r2 )
+
                return r;
               else
                return r2;
