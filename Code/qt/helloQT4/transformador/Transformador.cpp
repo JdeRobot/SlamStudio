@@ -7,7 +7,9 @@
 #include <cmath>
 #include <cstdlib>
 #include <limits>
-
+#include "Eigen/Dense"
+#include "Eigen/SVD"
+using namespace Eigen;
 #include "Point3D.h"
 #include "Transformador.h"
 
@@ -36,6 +38,44 @@ void Transformador::createMatRotTrasla ( char eje , float angulo, Point3D aPoint
 	setTraslacion( aPoint3D);
 
 }
+
+void Transformador::createMatRotTraslaEscala ( float rotaX,float rotaY,float rotaZ, Point3D aPoint3D,Point3D aScala ){
+    createMatRot( rotaX,rotaY,rotaZ);
+    setTraslacion( aPoint3D);//set traslation
+    std::cout << "\n inside1 creatematRotTraslaEscala, matRotTrasla=\n";
+    displayMatriz(matRotTrasla,4,4);
+    std::cout << "\n inside2 creatematRotTraslaEscala, matRotTrasla=\n";
+    double matScala [4] [4];
+
+            matScala[0][0]=aScala.getX();
+            matScala[0][1]=0.0;
+            matScala[0][2]=0.0;
+            matScala[0][3]=0.0;
+
+            matScala[1][0]=0.0;
+            matScala[1][1]=aScala.getY();
+            matScala[1][2]=0.0;
+            matScala[1][3]=0.0;
+
+            matScala[2][0]=0.0;
+            matScala[2][1]=0.0;
+            matScala[2][2]=aScala.getZ();
+            matScala[2][3]=0.0;
+
+            matScala[3][0]=0.0;
+            matScala[3][1]=0.0;
+            matScala[3][2]=0.0;
+            matScala[3][3]=1.0;
+            std::cout << "\n inside3 creatematRotTraslaEscala, matScala=\n";
+                displayMatriz(matScala,4,4);
+                std::cout << "\n inside4 creatematRotTraslaEscala, matScala=\n";
+     multiplicaMatrizPorMatriz( matRotTrasla,matScala,4,4,4,4 );
+     std::cout << "\n inside5 creatematRotTraslaEscala, matRotTrasla=\n";
+     displayMatriz(matRotTrasla,4,4);
+     std::cout << "\n inside6 creatematRotTraslaEscala, matRotTrasla=\n";
+
+}
+
 void Transformador::createMatRotTraslaEscala ( char eje , float angulo, Point3D aPoint3D,Point3D aScala ){
 	createMatRot( eje, angulo);
 	setTraslacion( aPoint3D);//set traslation
@@ -72,8 +112,134 @@ void Transformador::createMatRotTraslaEscala ( char eje , float angulo, Point3D 
 	 std::cout << "\n inside6 creatematRotTraslaEscala, matRotTrasla=\n";
 
 }
+void Transformador::createMatRot ( float radX,float radY,float radZ) {
+    //float anguloRad = angulo * (float)M_PI / 180.0f;
+    //float anguloRad=angulo;
+    radX=radX*180.0f/(float)M_PI;
+    radY=radY*180.0f/(float)M_PI;
+    radZ=radZ*180.0f/(float)M_PI;
+    Matrix4d Rx,Ry,Rz,rotMatrix;
+    Rx <<   1,0,0,0,
+            0,1,0,0,
+            0,0,1,0,
+            0,0,0,1;
+
+    Ry <<   1,0,0,0,
+            0,1,0,0,
+            0,0,1,0,
+            0,0,0,1;
+
+    Rz<<    1,0,0,0,
+            0,1,0,0,
+            0,0,1,0,
+            0,0,0,1;
+
+        matRotTrasla[0][0]=1.0;
+        matRotTrasla[0][1]=0.0;
+        matRotTrasla[0][2]=0.0;
+        matRotTrasla[0][3]=0.0;
+
+        matRotTrasla[1][0]=0.0;
+        matRotTrasla[1][1]=1.0;
+        matRotTrasla[1][2]=0.0;
+        matRotTrasla[1][3]=0.0;
+
+        matRotTrasla[2][0]=0.0;
+        matRotTrasla[2][1]=0.0;
+        matRotTrasla[2][2]=1.0;
+        matRotTrasla[2][3]=0.0;
+
+        matRotTrasla[3][0]=0.0;
+        matRotTrasla[3][1]=0.0;
+        matRotTrasla[3][2]=0.0;
+        matRotTrasla[3][3]=1.0;
+
+
+    if (radX != 0){
+
+           Rx<< 1,0,0,0,
+                0,cosf(radX),sinf(radX),0,
+                0,-sinf(radX),cosf(radX),0,
+                0,0,0,1;
+
+
+            matRotTrasla[1][0]=0.0;
+            matRotTrasla[1][1]=cosf(radX);
+            matRotTrasla[1][2]=sinf(radX);
+            matRotTrasla[1][3]=0.0;
+
+            matRotTrasla[2][0]=0.0;
+            matRotTrasla[2][1]=-sinf(radX);
+            matRotTrasla[2][2]=cosf(radX);
+            matRotTrasla[2][3]=0.0;
+
+
+
+    }
+    if (radY != 0){
+           Ry<< cosf(radY),0,-sinf(radY),0,
+                   0,1,0,0,
+                   sinf(radY),0,cosf(radY),0,
+                   0,0,0,1;
+
+            matRotTrasla[0][0]=cosf(radY);
+            matRotTrasla[0][1]=0.0;
+            matRotTrasla[0][2]=-sinf(radY);
+            matRotTrasla[0][3]=0.0;
+
+            matRotTrasla[2][0]=sinf(radY);
+            matRotTrasla[2][1]=0.0;
+            matRotTrasla[2][2]=cosf(radY);
+            matRotTrasla[2][3]=0.0;
+
+
+     }
+     if (radZ !=0) {
+            Rz << cosf(radZ),sinf(radZ),0,0,
+                    -sinf(radZ),cosf(radZ),0,0,
+                    0,0,1,0,
+                    0,0,0,1;
+
+            matRotTrasla[0][0]=cosf(radZ);
+            matRotTrasla[0][1]=sinf(radZ);
+            matRotTrasla[0][2]=0.0;
+            matRotTrasla[0][3]=0.0;
+
+            matRotTrasla[1][0]=-sinf(radZ);
+            matRotTrasla[1][1]=cosf(radZ);
+            matRotTrasla[1][2]=0.0;
+            matRotTrasla[1][3]=0.0;
+
+        }
+
+     rotMatrix = Rx*Ry*Rz;
+     matRotTrasla[0][0]= rotMatrix(0,0);
+     matRotTrasla[0][1]= rotMatrix(0,1);
+     matRotTrasla[0][2]= rotMatrix(0,2);
+     matRotTrasla[0][3]= rotMatrix(0,3);
+     matRotTrasla[1][0]= rotMatrix(1,0);
+     matRotTrasla[1][1]= rotMatrix(1,1);
+     matRotTrasla[1][2]= rotMatrix(1,2);
+     matRotTrasla[1][3]= rotMatrix(1,3);
+     matRotTrasla[2][0]= rotMatrix(2,0);
+     matRotTrasla[2][1]= rotMatrix(2,1);
+     matRotTrasla[2][2]= rotMatrix(2,2);
+     matRotTrasla[2][3]= rotMatrix(2,3);
+     matRotTrasla[3][0]= rotMatrix(3,0);
+     matRotTrasla[3][1]= rotMatrix(3,1);
+     matRotTrasla[3][2]= rotMatrix(3,2);
+     matRotTrasla[3][3]= rotMatrix(3,3);
+
+
+     std::cout << "\nthe final array has been created\n\n"<<rotMatrix;
+     std::cout << "end";
+
+
+}
 void Transformador::createMatRot ( char eje , float angulo) {
-	float anguloRad = angulo * (float)M_PI / 180.0f;
+    //float anguloRad = angulo * (float)M_PI / 180.0f;
+    //float anguloRad=angulo;
+    float anguloRad=angulo*180.0f/(float)M_PI;
 	if (angulo == 0.0 ){ // just create and identity matriz, put 1 on the left diagonal, 0 on the rest
 		matRotTrasla[0][0]=1.0;
 		matRotTrasla[0][1]=0.0;
@@ -405,6 +571,145 @@ double Transformador::generateGaussianNoise(double mu, double sigma, int CNoise)
 	//return z0 * sigma + mu + cosmicNoise/200 ;
 	//return z0 * sigma + mu + (cosmicNoise % 10 + 2 );
 	//return z0 * sigma + mu;
+}
+
+void Transformador::createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double rotaX, double rotaY,double rotaZ , int GNoise, int CNoise, double offset,int freqType, double frequency){
+    // This function modify an input dataset or sequence, and create another new dataset or sequence modified
+    // traslacion: is the traslation value (X,Y,Z)
+    // escala    : is the scale value (X,Y,Z)
+    // anguloRot : is the angle value for Rotation
+    // eje       : indicates the axis (X or Y or Z) to perform the Rotation
+    // GNoise    : boolean value to indicate if Gaussian Noise must be applied to create the new modified dataset
+    // CNoise    : boolean value to indicate if Cosmic Noise must be applied to create the new modified dataset
+    // offset    : Indicates time offset
+        std::cout << std::setprecision(6) << std::fixed;
+        std::ofstream out( outputFileName );
+        out << std::setprecision(6) << std::fixed;
+
+        std::cout << "DENTRO DE CREATE CONTAMINATED SEQUENCE--------------------------";
+        //int borrame = sqrt(4);
+        int contLin=0;
+        Transformador myTransformador;
+        myTransformador.setFrequency(0);
+        myTransformador.setOffset(offset);
+        myTransformador.setInitTime(-1);
+        //for (contLin=0;contLin <50; contLin++  ){
+        // FOR READING FILE AND DRAW CURVE
+        std::ifstream infile(inputFileName);
+        std::string line;
+        infile >> std::setprecision(6) >> std::fixed;
+
+        //createMatRot('Z',10*contLin);
+        //multiplicaMatrizPorMatriz (matRot,traslacion,4,4,4,4);// el resultado quedara en matRotTrasla
+        //Point3D traslacion(0,0,0.2*contLin);
+        //Point3D miTraslacion;
+        //miTraslacion.setXYZ(traslacion.getX(),traslacion.getY(),traslacion.getZ());
+
+        //Point3D escala(1.5,5,1.5);
+        //Point3D miEscala;
+        //miEscala.setXYZ(escala.getX(),escala.getY(),escala.getZ());
+        //myTransformador.createMatRotTrasla('Z',10*contLin,traslacion);
+        //myTransformador.createMatRotTrasla('Z',20,traslacion);
+        //myTransformador.createMatRotTraslaEscala('Z',0,traslacion,escala);
+        std::cout<<"traslacion==========================="<<traslacion.getX()<< traslacion.getY()<<traslacion.getZ()<<"\n";
+        myTransformador.createMatRotTraslaEscala(rotaX,rotaY,rotaZ,traslacion,escala);
+        //myTransformador.displayMatrizRotTrasla();
+        std::cout << "beFORE WHILE";
+        double gnoise; // variable to calculate Gaussian Noise
+        int chooseXYZ = 0;
+        int contTime = 0;
+        double anOffset = myTransformador.getOffset();
+        while ( infile >> timestamp >> rx >> ry >> rz >> q1 >> q2 >> q3 >> q4 ){
+
+            if (myTransformador.getInitTime() < 0){
+
+
+                myTransformador.setInitTime ( timestamp + anOffset ); //Take the first timestamp to init the time
+                contTime = myTransformador.getInitTime();
+
+
+            }
+            //std::cout << "You said.... contLin"<< contLin << timestamp << " " << rx << " " << ry << " " << rz << " " << q1 << " " << q2 << " " << q3 << " " << q4 << "\n";
+            myPoint3D.setX(rx);
+            myPoint3D.setY(ry);
+            myPoint3D.setZ(rz);
+            //std::cout << "antes setPoint3d\n";
+            myTransformador.setPoint3D(myPoint3D);
+            //std::cout<<"despues setPoint3d\n";
+            punto[0][0]=myPoint3D.getX();
+            punto[1][0]=myPoint3D.getY();
+            punto[2][0]=myPoint3D.getZ();
+            punto[3][0]=1;
+
+            //multiplicaMatrizPunto (traslacion,punto,4,4,1,4);
+            //myPoint3D=myTransformador.multiplicaMatrizPunto(matRotTrasla,punto,4,4,1,4);
+            myPoint3D=myTransformador.multiplicaMatrizPunto(punto,1,4);
+
+            //modify the Point3D adding Gaussian Noise
+            //std::cout<<"-----------------antes generateGaussianNoise\n";
+            if (GNoise == 1) {
+                gnoise=myTransformador.generateGaussianNoise(0,0.01,CNoise);//mean , deviation, cosmicNoise
+                //std::cout<<"-----------------despues generateGaussianNoise\n";
+                chooseXYZ= long(abs(gnoise*10000)) % 3;//
+                switch (chooseXYZ){
+                case 0: // Adding Gaussian noise to coordenate X
+                    myPoint3D.setX(myPoint3D.getX()+gnoise);
+                    break;
+                case 1: // Adding Gaussian noise to coordenate Y
+                    myPoint3D.setY(myPoint3D.getY()+gnoise);
+                    break;
+                case 2: // Adding Gaussian noise to coordenate Z
+                    myPoint3D.setZ(myPoint3D.getZ()+gnoise);
+                    break;
+                default:
+                    std::cout<< "Error calculating mod 3"<<"\n";
+                    break;
+                }
+            }
+
+            //out <<timestamp <<" "<< myPoint3D.getX() <<" "<< myPoint3D.getY() <<" "<< myPoint3D.getZ() <<" "<< q1 <<" "<< q2 <<" "<<q3 <<" "<< q4<<std::endl;
+            if (myTransformador.getFrequency()>0){
+                out << contTime++ * myTransformador.getFrequency()<<" "<< myPoint3D.getX() <<" "<< myPoint3D.getY() <<" "<< myPoint3D.getZ() <<" "<< q1 <<" "<< q2 <<" "<<q3 <<" "<< q4<<std::endl;
+            } else {
+                out << timestamp + anOffset<<" "<< myPoint3D.getX() <<" "<< myPoint3D.getY() <<" "<< myPoint3D.getZ() <<" "<< q1 <<" "<< q2 <<" "<<q3 <<" "<< q4<<std::endl;
+            }
+            //out <<contTime++ * myTransformador.getFrequency()<<" "<< myPoint3D.getX() <<" "<< myPoint3D.getY() <<" "<< myPoint3D.getZ() <<std::endl;
+
+        }
+        infile.close();
+        std::cout << ">>>>>>>CIERRO INFILE\n";
+        //}
+
+        //multiplicaMatrizPunto (traslacion,punto,4,4,1,4);
+        //displayPunto(newPunto);
+
+        //multiplicaMatrizPorMatriz (matRot,traslacion,4,4,4,4);
+        out.close();
+        std::cout << ">>>>>>>CIERRO outfile\n";
+        //infile.close();
+        //double noise,total;
+        //int g;
+        //MatrixXd m(2,2);
+        //m(0,0) = 3;
+        //m(1,0) = 2.5;
+        //m(0,1) = -1;
+        //m(1,1) = m(1,0) + m(0,1);
+        //std::cout << m << std::endl;
+
+        /*
+        //Codigo para comprobar como esta distribuido el ruido gaussiano
+
+         for (g=0;g<1000000;g++){
+            noise=generateGaussianNoise(0,1);
+             std::cout <<"ruido= "<<noise<<"\n";
+            total= total + noise;
+        }
+        std::cout <<"numero de datos con ruido="<<g<<"\n";
+        std::cout <<"La suma del ruido es= "<<total<<" y la media es"<< total / (g)<<"\n";
+        */
+
+        //return 0;
+
 }
 
 void Transformador::createContaminatedSequence(char* inputFileName,char* outputFileName,Point3D traslacion,Point3D escala,double anguloRot, char eje, int GNoise, int CNoise, double offset,int freqType, double frequency){
