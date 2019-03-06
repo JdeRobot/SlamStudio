@@ -159,6 +159,7 @@ void MainWindow::onModifySequence()
 
 void MainWindow::onEstimateSequence(int way){//Estimate transformations from dataset A to dataset B or dataset B to dataset A
     //frequency=0.005;
+    float rMax=0.0;
     std::cout<<"onEstimateSequenceAtoB frequency="<<frequency<<std::endl;
     //myRegistrador.rigid_transform_3D()
     readingA=readingAbkp.block(0,0,readingAbkp.rows(),3);//to use with Scale and PCA
@@ -221,10 +222,15 @@ void MainWindow::onEstimateSequence(int way){//Estimate transformations from dat
         }
 
         //rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval, anOffset,offsetEstimated, tAApca,  tBBpca);
-        rMax=myInterpolator.calculateOffsetWithInterpolation(maxLine,interval,offsetEstimated, tAApca,  tBBpca);
-        timeOffsetEstimated= offsetEstimated;
+        //rMax=myInterpolator.calculateOffsetWithInterpolation2( tAApca,  tBBpca);
+        //timeOffsetEstimated= offsetEstimated;
+
+        timeOffsetEstimated=myInterpolator.calculateOffsetWithInterpolation2( tAApca,  tBBpca,rMax);//Bueno
+        timeOffsetEstimated= int(timeOffsetEstimated*1000)/1000.0;
+        //timeOffsetEstimated=myInterpolator.calculateOffsetWithInterpolation3( tAApca,  tBBpca);
         std::cout<<"timeOffsetEstimated2="<<timeOffsetEstimated<<std::endl;
         std::cout<<"timeOffset EXPECTED="<<timeOffset<<std::endl;
+        std::cout<<"rMax="<<rMax<<std::endl;
 
         //Apply estimated offset over B
         for (int i=0; i< tBBpca.rows(); i++){
@@ -270,7 +276,7 @@ void MainWindow::onEstimateSequence(int way){//Estimate transformations from dat
         dataB.row(i)<<myNewVector.transpose();
      }
 
-myInterpolator.performInterpolation(ftype,frequency,dataA,dataB);
+//myInterpolator.performInterpolation(ftype,frequency,dataA,dataB);
 //begin before creating performInterpolation
 //    myInterpolator.interpolateSerieToFrequency2(frequency, dataA);
 //    myInterpolator.interpolateSerieToFrequency2(frequency, dataB);
@@ -405,9 +411,12 @@ myInterpolator.performInterpolation(ftype,frequency,dataA,dataB);
     Matrix3d myRotationEstimated(3, 3);
     myRotationEstimated = rotationEstimated.block(0,0,3,3);
     Eigen::Matrix< double, 3, 1> ypr=myRotationEstimated.eulerAngles(2,1,0);
-    double y= ypr(0)*180/M_PI;//yaw
-    double p= ypr(1)*180/M_PI;//pitch
-    double r= ypr(2)*180/M_PI;//roll
+    //double y= ypr(0)*180/M_PI;//yaw
+    //double p= ypr(1)*180/M_PI;//pitch
+    //double r= ypr(2)*180/M_PI;//roll
+    double y= ypr(0);//yaw
+    double p= ypr(1);//pitch
+    double r= ypr(2);//roll
     std::cout<<"rpy====================================================================="<<ypr<<std::endl;
 
     //dataDialogShowEstimated= new DataDialogShowEstimated(medScala,medScala,medScala,traslationEstimated(0),traslationEstimated(1),traslationEstimated(2),x1,y1,z1,x2,y2,z2,x3,y3,z3,timeOffsetEstimated,rMax,1,RMSE);
@@ -963,6 +972,7 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
 
      myOutputFileName="miSalidaContaminadaQT.txt";
      std::cout <<"mainwindow.performModifySequence  gNoise="<<gNoise<< " cNoise="<<cNoise<<std::endl;
+     /*
      char axisToRotate='X';
      double rotationGrades = 0;
 
@@ -979,15 +989,20 @@ void MainWindow::performModifySequence(double scalaX,double scalaY,double scalaZ
      }else {
          rotationGrades = 0;
      }
+     */
 
 
      if (gNoise > 0.0 & cNoise >0.0) {
-         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,1,offset,fType,freq);
+         //myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,1,offset,fType,freq);
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotaX,rotaY,rotaZ,1,1,offset,fType,freq);
      } else if (gNoise > 0.0 & cNoise <=0.0) {
-        myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,0,offset,fType,freq);
+        //myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',1,0,offset,fType,freq);
+        myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotaX,rotaY,rotaZ,1,0,offset,fType,freq);
      } else if (gNoise <= 0 & cNoise >0.0){
-         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,1,offset,fType,freq);
-     } else  myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,0,offset,fType,freq);
+         //myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,1,offset,fType,freq);
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotaX,rotaY,rotaZ,0,1,offset,fType,freq);
+     } else  //myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotationGrades,'X',0,0,offset,fType,freq);
+         myTransformador.createContaminatedSequence(myInputFileName,myOutputFileName,miTraslacion,myScala,rotaX,rotaY,rotaZ,0,0,offset,fType,freq);
 
      // Reading input file B, with new dataset contaminated
      std::ifstream infileB( "miSalidaContaminadaQT.txt" );

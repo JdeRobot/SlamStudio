@@ -78,7 +78,7 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     traslaZ = new QLineEdit;
     traslaZ->setText("0");
     */
-    QGroupBox *rotationGroupBox = new QGroupBox(tr("ROTATION"));
+    QGroupBox *rotationGroupBox = new QGroupBox(tr("ROTATION in Radians"));
     QVBoxLayout *rotateVBox = new QVBoxLayout;
     //rotaCheckBox = new QCheckBox(tr("Rotation"));
     labRotaX = new QLabel(tr("X"));
