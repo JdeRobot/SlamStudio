@@ -659,6 +659,82 @@ void Interpolator::interpolate2Series(int maxLine, MatrixXd& A, MatrixXd& B){
 
 }
 
+
+void Interpolator::interpolate2SeriesFMin(int maxLine, MatrixXd& A, MatrixXd& B){
+    //
+    // Interpolate 2 series to minimum frequency
+    //  A is the Fmin dataSerie. B is the dataSerie to be reduced so in this case B should have more data than A
+    //
+    int Bsize= B.rows();
+    std::cout<< "Interpolator::interpolate2SeriesFMin Bsize="<<Bsize<<std::endl;
+    int Asize= A.rows();
+    std::cout<< "Interpolator::interpolate2SeriesFMin Asize="<<Asize<<std::endl;
+    int i =0;
+    int j=0 , contAddedValues= 0;
+    MatrixXd newBMatrix (A.rows()+B.rows(),A.cols());
+    int contNewMatrix =0;
+    double Atime,Btime;
+    std::cout<<"Interpolator::interpolate2SeriesFMin Antes del while"<<std::endl;
+    while ((i < Asize ) && ( j < Bsize)){
+        Atime=A.row(i)(0); //take the time value of A
+        Btime=B.row(j)(0);
+        std::cout<<"Interpolator::interpolate2SeriesFMin Atime="<<Atime<<" Btime="<<Btime<<" i="<<i<<" j="<<j<<std::endl;
+        while ((Btime < Atime) && (j < Bsize)){
+            Btime=B.row(j)(0);
+            j++;
+
+        }
+        if ((Btime > Atime)&& (j>0) && (j < Bsize)){
+            std::cout<< "dentro del if"<<std::endl;
+            //interpolate X coordinate
+            double y2= (B.row(j-1))(1);
+            double x = (A.row(i))(0);
+            double x2= (B.row(j-1))(0);
+            double y3= (B.row(j))(1);
+            double x3= (B.row(j))(0);
+            double xCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+            std::cout<< "interpolo X"<<std::endl;
+            //interpolate Y coordinate
+            y2= (B.row(j-1))(2);
+            x = (A.row(i))(0);
+            x2= (B.row(j-1))(0);
+            y3= (B.row(j))(2);
+            x3= (B.row(j))(0);
+            double yCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+            std::cout<< "interpolo Y"<<std::endl;
+            //interpolate Z coordinate
+            y2= (B.row(j-1))(3);
+            x = (A.row(i))(0);
+            x2= (B.row(j-1))(0);
+            y3= (B.row(j))(3);
+            x3= (B.row(j))(0);
+            double zCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+            std::cout<< "interpolo Z"<<std::endl;
+            Vector4d myNewVector(x,xCoordinate,yCoordinate,zCoordinate);
+            std::cout<< "myNewVector="<<myNewVector<<std::endl;
+            //contAddedValues++;
+
+            newBMatrix.row(contNewMatrix) << myNewVector.transpose();
+            contNewMatrix++;
+            std::cout<< "contNewMatrix="<<contNewMatrix<<std::endl;
+
+        } else if (( Btime == Atime)&& (j < Bsize)) {
+            std::cout<< "interpolo FMin Btime==Atime contNewMatrix="<<contNewMatrix<<"j="<<j<<std::endl;
+            newBMatrix.row(contNewMatrix) << B.row(j);
+            contNewMatrix++;
+            std::cout<< "interpolo FMin Btime==Atime,  contNewMatrix="<<contNewMatrix<<std::endl;
+        } else if (j==0){
+            j++;
+        }
+        i++;
+       }//end while (i < Asize )
+
+    B= newBMatrix.block(0,0,contNewMatrix,4);
+    std::cout<< "Interpolator::interpolate2SeriesFMin END------------"<<B<<std::endl;
+
+
+}
+
 //=============================================================================================================
 
 void Interpolator::modifyTime (double valueToAdd, MatrixXd& aMatrix){
@@ -764,6 +840,265 @@ void Interpolator::reduceSequence(int maxLine, MatrixXd& aMatrix , int numberToD
 
 
 }
+
+void Interpolator::performInterpolation(int freqType,double freq, MatrixXd& dataA, MatrixXd& dataB ){
+    if (freqType == 2 && freq >0){//interpolate to Custom Frequency
+        this->interpolateSerieToFrequency2(freq,dataA);
+        this->interpolateSerieToFrequency2(freq,dataB);
+
+    }else if (freqType==1){//interpolate to Fmin
+        std::cout<<"dataA="<<dataA<<std::endl;
+        this->reduceSequence(2,dataA);
+        std::cout<<"dataA="<<dataA<<std::endl;
+        std::cout<<"dataB="<<dataB<<std::endl;
+        this->interpolate2SeriesFMin(dataA.rows(),dataA,dataB);
+
+    }else if (freqType==0){//interpolate to Fmax
+        this->reduceSequence(dataB.rows(),dataB,2);
+        this->interpolate2SeriesB(dataA.rows(),dataA,dataB);
+    }
+}
+//---------------------------------------------------------------------------------
+int Interpolator::timeLessThan (double timeA, double timeB){
+    //return (long(time1*100) < long(time2*100));
+    //long time1 = timeA*100.0;
+    //long time2 = timeB*100.0;
+    return (fabs(timeA - timeB) > 0.0001);
+    //return (time1 < time2);
+    //return (fabs(timeB - timeA) > std::numeric_limits<double>::epsilon());
+}
+int Interpolator::timeEqualThan (double time1, double time2){
+    //return fabs(time1 - time2) < 0.00001;
+    //return (long(time1*100) == long(time2*100));
+    //if(fabs(time1 - time2) <= std::numeric_limits<double>::epsilon() * fabs(time1));
+    const double epsilon = 0.00001/* some small number such as 1e-5 */;
+    return std::abs(time1 - time2) <= epsilon * std::abs(time1);
+
+
+}
+void Interpolator::traza(double timeA, double timeB){
+//    long time1 = timeA*100.0;
+//    long time2 = timeB*100.0;
+//    if (time1 > time2)
+//        std::cout<< "B.row(tIndexB)(0) ="<<time1<<"es mayor que A.row(tIndexA)(0)="<<time2<<std::endl;
+//     else if (time1 < time2)
+//        std::cout<< "B.row(tIndexB)(0) ="<<time1<<"es MENOR que A.row(tIndexA)(0)="<<time2<<std::endl;
+//     else if (time1 == time2)
+//        std::cout<< "B.row(tIndexB)(0) ="<<time1<<"es igual que A.row(tIndexA)(0)="<<time2<<std::endl;
+    if (fabs(timeA - timeB) < 0.0001) {
+            std::cout<< "B.row(tIndexB)(0) ="<<timeA<<"es igual que A.row(tIndexA)(0)="<<timeB<<std::endl;
+
+    }else if ((timeA - timeB) > 0 )
+        std::cout<< "B.row(tIndexB)(0) ="<<timeA<<"es mayor que A.row(tIndexA)(0)="<<timeB<<std::endl;
+    else if ((timeB - timeA) > 0 )
+        std::cout<< "B.row(tIndexB)(0) ="<<timeB<<"es mayor  que A.row(tIndexA)(0)="<<timeA<<std::endl;
+    else if (fabs(timeA - timeB) < 0.00001)
+        std::cout<< "B.row(tIndexB)(0) ="<<timeA<<"es igual que A.row(tIndexA)(0)="<<timeB<<std::endl;
+
+}
+//=============================================================================================================
+double Interpolator::calculateOffsetWithInterpolation3(MatrixXd A, MatrixXd Boriginal){
+    double step = 0.01;
+    double interval = 3;
+    AjusteTiempo myCorrelator;
+    int tIndexA,tIndexB=0.0;
+    double contNewMatrix=0, r2=0.0, rMax=0.0,delayMax=0.0;
+
+    for (double i = - interval; i < interval ; i +=0.01){
+        MatrixXd B= Boriginal.block(0,0,Boriginal.rows(),4);
+        this->modifyTime(i,B);// the time for serie B will be oscilating
+        tIndexA=0;
+        tIndexB=0;
+        contNewMatrix=0;
+        MatrixXd newBMatrix (B.rows()+B.rows(),B.cols());
+        MatrixXd newAMatrix (A.rows()+A.rows(),A.cols());
+        while (tIndexB < B.rows() && tIndexA < A.rows()){
+            //if ((tIndexB < B.rows()) && (B.row(tIndexB)(0)==A.row(tIndexA)(0))) {
+            if ((tIndexB < B.rows()) && (timeEqualThan(B.row(tIndexB)(0),A.row(tIndexA)(0)))) {
+                std::cout<< "Igual B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
+                std::cout<< "Igual A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
+                newBMatrix.row(contNewMatrix)<< B.row(tIndexB);
+                newAMatrix.row(contNewMatrix)<< A.row(tIndexA);
+                contNewMatrix++;
+                tIndexB++;
+                tIndexA++;
+            //}else if ((tIndexB < B.rows()) &&( B.row(tIndexB)(0)>A.row(tIndexA)(0))){//begin if2
+            }else if ((tIndexB < B.rows()) &&( this->timeLessThan(A.row(tIndexA)(0),B.row(tIndexB)(0)))){//begin if2
+                //interpolate between Bpca.row(tIndexB-1) and Bpca.row(tIndexB) for Apca.row(tIndexA) value
+                //interpolate X coordinate
+                std::cout<< "Interpolo B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
+                std::cout<< "Interpolo A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
+                int j=tIndexB;
+                int i=tIndexA;
+                if (j>0){
+                    double y2= (B.row(j-1))(1);
+                    double x = (A.row(i))(0);
+                    double x2= (B.row(j-1))(0);
+                    double y3= (B.row(j))(1);
+                    double x3= (B.row(j))(0);
+                    double xCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+                    std::cout<< "interpolo X"<<std::endl;
+                    //interpolate Y coordinate
+                    y2= (B.row(j-1))(2);
+                    x = (A.row(i))(0);
+                    x2= (B.row(j-1))(0);
+                    y3= (B.row(j))(2);
+                    x3= (B.row(j))(0);
+                    double yCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+                    std::cout<< "interpolo Y"<<std::endl;
+                    //interpolate Z coordinate
+                    y2= (B.row(j-1))(3);
+                    x = (A.row(i))(0);
+                    x2= (B.row(j-1))(0);
+                    y3= (B.row(j))(3);
+                    x3= (B.row(j))(0);
+                    double zCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+                    std::cout<< "interpolo Z"<<std::endl;
+                    Vector4d myNewVector(x,xCoordinate,yCoordinate,zCoordinate);
+                    std::cout<< "myNewVector="<<myNewVector<<std::endl;
+                    //contAddedValues++;
+
+                    newBMatrix.row(contNewMatrix) << myNewVector.transpose();
+
+                    newAMatrix.row(contNewMatrix)<< A.row(tIndexA);
+                    contNewMatrix++;
+                    std::cout<< "contNewMatrix="<<contNewMatrix<<std::endl;
+                }
+                tIndexA++;
+             }else if ((tIndexB < B.rows()) && (B.row(tIndexB)(0)<A.row(tIndexA)(0))){ //while time of dataB < time of dataA
+                //while ((tIndexB < B.rows()) && this->timeLessThan(B.row(tIndexB)(0),A.row(tIndexA)(0))){ //while time of dataB < time of dataA
+                    std::cout<< "B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
+                    std::cout<< "A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
+                    tIndexB++;
+
+             }
+       }//end while
+    }//end for
+}
+
+double Interpolator::calculateOffsetWithInterpolation2(MatrixXd A, MatrixXd Boriginal, float& rMax){
+    float step = 0.01f;
+    float interval = 3;
+    AjusteTiempo myCorrelator;
+    int tIndexA,tIndexB=0.0,contNewMatrix=0;
+    float r2=0.0, delayMax=0.0;
+    rMax=0.0;
+
+    for (float i = - interval; i < interval ; i +=step){
+        MatrixXd B= Boriginal.block(0,0,Boriginal.rows(),4);
+        this->modifyTime(i,B);// the time for serie B will be oscilating
+        tIndexA=0;
+        tIndexB=0;
+        contNewMatrix=0;
+        MatrixXd newBMatrix (B.rows()+B.rows(),B.cols());
+        MatrixXd newAMatrix (A.rows()+A.rows(),A.cols());
+        while (tIndexB < B.rows() && tIndexA < A.rows()){ //while 2
+            //std::cout<< "1B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
+            //std::cout<< "1A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
+            //traza (B.row(tIndexB)(0),A.row(tIndexA)(0));
+//            while ((tIndexB < B.rows()) && (B.row(tIndexB)(0)<A.row(tIndexA)(0))){ //while time of dataB < time of dataA
+//            //while ((tIndexB < B.rows()) && this->timeLessThan(B.row(tIndexB)(0),A.row(tIndexA)(0))){ //while time of dataB < time of dataA
+//                std::cout<< "B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
+//                std::cout<< "A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
+//                tIndexB++;
+
+
+//            }
+//            if (tIndexB >= B.rows()) break;
+            //std::cout<< "2B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<std::endl;
+            //std::cout<< "2A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<std::endl;
+//            while ((B.row(tIndexB)(0)>A.row(tIndexA)(0)) && (tIndexA < A.rows())){ //while time of dataA < time of dataA
+//                tIndexA++;
+//                std::cout<< "3B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
+//                std::cout<< "3A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
+
+//            }
+            if ((tIndexB < B.rows()) && (B.row(tIndexB)(0)==A.row(tIndexA)(0))) {
+            //if ((tIndexB < B.rows()) && (timeEqualThan(B.row(tIndexB)(0),A.row(tIndexA)(0)))) {
+                newBMatrix.row(contNewMatrix)<< B.row(tIndexB);
+                newAMatrix.row(contNewMatrix)<< A.row(tIndexA);
+                contNewMatrix++;
+                tIndexB++;
+                tIndexA++;
+            }else if ((tIndexB < B.rows()) &&( B.row(tIndexB)(0)>A.row(tIndexA)(0))){//begin if2
+            //}else if ((tIndexB < B.rows()) &&( this->timeLessThan(A.row(tIndexA)(0),B.row(tIndexB)(0)))){//begin if2
+                //interpolate between Bpca.row(tIndexB-1) and Bpca.row(tIndexB) for Apca.row(tIndexA) value
+                //interpolate X coordinate
+                //std::cout<< "Interpolo B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
+                //std::cout<< "Interpolo A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
+                int j=tIndexB;
+                int i=tIndexA;
+                if (j>0){
+                    double y2= (B.row(j-1))(1);
+                    double x = (A.row(i))(0);
+                    double x2= (B.row(j-1))(0);
+                    double y3= (B.row(j))(1);
+                    double x3= (B.row(j))(0);
+                    double xCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+                    //std::cout<< "interpolo X"<<std::endl;
+                    //interpolate Y coordinate
+                    y2= (B.row(j-1))(2);
+                    x = (A.row(i))(0);
+                    x2= (B.row(j-1))(0);
+                    y3= (B.row(j))(2);
+                    x3= (B.row(j))(0);
+                    double yCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+                    //std::cout<< "interpolo Y"<<std::endl;
+                    //interpolate Z coordinate
+                    y2= (B.row(j-1))(3);
+                    x = (A.row(i))(0);
+                    x2= (B.row(j-1))(0);
+                    y3= (B.row(j))(3);
+                    x3= (B.row(j))(0);
+                    double zCoordinate = this->interpolateValue(x,x2,y2,x3,y3);
+                    //std::cout<< "interpolo Z"<<std::endl;
+                    Vector4d myNewVector(x,xCoordinate,yCoordinate,zCoordinate);
+                    //std::cout<< "myNewVector="<<myNewVector<<std::endl;
+                    //contAddedValues++;
+
+                    newBMatrix.row(contNewMatrix) << myNewVector.transpose();
+
+                    newAMatrix.row(contNewMatrix)<< A.row(tIndexA);
+                    contNewMatrix++;
+                    //std::cout<< "contNewMatrix="<<contNewMatrix<<std::endl;
+                }
+                tIndexA++;
+            }//end if2
+            else if ((tIndexB < B.rows()) && (B.row(tIndexB)(0)<A.row(tIndexA)(0))){ //while time of dataB < time of dataA
+            //while ((tIndexB < B.rows()) && this->timeLessThan(B.row(tIndexB)(0),A.row(tIndexA)(0))){ //while time of dataB < time of dataA
+                //std::cout<< "B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
+                //std::cout<< "A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
+                tIndexB++;
+
+
+            }
+            //if (tIndexB >= B.rows()) break;
+
+        }//end while2
+        //std::cout<< "newAMatrix.rows()="<<newAMatrix.rows()<<std::endl;
+        //std::cout<< "newBMatrix.rows()="<<newBMatrix.rows()<<std::endl;
+        r2=myCorrelator.calculateOffsetTXYZ5(newAMatrix.rows(),  newAMatrix,  newBMatrix);
+        //std::cout<< "r2="<<r2<<std::endl;
+
+        //if ((fabs(r2) <= 1 )&& (fabs(r2) >= rMax)){
+        if ((fabs(r2) <= 1 )&& (fabs(r2) > rMax)){
+
+                      rMax=r2;
+                      delayMax=i;
+                      //finalBMatrix=newBMatrix.block(0,0,newBMatrix.rows(),4);
+                      //std::cout << std::cout << std::setprecision(4) << std::fixed;
+                      //std::ofstream outRegresion( "/home/tfm3/workspace/Interpolator/miSalidaRegresion.txt" );
+                      //outRegresion << std::setprecision(6) << std::fixed;
+                      //std::cout <<"3="<<std::endl;<"finalBMatrixafter regresion++++++++++++++++++++++++++++++"<<finalBMatrix.rows()<<"rows"<<std::endl;
+
+        }
+
+
+    }//end for
+
+    return delayMax;
+
+}
 //=============================================================================================================
 double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval, double& offsetEstimated, MatrixXd Apca,MatrixXd Bpca){
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation"<<std::endl;
@@ -772,20 +1107,26 @@ double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval,
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation Bpca.cols()"<<Bpca.cols()<<std::endl;
     AjusteTiempo myCorrelator;
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation, before reduceSequence(2,Bpca)"<<std::endl;
-    this->reduceSequence(4,Bpca);
+    //this->reduceSequence(10,Bpca);
+    //this->reduceSequence(15,Bpca);
+    this->reduceSequence(Bpca.rows(),Bpca,2);
     std::cout <<"-------------------------inside Interpolator::calculateOffsetWithInterpolation, after reduceSequence(2,Bpca)"<<std::endl;
 
 
     std::cout <<"before interpolate "<<std::endl;
 
 
-    std::cout << std::setprecision(4) << std::fixed;
+    //std::cout << std::setprecision(4) << std::fixed;
+    std::cout << std::setprecision(6) << std::fixed;
     std::ofstream outRegresion( "/home/tfm3/workspace/Interpolator/miSalidaRegresion.txt" );
-    outRegresion << std::setprecision(4) << std::fixed;
+    //outRegresion << std::setprecision(4) << std::fixed;
+    outRegresion << std::setprecision(6) << std::fixed;
     std::cout <<"3="<<std::endl;
 
-    double step = 0.1;
-    double limit = 20;
+    double step = 0.01;
+    //double limit = 20;
+    double limit = 100;
+    //double limit = 200;
     double delayMax=0, rMax=0;
     MatrixXd finalBMatrix (Apca.rows()+Apca.rows(),Bpca.cols());
     double i = 0;
@@ -806,6 +1147,9 @@ double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval,
         std::cout <<"Antes de interpolar:Apca.rows()="<<Apca.rows()<<std::endl;
         //myInterpolator.interpolate2Series(maxLine, A,B);
         this->interpolate2SeriesB(maxLine, Apca,newBMatrix);
+        for (int t=0; t<10; t++){
+               std::cout<<"================================================================timeA["<<t<<"]="<<Apca(t,0)<<"  timeB["<<t<<"]="<<newBMatrix(t,0)<<std::endl;
+        }
         //myInterpolator.interpolate2Series(maxLine, A,newBMatrix);
         //newInterpolated=myInterpolator.interpolateAoverB(A,newBMatrix);
         //newBMatrix= newInterpolated.block(0,0,newInterpolated.rows(),4);
@@ -816,7 +1160,10 @@ double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval,
         //double r=micorrelador.calcularAutocorrelacion4(A.rows(), 100,step, A,  newBMatrix);
         //double r=micorrelador.calcularAutocorrelacion4(Apca.rows(), 100,0, Apca,  newBMatrix);
         double anOffset = 0;
-        double r=myCorrelator.calculateOffsetTXYZ(maxLine,interval,  Apca,  newBMatrix);
+        //double r=myCorrelator.calculateOffsetTXYZ(maxLine,interval,  Apca,  newBMatrix);
+        //double r=myCorrelator.calculateOffsetTXYZ2(maxLine,interval,  Apca,  newBMatrix);
+        //double r=myCorrelator.calculateOffsetTXYZ3(maxLine,interval,  Apca,  newBMatrix);
+        double r=myCorrelator.calculateOffsetTXYZ5(maxLine,  Apca,  newBMatrix);
         std::cout <<"regresion="<<r<<std::endl;
         outRegresion<< r << " " << i << std::endl;
         std::cout <<"newBMatrix after regresion"<<newBMatrix.rows()<<"rows"<<std::endl;
@@ -829,8 +1176,8 @@ double Interpolator::calculateOffsetWithInterpolation(int maxLine, int interval,
                       delayMax=i;
                       finalBMatrix=newBMatrix.block(0,0,newBMatrix.rows(),4);
                       //std::cout << std::cout << std::setprecision(4) << std::fixed;
-                      std::ofstream outRegresion( "/home/tfm3/workspace/Interpolator/miSalidaRegresion.txt" );
-                      outRegresion << std::setprecision(4) << std::fixed;
+                      //std::ofstream outRegresion( "/home/tfm3/workspace/Interpolator/miSalidaRegresion.txt" );
+                      //outRegresion << std::setprecision(6) << std::fixed;
                       //std::cout <<"3="<<std::endl;<"finalBMatrixafter regresion++++++++++++++++++++++++++++++"<<finalBMatrix.rows()<<"rows"<<std::endl;
 
         }

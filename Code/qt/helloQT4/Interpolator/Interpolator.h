@@ -29,8 +29,12 @@ public:
    void interpolateSerieToFrequency(float frequency, MatrixXd& B);
    void interpolateSerieToFrequency2(float frequency, MatrixXd& B);
    double calculateOffsetWithInterpolation(int maxLine, int interval, double& offsetEstimated, MatrixXd A1,MatrixXd B2);
-
-
-
+   void interpolate2SeriesFMin(int maxLine, MatrixXd& A, MatrixXd& B);
+   void performInterpolation(int freqType, double freq, MatrixXd& A, MatrixXd& B);
+   double calculateOffsetWithInterpolation2(MatrixXd A, MatrixXd B, float& rMax);
+   double calculateOffsetWithInterpolation3(MatrixXd A, MatrixXd B);
+   int timeLessThan (double time1, double time2); // to compare float time converted to long integer
+   int timeEqualThan (double time1, double time2); // to compare float time converted to long integer
+   void traza (double time1, double time2); // to compare float time converted to long integer
 };
 #endif
