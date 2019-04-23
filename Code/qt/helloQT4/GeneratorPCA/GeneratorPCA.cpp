@@ -183,7 +183,8 @@ void GeneratorPCA::calculatePCAbySVD( int rotation,MatrixXd& A , MatrixXd& A2 ,M
 	 * https://forum.kde.org/viewtopic.php?f=9&t=110265
 	 */
     // int rotation , means one of the six possibles orders of pca solution. XYZ, XZY, YZX,YXZ,ZXY,ZYX
-
+    std::cout <<"A.rows()="<<A.rows()<<std::endl;
+    std::cout <<"A.colwise().mean()="<<A.colwise().mean()<<std::endl;
 	Eigen::MatrixXd aligned = A.rowwise() - A.colwise().mean();
 	Eigen::MatrixXd cov = aligned.adjoint() * aligned;
 		cov = cov / (A.rows() - 1);
@@ -227,6 +228,7 @@ void GeneratorPCA::calculatePCAbySVD( int rotation,MatrixXd& A , MatrixXd& A2 ,M
 	//std::cout <<"svd.matrixU="<<svd.matrixU()<<std::endl;
 	// Return the dataset transformed by pca
     A2=projected.block(0,0,projected.rows(),projected.cols());
+    std::cout <<"A2="<<A2<<std::endl;
 
 }
 
