@@ -13,13 +13,26 @@ using namespace Eigen;
 #include <limits>
 #include <stdbool.h>
 #include "AjusteTiempo.h"
+#include "Interpolator/Interpolator.h"
 
 
 AjusteTiempo::AjusteTiempo(){
 	std::cout<< "constructor por defecto AjusteTiempo" <<std::endl;
 }
 
-
+void calculateDistanceForDataSet3D( MatrixXd dataSet, Matrix2Xd& time_Distance3D ){
+    int rows = dataSet.rows();
+    double x=0, y=0, z=0;
+    time_Distance3D = Matrix2Xd::Zero(dataSet.rows(),2);
+    for (int i=0; i < rows; i++){
+        x=dataSet.row(i)(1);
+        y= dataSet.row(i)(2);
+        z= dataSet.row(i)(3);
+        // the Distance to the origin (0,0,0) of a 3d point (x,y, z)
+        // should be calculated like sqrt( (0-x)^2 + (0-y)^2 + (0-z)^2)
+        time_Distance3D.row(i)<< dataSet.row(i)(0), sqrt( x*x + y*y + z*z );
+    }
+}
 
 void AjusteTiempo::calcularAutocorrelacion(int maxLine, int intervalo,double offset, MatrixXd& A1, MatrixXd& B2)
 
@@ -1208,6 +1221,7 @@ double AjusteTiempo::calculateOffsetTXYZ5(int maxLine,  MatrixXd A1,MatrixXd B2)
     //offset: defines gap between second matrix and first matrix
     //maxLine: number of lines
     //interval: defines variation to calculate offset. If interval = 100, then calculate offset from -100 to 100
+    Interpolator myInterpolator;
     std::cout<<" CALCULATE OFFSET TXYZ5......................................."<<std::endl;
     std::cout << std::setprecision(6) << std::fixed;
     std::ofstream outA( "/home/tfm3/workspace/AjusteTiempo/miSalidaA.txt" );
@@ -1311,13 +1325,16 @@ double AjusteTiempo::calculateOffsetTXYZ5(int maxLine,  MatrixXd A1,MatrixXd B2)
                    //j = i + offset;
                    //j=i;
                    //std::cout <<"i="<<i<<std::endl;
-                   if (B2.row(j)(0) < A1.row(i)(0)){  //compari timestamps
+                   //if (B2.row(j)(0) < A1.row(i)(0)){  //compari timestamps
+                   if (myInterpolator.timeLessThan(B2.row(j)(0) , A1.row(i)(0))){  //compari timestamps
                      j++;
                      continue;
-                   }else if (B2.row(j)(0) > A1.row(i)(0)){
+                   //}else if (B2.row(j)(0) > A1.row(i)(0)){
+                     }else if (myInterpolator.timeGreaterThan(B2.row(j)(0), A1.row(i)(0))){
                        i++;
                        continue;
-                    } else if (B2.row(j)(0) == A1.row(i)(0)){
+                    //} else if (B2.row(j)(0) == A1.row(i)(0)){
+                       } else if (myInterpolator.timeEqualThan(B2.row(j)(0) ,A1.row(i)(0))){
 
 
                         sxy0 += ((A1.row(i))(1) - mediaSerieA0) * ((B2.row(j))(1) - mediaSerieB0);
@@ -1365,6 +1382,198 @@ double AjusteTiempo::calculateOffsetTXYZ5(int maxLine,  MatrixXd A1,MatrixXd B2)
 
 
 }
+
+double AjusteTiempo::calculateOffsetTXYZ6(int maxLine,  MatrixXd A1,MatrixXd B2){
+    //Calculate Normalized Cross Correlation for 2 matrix, each has 3 columns and maxLine rows. Use with 3d datasets
+    //offset: defines gap between second matrix and first matrix
+    //maxLine: number of lines
+    //interval: defines variation to calculate offset. If interval = 100, then calculate offset from -100 to 100
+    Interpolator myInterpolator;
+    MatrixXd time_Distance3DA1;
+    MatrixXd time_Distance3DB2;
+    //this->calculateDistanceForDataSet3D( A1, time_Distance3DA1 );
+    int rows = A1.rows();
+    double t=0,x=0, y=0, z=0;
+    time_Distance3DA1 = MatrixXd::Zero(rows,2);
+    for (int i=0; i < rows; i++){
+        t=A1.row(i)(0);
+        x=A1.row(i)(1);
+        y=A1.row(i)(2);
+        z=A1.row(i)(3);
+        // the Distance to the origin (0,0,0) of a 3d point (x,y, z)
+        // should be calculated like sqrt( (0-x)^2 + (0-y)^2 + (0-z)^2)
+        time_Distance3DA1.row(i)<< t, sqrt( x*x + y*y + z*z );
+    }
+    //this->calculateDistanceForDataSet3D( B2, time_Distance3DB2 );
+    rows = B2.rows();
+
+    time_Distance3DB2 = MatrixXd::Zero(rows,2);
+    for (int i=0; i < rows; i++){
+        t=B2.row(i)(0);
+        x=B2.row(i)(1);
+        y=B2.row(i)(2);
+        z=B2.row(i)(3);
+        // the Distance to the origin (0,0,0) of a 3d point (x,y, z)
+        // should be calculated like sqrt( (0-x)^2 + (0-y)^2 + (0-z)^2)
+        time_Distance3DB2.row(i)<< B2.row(i)(0), sqrt( x*x + y*y + z*z );
+    }
+    std::cout<<"time_Distance3DA1.rows()"<<time_Distance3DA1.rows()<<"\n";
+    std::cout<<"time_Distance3DB2.rows()"<<time_Distance3DB2.rows()<<"\n";
+    std::cout<<" CALCULATE OFFSET TXYZ6.with normalized cross correlation......................................"<<std::endl;
+
+    std::cout << std::setprecision(6) << std::fixed;
+    std::ofstream outA( "/home/tfm3/workspace/AjusteTiempo/miSalidaDistanceA.txt" );
+    outA << std::setprecision(6) << std::fixed;
+    for (int i=0;i++;i < time_Distance3DA1.rows()){
+        outA<< time_Distance3DA1(0) << " " << time_Distance3DA1(1) << std::endl;
+    }
+
+    outA.close();
+
+
+    std::cout << std::setprecision(6) << std::fixed;
+    std::ofstream outB( "/home/tfm3/workspace/AjusteTiempo/miSalidaDistanceB.txt" );
+    outB << std::setprecision(6) << std::fixed;
+    for (int i=0;i++;i < time_Distance3DB2.rows()){
+        outB<< time_Distance3DB2(0) << " " << time_Distance3DB2(1) << std::endl;
+    }
+
+    outB.close();
+
+    std::cout << std::setprecision(6) << std::fixed;
+    std::ofstream outRegresion( "/home/tfm3/workspace/AjusteTiempo/miSalidaRegresion.txt" );
+    //outRegresion << std::setprecision(6) << std::fixed;
+
+    int contLin=maxLine;
+
+    std::cout <<"contLin="<<A1.rows()<<std::endl;
+
+    std::cout <<"contLin2"<<B2.rows()<<std::endl;
+
+    MatrixXd readingB= MatrixXd::Zero((B2.rows()),B2.cols());
+    //for (int h=0; h<( maxLine-10);h++){
+    //for (int h=0; h<B2.rows() ; h++){
+
+        //readingB.row(int(h+offset)) = B2.row(h);
+        //readingB.row(h) = B2.row(h);
+        //std::cout <<"h==="<<h<<std::endl;
+    //}
+    readingB=B2.block(0,0,B2.rows(),B2.cols());
+    std::cout <<"fin bucle h"<<std::endl;
+
+    //mediaSerieA = A1.col(1).mean();
+    double mediaSerieA = A1.col(1).mean();
+
+    //std::cout <<"	mediaSerieA="<<	round(mediaSerieA0)<<std::endl;
+
+    //mediaSerieB = B2.col(1).mean();
+    double mediaSerieB = B2.col(1).mean();
+
+    //std::cout <<"	mediaSerieB="<<	round(mediaSerieB0)<<std::endl;
+//Serie
+    VectorXd centeredSA,centeredSB,totalCenteredS;
+        //for (int i=0; i < contLin ; i++){
+            //centeredTA.row(contLin)<< vTiempoA.array() - mediaTiempoA;
+
+        //}
+    centeredSA = A1.col(1).array() - mediaSerieA;
+    //centeredSA = A1.col(1).array() - mediaSerieA;
+    //std::cout <<"	centeredSA0="<<	centeredSA0<<std::endl;
+    //centeredSB = B2.col(1).array() - mediaSerieB;
+    centeredSB = B2.col(1).array() - mediaSerieB;
+    //std::cout <<"	centeredSB0="<<	centeredSB0<<std::endl;
+
+    double denom=0,denom2=0,sx=0,sy=0,sx0=0,sx1=0,sx2=0,sy0=0,sy1=0,sy2=0;
+    for ( int i=0; i < A1.rows(); i++){
+
+            //sx += centeredTA(i)*centeredTA(i);
+            //sy += centeredTB(i)*centeredTB(i);
+            sx += centeredSA(i)*centeredSA(i);
+    }
+
+    for ( int i=0; i < B2.rows(); i++){
+            sy += centeredSB(i)*centeredSB(i);
+
+
+
+    }
+
+    denom = sqrt((sx)*(sy));
+
+    // Calculate the correlation series
+    double sxy=0, rMax=0;
+    double delayMax=0;
+    int i=0,j = 0;
+
+    std::cout <<"contLin3="<<contLin<<std::endl;
+    std::cout <<"maxLine="<<maxLine<<std::endl;
+    int maxRowsA = A1.rows();
+    int maxRowsB = B2.rows();
+    int maxRows =0;
+    if (maxRowsA < maxRowsB){
+        maxRows= maxRowsA;
+    } else maxRows= maxRowsB;
+
+    while (i < maxRows && j < maxRows){
+   // for (int i=0;i<maxRows;i++) {
+
+                   //j = i + offset;
+                   //j=i;
+                   //std::cout <<"i="<<i<<std::endl;
+                   //if (B2.row(j)(0) < A1.row(i)(0)){  //compari timestamps
+                   if (myInterpolator.timeLessThan(B2.row(j)(0) , A1.row(i)(0))){  //comparing timestamps
+                     j++;
+                     continue;
+                   //}else if (B2.row(j)(0) > A1.row(i)(0)){
+                     }else if (myInterpolator.timeGreaterThan(B2.row(j)(0), A1.row(i)(0))){
+                       i++;
+                       continue;
+                    //} else if (B2.row(j)(0) == A1.row(i)(0)){
+                       } else if (myInterpolator.timeEqualThan(B2.row(j)(0) ,A1.row(i)(0))){
+
+
+                        sxy += ((A1.row(i))(1) - mediaSerieA) * ((B2.row(j))(1) - mediaSerieB);
+
+                        j++;
+                        i++;
+
+                     }
+
+
+
+
+
+
+                   //i++;
+                   //std::cout <<"i2="<<i<<std::endl;
+
+       }
+
+
+              double r = (sxy) / denom;
+              //double r = sxy / sqrt(sx*sy);
+
+              r= fabs(r);
+
+              // r is the correlation coefficient at "delay"
+              std::cout <<"r ="<<r<<std::endl;
+
+              //std::cout <<"delay ="<<offset<<std::endl;
+              if ((fabs(r) <= 1 )&& (fabs(r) > rMax)){
+
+                  rMax=r;
+                 // delayMax=delay;
+
+              }
+              return rMax;
+
+}
+
+
+
+
+
+
 
 
 void AjusteTiempo::calculateOffset( int maxLine, int intervalo,double offset, MatrixXd& A1, MatrixXd& B2)

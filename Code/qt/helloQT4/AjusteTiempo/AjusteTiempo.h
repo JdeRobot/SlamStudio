@@ -11,6 +11,7 @@ private:
 
 public:
    AjusteTiempo () ;
+   void calculateDistanceForDataSet3D( MatrixXd dataSet, Matrix2Xd& time_Distance3D );
    void demoPresentaMatriz(); // Constructor with default arguments
    void rigid_transform_3D (MatrixXd A, MatrixXd B, MatrixXd& R, MatrixXd& t);
    void getScalaRansac(MatrixXd AA, MatrixXd BB, int ContLin);
@@ -29,6 +30,8 @@ public:
    double calculateOffsetTXYZ2(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
    double calculateOffsetTXYZ3(int maxLine, int interval, MatrixXd A1,MatrixXd B2);
    double calculateOffsetTXYZ5(int maxLine,  MatrixXd A1,MatrixXd B2);
+   double calculateOffsetTXYZ6(int maxLine,  MatrixXd A1,MatrixXd B2);
+
    Vector3d getScalaEigenValues(MatrixXd AA, MatrixXd BB);
    Vector3d getScalaSVD(MatrixXd AA, MatrixXd BB);
 
