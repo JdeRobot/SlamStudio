@@ -35,6 +35,8 @@ public:
    double calculateOffsetWithInterpolation3(MatrixXd A, MatrixXd B);
    int timeLessThan (double time1, double time2); // to compare float time converted to long integer
    int timeEqualThan (double time1, double time2); // to compare float time converted to long integer
+   int timeGreaterThan (double time1, double time2); // to compare float time converted to long integer
    void traza (double time1, double time2); // to compare float time converted to long integer
+   double findFrequency(MatrixXd dataSet);
 };
 #endif
