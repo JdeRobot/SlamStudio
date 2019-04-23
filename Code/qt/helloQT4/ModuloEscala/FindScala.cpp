@@ -173,6 +173,75 @@ Vector3d FindScala::getScalaSVD(MatrixXd AA, MatrixXd BB){
 			return myScala;
 }
 
+Vector3d FindScala::getScalaByMean(MatrixXd AA, MatrixXd BB){
+//This method estimate the scale using the mean of coordinate X , mean of Y and mean of Z
+// if AA.x.mean > BB.x.mean  then scale = AA.x.mean / BB.x.mean
+//             else               scale = BB.x.mean / AA.x.mean
+    double aMeanX = AA.col(0).mean();
+    double aMeanY = AA.col(1).mean();
+    double aMeanZ = AA.col(2).mean();
+    double bMeanX = BB.col(0).mean();
+    double bMeanY = BB.col(1).mean();
+    double bMeanZ = BB.col(2).mean();
+    double scaleX=0, scaleY=0, scaleZ=0;
+    if (aMeanX > bMeanX){
+        scaleX=aMeanX/bMeanX;
+        scaleY=aMeanY/bMeanY;
+        scaleZ=aMeanZ/bMeanZ;
+    } else {
+        scaleX=bMeanX/aMeanX;
+        scaleY=bMeanY/aMeanY;
+        scaleZ=bMeanZ/aMeanZ;
+    }
+
+    Vector3d myScale(scaleX,scaleY,scaleZ);
+    return myScale;
+
+}
+Vector3d FindScala::getScalaByDivision(MatrixXd AA, MatrixXd BB){
+
+    // METHOD 1
+
+
+//    double scalaX = AA.col(0).norm() / BB.col(0).norm();
+//    double scalaY = AA.col(1).norm() / BB.col(1).norm();
+//    double scalaZ = AA.col(2).norm() / BB.col(2).norm();
+
+    double scalaX = AA.col(0).mean() / BB.col(0).mean();
+    double scalaY = AA.col(1).mean() / BB.col(1).mean();
+    double scalaZ = AA.col(2).mean() / BB.col(2).mean();
+
+
+    std::cout <<"scalaX="<<scalaX <<std::endl;
+    std::cout <<"scalaY="<<scalaY <<std::endl;
+    std::cout <<"scalaZ="<<scalaZ <<std::endl;
+
+    std::cout <<"1/scalaX="<<1/scalaX <<std::endl;
+    std::cout <<"1/scalaY="<<1/scalaY <<std::endl;
+    std::cout <<"1/scalaZ="<<1/scalaZ <<std::endl;
+
+    scalaX = BB.col(0).norm() / AA.col(0).norm();
+    scalaY = BB.col(1).norm() / AA.col(1).norm();
+    scalaZ = BB.col(2).norm() / AA.col(2).norm();
+
+    std::cout <<"scalaX="<<scalaX <<std::endl;
+    std::cout <<"scalaY="<<scalaY <<std::endl;
+    std::cout <<"scalaZ="<<scalaZ <<std::endl;
+    std::cout <<"1/scalaX="<<1/scalaX <<std::endl;
+    std::cout <<"1/scalaY="<<1/scalaY <<std::endl;
+    std::cout <<"1/scalaZ="<<1/scalaZ <<std::endl;
+    Vector3d myScala (scalaX,scalaY,scalaZ);
+    return myScala;
+    // How to know, what to divide AA.norm()/ BB.norm() ?
+    // or BB.norm() / AA.norm() ?
+    //
+    // if mean (AA) > mean (BB)
+    //       scale = AA.norm() / BB.norm()
+    // else
+    //       scale = BB.norm() / AA.norm()
+
+}
+
 //int main( int argc, char** argv )
 void principal()
 {

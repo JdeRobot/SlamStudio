@@ -16,6 +16,8 @@ public:
    void getScalaRansac(MatrixXd AA, MatrixXd BB, int ContLin);
    Vector3d getScalaEigenValues(MatrixXd AA, MatrixXd BB);
    Vector3d getScalaSVD(MatrixXd AA, MatrixXd BB);
+   Vector3d getScalaByDivision(MatrixXd AA, MatrixXd BB);
+   Vector3d getScalaByMean(MatrixXd AA, MatrixXd BB);
 
 };
 #endif
