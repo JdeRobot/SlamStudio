@@ -1066,8 +1066,11 @@ double Interpolator::calculateOffsetWithInterpolation2(MatrixXd A, MatrixXd Bori
             numRows=B.rows();
         //MatrixXd newBMatrix (B.rows()+B.rows(),B.cols());
         //MatrixXd newAMatrix (A.rows()+A.rows(),A.cols());
-        MatrixXd newBMatrix (B.rows(),B.cols());
-        MatrixXd newAMatrix (A.rows(),A.cols());
+        //MatrixXd newBMatrix (B.rows(),B.cols());
+        //MatrixXd newAMatrix (A.rows(),A.cols());
+        MatrixXd newBMatrix (numRows,B.cols());
+        MatrixXd newAMatrix (numRows,A.cols());
+
         while (tIndexB < B.rows() && tIndexA < A.rows()){ //while 2
             //std::cout<< "1B.row(tIndexB)(0)="<<B.row(tIndexB)(0)<<"tIndexB="<<tIndexB<<std::endl;
             //std::cout<< "1A.row(tIndexA)(0)="<<A.row(tIndexA)(0)<<"tIndexA="<<tIndexA<<std::endl;
