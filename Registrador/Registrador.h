@@ -19,6 +19,7 @@ public:
    // this method apply both rotation and traslation estimated matrix over a dataset
    void applyTransformationsOverData(MatrixXd dataInitial,MatrixXd& dataEstimated, MatrixXd rotationEstimated, MatrixXd traslationEstimated);
    void applyTransformationsOverQuaternion(MatrixXd dataInitialQuaternion,MatrixXd& dataEstimated, MatrixXd rotationEstimated);
-
+   Matrix3d matRot_toQuaternion; //important rotMatrix should be 3x3 to convert to a quaternion
+   Matrix3d getMatRot_toQuaternion();
 };
 #endif

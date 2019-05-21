@@ -11,6 +11,11 @@ Registrador::Registrador(){
 	std::cout<< "constructor por defecto" <<std::endl;
 }//
 
+Matrix3d Registrador::getMatRot_toQuaternion(){
+    return matRot_toQuaternion;
+}
+
+
 void Registrador::rigid_transform_3D_normalized(MatrixXd A, MatrixXd B , MatrixXd& R, MatrixXd& t){
     // compare size of matrix A y B
 	//Matrix A and B have been transformed . A = A - centroidA  B = B - centroidB
@@ -284,7 +289,7 @@ void Registrador::rigid_transform_3D_normalized(MatrixXd A, MatrixXd B , MatrixX
      // dataEstimated will have q1',q2',q3',q4' estimated
      // rotMatrix is rotationMatrixEstimated
 
-     Matrix3d matRot_toQuaternion; //important rotMatrix should be 3x3 to convert to a quaternion
+     //Matrix3d matRot_toQuaternion; //important rotMatrix should be 3x3 to convert to a quaternion
      matRot_toQuaternion<< rotMatrix(0,0),rotMatrix(0,1),rotMatrix(0,2),
                            rotMatrix(1,0),rotMatrix(1,1) ,rotMatrix(1,2),
                            rotMatrix(2,0),rotMatrix(2,1),rotMatrix(2,2);

@@ -17,7 +17,14 @@ using namespace Eigen;
 
 
 
+Matrix3d Transformador::getMatRot_toQuaternion(){
+    return this->matRot_toQuaternion;
+}
 
+void Transformador::setMatRot_toQuaternion(Matrix3d aMatrix){
+    //matRot_toQuaternion= aMatrix;
+    matRot_toQuaternion= aMatrix.block(0,0,3,3);
+}
 void Transformador::displayMatriz (double matriz [4][4], int matriz_rows, int matriz_cols){
 
 	std::cout<<"-----------------------------------------------display Matriz Rotacion-traslacion\n\n";
@@ -35,14 +42,10 @@ void Transformador::displayMatriz (double matriz [4][4], int matriz_rows, int ma
 void Transformador::displayMatrizRotTrasla (){
 	displayMatriz(matRotTrasla,4,4);
 }
-void Transformador::createMatRotTrasla ( char eje , float angulo, Point3D aPoint3D){
-	createMatRot( eje, angulo);
-	setTraslacion( aPoint3D);
-
-}
 
 void Transformador::createMatRotTraslaEscala ( float rotaX,float rotaY,float rotaZ, Point3D aPoint3D,Point3D aScala ){
     createMatRot( rotaX,rotaY,rotaZ);
+    std::cout << "MatRot_toQuaternion="<<matRot_toQuaternion<<std::endl;
     setTraslacion( aPoint3D);//set traslation
     std::cout << "\n inside1 creatematRotTraslaEscala, matRotTrasla=\n";
     displayMatriz(matRotTrasla,4,4);
@@ -76,46 +79,12 @@ void Transformador::createMatRotTraslaEscala ( float rotaX,float rotaY,float rot
      std::cout << "matRotTrasla="<<matRotTrasla<<std::endl;
      displayMatriz(matRotTrasla,4,4);
      std::cout << "\n inside6 creatematRotTraslaEscala, matRotTrasla=\n";
+     std::cout << "MatRot_toQuaternion="<<matRot_toQuaternion<<std::endl;
+
 
 }
 
-void Transformador::createMatRotTraslaEscala ( char eje , float angulo, Point3D aPoint3D,Point3D aScala ){
-	createMatRot( eje, angulo);
-	setTraslacion( aPoint3D);//set traslation
-	std::cout << "\n inside1 creatematRotTraslaEscala, matRotTrasla=\n";
-	displayMatriz(matRotTrasla,4,4);
-	std::cout << "\n inside2 creatematRotTraslaEscala, matRotTrasla=\n";
-	double matScala [4] [4];
 
-	        matScala[0][0]=aScala.getX();
-	        matScala[0][1]=0.0;
-	        matScala[0][2]=0.0;
-	        matScala[0][3]=0.0;
-
-	        matScala[1][0]=0.0;
-	        matScala[1][1]=aScala.getY();
-	        matScala[1][2]=0.0;
-	        matScala[1][3]=0.0;
-
-	        matScala[2][0]=0.0;
-	        matScala[2][1]=0.0;
-	        matScala[2][2]=aScala.getZ();
-	        matScala[2][3]=0.0;
-
-	        matScala[3][0]=0.0;
-	        matScala[3][1]=0.0;
-	        matScala[3][2]=0.0;
-	        matScala[3][3]=1.0;
-	        std::cout << "\n inside3 creatematRotTraslaEscala, matScala=\n";
-	        	displayMatriz(matScala,4,4);
-	        	std::cout << "\n inside4 creatematRotTraslaEscala, matScala=\n";
-	 multiplicaMatrizPorMatriz( matRotTrasla,matScala,4,4,4,4 );
-	 std::cout << "\n inside5 creatematRotTraslaEscala, matRotTrasla=\n";
-	 displayMatriz(matRotTrasla,4,4);
-     std::cout<<"Endl"<<std::endl;
-	 std::cout << "\n inside6 creatematRotTraslaEscala, matRotTrasla=\n";
-
-}
 void Transformador::createMatRot ( float radX,float radY,float radZ) {
     //float anguloRad = angulo * (float)M_PI / 180.0f;
     //float anguloRad=angulo;
@@ -235,10 +204,11 @@ void Transformador::createMatRot ( float radX,float radY,float radZ) {
      matRotTrasla[3][3]= rotMatrix(3,3);
 
      //Matrix3d matRot_toQuaternion;
-     matRot_toQuaternion<< rotMatrix(0,0),rotMatrix(0,1),rotMatrix(0,2),
+     Matrix3d aMatrix;
+     aMatrix << rotMatrix(0,0),rotMatrix(0,1),rotMatrix(0,2),
                            rotMatrix(1,0),rotMatrix(1,1) ,rotMatrix(1,2),
                            rotMatrix(2,0),rotMatrix(2,1),rotMatrix(2,2);
-
+     this->setMatRot_toQuaternion(aMatrix);
      std::cout << "MatRot_toQuaternion="<<matRot_toQuaternion<<std::endl;
 //     Quaterniond q(matRot_toQuaternion);
 
@@ -248,101 +218,8 @@ void Transformador::createMatRot ( float radX,float radY,float radZ) {
 
      std::cout << "\nthe final array has been created\n\n"<<rotMatrix;
      std::cout << "end";
+     std::cout << "MatRot_toQuaternion="<<matRot_toQuaternion<<std::endl;
 
-
-}
-void Transformador::createMatRot ( char eje , float angulo) {
-    //float anguloRad = angulo * (float)M_PI / 180.0f;
-    //float anguloRad=angulo;
-    float anguloRad=angulo*180.0f/(float)M_PI;
-	if (angulo == 0.0 ){ // just create and identity matriz, put 1 on the left diagonal, 0 on the rest
-		matRotTrasla[0][0]=1.0;
-		matRotTrasla[0][1]=0.0;
-		matRotTrasla[0][2]=0.0;
-		matRotTrasla[0][3]=0.0;
-
-		matRotTrasla[1][0]=0.0;
-		matRotTrasla[1][1]=1.0;
-		matRotTrasla[1][2]=0.0;
-		matRotTrasla[1][3]=0.0;
-
-		matRotTrasla[2][0]=0.0;
-		matRotTrasla[2][1]=0.0;
-		matRotTrasla[2][2]=1.0;
-		matRotTrasla[2][3]=0.0;
-
-		matRotTrasla[3][0]=0.0;
-		matRotTrasla[3][1]=0.0;
-		matRotTrasla[3][2]=0.0;
-		matRotTrasla[3][3]=1.0;
-
-	}else   if (eje == 'X'){
-
-	        matRotTrasla[0][0]=1.0;
-	        matRotTrasla[0][1]=0.0;
-	        matRotTrasla[0][2]=0.0;
-	        matRotTrasla[0][3]=0.0;
-
-	        matRotTrasla[1][0]=0.0;
-	        matRotTrasla[1][1]=cosf(anguloRad);
-	        matRotTrasla[1][2]=sinf(anguloRad);
-	        matRotTrasla[1][3]=0.0;
-
-	        matRotTrasla[2][0]=0.0;
-	        matRotTrasla[2][1]=-sinf(anguloRad);
-	        matRotTrasla[2][2]=cosf(anguloRad);
-	        matRotTrasla[2][3]=0.0;
-
-	        matRotTrasla[3][0]=0.0;
-	        matRotTrasla[3][1]=0.0;
-	        matRotTrasla[3][2]=0.0;
-	        matRotTrasla[3][3]=1.0;
-
-	    }if (eje == 'Y'){
-
-	    	matRotTrasla[0][0]=cosf(anguloRad);
-	    	matRotTrasla[0][1]=0.0;
-	    	matRotTrasla[0][2]=-sinf(anguloRad);
-	    	matRotTrasla[0][3]=0.0;
-
-	    	matRotTrasla[1][0]=0.0;
-	    	matRotTrasla[1][1]=1.0;
-	    	matRotTrasla[1][2]=0.0;
-	    	matRotTrasla[1][3]=0.0;
-
-	    	matRotTrasla[2][0]=sinf(anguloRad);
-	    	matRotTrasla[2][1]=0.0;
-	    	matRotTrasla[2][2]=cosf(anguloRad);
-	    	matRotTrasla[2][3]=0.0;
-
-	    	matRotTrasla[3][0]=0.0;
-	    	matRotTrasla[3][1]=0.0;
-	    	matRotTrasla[3][2]=0.0;
-	    	matRotTrasla[3][3]=1.0;
-
-	    } else if (eje == 'Z') {
-
-	    	matRotTrasla[0][0]=cosf(anguloRad);
-	    	matRotTrasla[0][1]=sinf(anguloRad);
-	    	matRotTrasla[0][2]=0.0;
-	    	matRotTrasla[0][3]=0.0;
-
-	    	matRotTrasla[1][0]=-sinf(anguloRad);
-	    	matRotTrasla[1][1]=cosf(anguloRad);
-	    	matRotTrasla[1][2]=0.0;
-	    	matRotTrasla[1][3]=0.0;
-
-	    	matRotTrasla[2][0]=0.0;
-	    	matRotTrasla[2][1]=0.0;
-	    	matRotTrasla[2][2]=1.0;
-	    	matRotTrasla[2][3]=0.0;
-
-	    	matRotTrasla[3][0]=0.0;
-	    	matRotTrasla[3][1]=0.0;
-	    	matRotTrasla[3][2]=0.0;
-	    	matRotTrasla[3][3]=1.0;
-
-	    }
 
 }
 
@@ -632,6 +509,9 @@ void Transformador::createContaminatedSequence(char* inputFileName,char* outputF
         //myTransformador.createMatRotTraslaEscala('Z',0,traslacion,escala);
         std::cout<<"traslacion==========================="<<traslacion.getX()<< traslacion.getY()<<traslacion.getZ()<<"\n";
         myTransformador.createMatRotTraslaEscala(rotaX,rotaY,rotaZ,traslacion,escala);
+        std::cout << "MatRot_toQuaternion="<<myTransformador.getMatRot_toQuaternion()<<std::endl;
+        this->setMatRot_toQuaternion(myTransformador.getMatRot_toQuaternion());
+        std::cout << "MatRot_toQuaternion="<<this->getMatRot_toQuaternion()<<std::endl;
         //myTransformador.displayMatrizRotTrasla();
         std::cout << "beFORE WHILE";
         double gnoise; // variable to calculate Gaussian Noise
