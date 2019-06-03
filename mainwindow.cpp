@@ -84,6 +84,17 @@ MainWindow::MainWindow()
     connect(estimateSequenceBtoA, &QAction::triggered, this, &MainWindow::onEstimateSequenceBtoA);
 
 
+    QAction *estimateSequenceAtoB_RANSAC = new QAction(menuWindow);
+    estimateSequenceAtoB_RANSAC->setText(tr("Estimate sequence A to B with RANSAC"));
+    menuEstimate->addAction(estimateSequenceAtoB_RANSAC);
+    connect(estimateSequenceAtoB_RANSAC, &QAction::triggered, this, &MainWindow::onEstimateSequenceAtoB_RANSAC);
+
+    QAction *estimateSequenceBtoA_RANSAC = new QAction(menuWindow);
+    estimateSequenceBtoA_RANSAC->setText(tr("Estimate sequence B to A with RANSAC"));
+    menuEstimate->addAction(estimateSequenceBtoA_RANSAC);
+    connect(estimateSequenceBtoA_RANSAC, &QAction::triggered, this, &MainWindow::onEstimateSequenceBtoA_RANSAC);
+
+
 
     QMenu *menuView = menuBar->addMenu(tr("&View"));
     QAction *setDots = new QAction(menuWindow);
@@ -265,7 +276,7 @@ void MainWindow::onModifySequence()
 }
 //================================================================================================================
 
-void MainWindow::onEstimateSequence(int way){//Estimate transformations from dataset A to dataset B or dataset B to dataset A
+void MainWindow::onEstimateSequence(int way,bool RANSAC){//Estimate transformations from dataset A to dataset B or dataset B to dataset A
     //frequency=0.005;
     float rMax=0.0;
 
@@ -513,11 +524,16 @@ statusProgressBar->setValue(75);
          }
 
         //myRegistrador.rigid_transform_3D(newB,readingA,rotationEstimated,traslationEstimated);ok
+
         if (way == 0) {//A to B
-            myRegistrador.rigid_transform_3D(readingA,newB,rotationEstimated,traslationEstimated);
+            if (RANSAC)
+                myRegistrador.applyRANSAC(readingA,newB,rotationEstimated,traslationEstimated);
+            else
+                myRegistrador.rigid_transform_3D(readingA,newB,rotationEstimated,traslationEstimated);
             std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
             std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
             myRegistrador.applyTransformationsOverData(readingA,dataEstimated,rotationEstimated,traslationEstimated);
+
             myRegistrador.applyTransformationsOverQuaternion(dataAquaternion,dataQuaternionEstimated,rotationEstimated);
             MatrixXd newA(dataEstimated.rows(),3);
             newA = dataEstimated.block(0,0,dataEstimated.rows(),3);
@@ -531,7 +547,10 @@ statusProgressBar->setValue(75);
 
 
         } else { //B to A
-            myRegistrador.rigid_transform_3D(newB,readingA,rotationEstimated,traslationEstimated);
+            if (RANSAC)
+                myRegistrador.applyRANSAC(newB,readingA,rotationEstimated,traslationEstimated);
+            else
+                myRegistrador.rigid_transform_3D(newB,readingA,rotationEstimated,traslationEstimated);
             //myRegistrador.rigid_transform_3D(readingA,newB,rotationEstimated,traslationEstimated);
             std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
             std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
@@ -664,8 +683,8 @@ void MainWindow::onEstimateSequenceAtoB(){
     //update();
 
     //QThread::sleep(5);
-
-    onEstimateSequence(0);
+    bool RANSAC=false;
+    onEstimateSequence(0,RANSAC);
     statusBar()->showMessage(tr("Estimated secuence calculated..."));
     statusProgressBar->setValue(0);
     //this->setTextOnStatusBar("Estimated secuence calculated");
@@ -674,9 +693,37 @@ void MainWindow::onEstimateSequenceAtoB(){
 
 void MainWindow::onEstimateSequenceBtoA(){//estimate transformations from dataset B to dataset A
     statusBar()->showMessage(tr("Please wait while calculating ..."));
-    onEstimateSequence(1);
+    bool RANSAC=false;
+    onEstimateSequence(1,RANSAC);
     statusProgressBar->setValue(0);
     statusBar()->showMessage(tr("Estimated secuence calculated..."));
+}
+
+void MainWindow::onEstimateSequenceAtoB_RANSAC(){
+
+    //
+    //this->setTextOnStatusBar();
+    statusBar()->showMessage(tr("Please wait while calculating ..."));
+    //dialogMessage->update();
+    //dialogMessage->show();
+    //dialogMessage->repaint();
+    //update();
+
+    //QThread::sleep(5);
+    bool RANSAC=true;
+    onEstimateSequence(3,RANSAC);
+    statusBar()->showMessage(tr("Estimated secuence calculated, A to B, using RANSAC..."));
+    statusProgressBar->setValue(0);
+    //this->setTextOnStatusBar("Estimated secuence calculated");
+    //dialogMessage->close();
+}
+
+void MainWindow::onEstimateSequenceBtoA_RANSAC(){//estimate transformations from dataset B to dataset A
+    statusBar()->showMessage(tr("Please wait while calculating ..."));
+    bool RANSAC=true;
+    onEstimateSequence(4,RANSAC);
+    statusProgressBar->setValue(0);
+    statusBar()->showMessage(tr("Estimated secuence calculated, B TO A , using RANSAC..."));
 }
 
 void MainWindow::onModifyParameters(){

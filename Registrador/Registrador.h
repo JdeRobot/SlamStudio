@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Eigen/Dense"
 #include "Eigen/Geometry"
+#include <cstdlib>
 using namespace Eigen;
 //using namespace std;
 
@@ -19,6 +20,7 @@ public:
    // this method apply both rotation and traslation estimated matrix over a dataset
    void applyTransformationsOverData(MatrixXd dataInitial,MatrixXd& dataEstimated, MatrixXd rotationEstimated, MatrixXd traslationEstimated);
    void applyTransformationsOverQuaternion(MatrixXd dataInitialQuaternion,MatrixXd& dataEstimated, MatrixXd rotationEstimated);
+   void applyRANSAC(MatrixXd A, MatrixXd B, MatrixXd& bestRotationEstimated, MatrixXd& bestTraslationEstimated);
    Matrix3d matRot_toQuaternion; //important rotMatrix should be 3x3 to convert to a quaternion
    Matrix3d getMatRot_toQuaternion();
 };

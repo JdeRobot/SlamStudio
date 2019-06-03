@@ -1,5 +1,6 @@
 #include "Registrador.h"
 #include <iostream>
+#include <cstdlib>
 //#include "Eigen/SVD"
 //##include "Eigen/Geometry"
 //#include "Eigen/Dense"
@@ -15,6 +16,182 @@ Matrix3d Registrador::getMatRot_toQuaternion(){
     return matRot_toQuaternion;
 }
 
+void Registrador::applyRANSAC(MatrixXd A, MatrixXd B,  MatrixXd& bestRotation, MatrixXd& bestTraslation){
+    int iterations = 0;
+    int maxIterations =20;
+    MatrixXd FinalRotation;
+    Vector3d FinalTraslation;
+    double bestError = 99999;
+    unsigned t0, t1;
+    t0 = clock();
+    int numRows;
+    numRows=0;
+    numRows=A.rows();
+    int randMAX=32767;
+    int nvalores = 20;
+    while (iterations < maxIterations){ // Comenzamos el bucle RANSANC
+        iterations ++;
+        //std::cout << "B "<<B<<std::endl;
+
+        // Select 30 points inliers,
+        MatrixXd mInliers (nvalores,3);
+        MatrixXd mData (nvalores,3);
+        int i=0;
+        bool visitados[numRows] ={ false};
+        int aInlierIdx =0;
+        // Seleccionamos aleatoriamente los primeros supuestos inliers
+        while (i < nvalores) {
+
+            //get random value
+            //srand(time(0));
+            //srand(aInlierIdx);
+            //aInlierIdx = rand() % contLin;
+            //aInlierIdx=1+(int) (numRows*rand()/(RAND_MAX+1.0));
+            aInlierIdx=abs((1+(int) (numRows*rand()/(randMAX+1.0)))%numRows);
+            //if (visitados[aInlierIdx]==false) {
+                visitados[aInlierIdx]=true;
+                std::cout<<i << " aInlierIdx "<< aInlierIdx	<<std::endl;
+                mInliers.row(i)= A.row(aInlierIdx);
+                mData.row(i)= B.row(aInlierIdx);
+                i++;
+            //}
+        }
+
+
+        //std::cout << "mInliers "<<mInliers<<std::endl;
+
+        //Registrador myRegistrador;
+        MatrixXd rotationEstimated,traslationEstimated,inliersEstimated,second_xyz_aligned;
+        //miRegistradorHorn.align(B.transpose(),A.transpose(),ret_R,ret_t);
+        this->rigid_transform_3D(mInliers,mData,rotationEstimated,traslationEstimated);
+        this->applyTransformationsOverData(mInliers,inliersEstimated,rotationEstimated,traslationEstimated);
+
+
+        //std::cout << "mData \n"<< mData <<std:: endl;
+        //std::cout << "model_aligned2 \n"<< model_aligned2 <<std:: endl;
+        //MatrixXd alignment_error = model_aligned - data
+        MatrixXd mErr = inliersEstimated - mData;
+        //        int numCols = model_aligned2.cols();
+
+        //for (int w=0;w<numCols; w++){
+        //	out<<w <<" "<< model_aligned2(0,w) <<" "<< model_aligned2(1,w) <<" "<< model_aligned2(2,w) <<" "<< w <<" "<< w <<" "<< w <<" "<< w<<std:: endl;
+        //}
+        //out.close();
+        // calculo la media del error de la diferencia entre los inliers y los datos originales
+        //std::cout << "mErr  \n"<< mErr <<std:: endl;
+        // calculo el valor absoluto
+        //std::cout << "mErr abs \n"<< mErr.cwiseAbs() <<std:: endl;
+        // calculo la media por columnas
+
+        Vector3d meanInliers = (mErr.cwiseAbs()).colwise().mean();
+        //std::cout << "meanInliers \n"<< meanInliers <<std:: endl;
+
+        //Una vez estimado el modelo con los primeros inliers (matriz Rotacion y traslacion) intentaré encontrar cuales del resto de puntos escajarian en el modelo
+
+        for (int k = 0; k<numRows; k ++ ){
+
+            if (!visitados[k]) {
+                Vector3d newInlier = A.row(k);
+                MatrixXd newInlierTransformed;
+                this->applyTransformationsOverData(newInlier.transpose(),newInlierTransformed,rotationEstimated,traslationEstimated);
+                Vector3d dataVector = B.row(k);
+                Vector3d vErrorInlier = (dataVector - newInlierTransformed.transpose()).cwiseAbs();
+                //std::cout << "vErrorInlier "<< vErrorInlier(0)<<" "<< vErrorInlier(1)<<" "<<vErrorInlier(2)<<std::endl;
+                if (vErrorInlier(0)<0.0025 && vErrorInlier(1)<0.0025 && vErrorInlier(2)<0.0025) {
+                //if (vErrorInlier(0)<0.0001 && vErrorInlier(1)<0.0001 && vErrorInlier(2)<0.0001) {
+                    //std::cout << "vErrorInlier "<< vErrorInlier(0)<<" "<< vErrorInlier(1)<<" "<<vErrorInlier(2)<<std::endl;
+                    //std::cout << "newInlier "<< newInlier <<std::endl;
+                    visitados[k]=true;
+
+                }
+
+
+            }
+        }
+        int contTotalInliers =0;
+        for (int c=0;c< numRows;c++){
+            if (visitados[c]) contTotalInliers ++;
+        }
+        MatrixXd mFinalInliers (contTotalInliers,3);
+        MatrixXd mFinalData (contTotalInliers,3);
+        MatrixXd mFinalEstimated;
+        int idxFinalInlier=0;
+        for (int g = 0; g < numRows; g++){
+
+            if (visitados[g]){
+                mFinalInliers.row(idxFinalInlier)=A.row(g);
+                mFinalData.row(idxFinalInlier)=B.row(g);
+                idxFinalInlier++;
+            }
+        }
+        std::cout << "Num final Inliers "<< idxFinalInlier <<std::endl;
+        this->rigid_transform_3D(mFinalInliers,mFinalData,rotationEstimated,traslationEstimated); // Estimamos matriz rotacion traslacion
+        this->applyTransformationsOverData(mFinalInliers,mFinalEstimated,rotationEstimated,traslationEstimated);
+
+        //std::cout << "mData \n"<< mFinalData <<std:: endl;
+
+        //std::cout << "model_final \n"<< modelAligned_final <<std:: endl;
+
+            //MatrixXd alignment_error = model_aligned - data
+        mErr = mFinalEstimated - mFinalData;
+
+
+        MatrixXd mErr2 = mErr.array().pow(2);
+        double errorNumber = sqrt(mErr2.sum()/mErr.rows());
+
+        //std::cout << "err2 "<< err2 <<std::endl;
+        std::cout << "RMSE= "<< errorNumber <<std::endl;
+
+        if (bestError > errorNumber){
+            FinalRotation=rotationEstimated;
+            FinalTraslation=traslationEstimated;
+            bestError = errorNumber;
+        }
+
+
+    }
+    t1 = clock();
+    bestRotation=FinalRotation;
+    bestTraslation=FinalTraslation;
+    std::cout << "BestError= "<< bestError <<std::endl;
+    std::cout << "FinalRotation= "<< FinalRotation <<std::endl;
+    std::cout << "FinalTraslation= "<< FinalTraslation <<std::endl;
+
+
+    // Una vez tenemos el mejor modelo, aplicamos a los puntos la mejor estimacion de la matriz de rotacion y traslacion a los
+    //  y guardamos en un fichero la transformación resultante de dichos puntos
+
+    //this->rigid_transform_3D(A,B,bestRotation,bestTraslation); // Estimate best rotation and Traslation Matrix
+    //this->applyTransformationsOverData(A,bestDataEstimated,bestRotation,bestTraslation);
+
+
+//    MatrixXd Final_xyz_aligned;
+//    Final_xyz_aligned = FinalRotation * B.transpose() ;
+//    MatrixXd mFinalTransMatrix (Final_xyz_aligned.rows(),Final_xyz_aligned.cols()),  Final_model_aligned2;
+    //        for (int j=0; j< Final_xyz_aligned.cols(); j++ ) {
+
+    //        	mFinalTransMatrix.col(j) << FinalTraslation(0), FinalTraslation(1), FinalTraslation(2);
+
+    //        }
+    //        std::cout << "mFinalTransMatrix \n"<< mFinalTransMatrix <<std:: endl;
+    //        Final_model_aligned2=Final_xyz_aligned+mFinalTransMatrix;
+
+    //        //std::cout << "Final_model_aligned2 \n"<< Final_model_aligned2 <<std:: endl;
+    //        std::cout << "Final_model_aligned2.rows() \n"<< Final_model_aligned2.rows() <<std:: endl;
+    //        std::cout << "Final_model_aligned2.cols() \n"<< Final_model_aligned2.cols() <<std:: endl;
+    //        //MatrixXd alignment_error = model_aligned - data
+
+    //    int numCols = Final_model_aligned2.cols();
+
+    //    for (int w=0;w<numCols; w++){
+    //    	out<<w <<" "<< Final_model_aligned2(0,w) <<" "<< Final_model_aligned2(1,w) <<" "<< Final_model_aligned2(2,w) <<" "<< w <<" "<< w <<" "<< w <<" "<< w<<std:: endl;
+    //    }
+    //    out.close();
+
+        double time = (double(t1-t0)/CLOCKS_PER_SEC);
+        std::cout << "Execution Time: " << time << std::endl;
+
+}
 
 void Registrador::rigid_transform_3D_normalized(MatrixXd A, MatrixXd B , MatrixXd& R, MatrixXd& t){
     // compare size of matrix A y B

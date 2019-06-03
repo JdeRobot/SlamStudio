@@ -152,9 +152,11 @@ private slots:
     void onOpenFileA();
     void onOpenFileB();
     void onModifySequence();
-    void onEstimateSequence(int way); // way==0 means A to B .  way==1 means B to A
+    void onEstimateSequence(int way,bool RANSAC); // way==0 means A to B .  way==1 means B to A
     void onEstimateSequenceAtoB();
     void onEstimateSequenceBtoA();
+    void onEstimateSequenceAtoB_RANSAC();
+    void onEstimateSequenceBtoA_RANSAC();
     void onExit();
     void onSetDots();//Menu View:indicate that dataset will be displayed as 3d points
     void onSetLines();//Menu View:indicate that dataset will be displayed as 3d lines
