@@ -592,7 +592,20 @@ statusProgressBar->setValue(75);
         }
     }
 
-    if (!dataSetB_isLoaded_NotTransformed) { //if datasetB is the result of transforming datasetA
+    if (dataSetB_isLoaded_NotTransformed) {         //if datasetB is loaded from file
+        Quaterniond q(1,0,0,0);
+        Quaterniond p(myRegistrador.getMatRot_toQuaternion());
+
+        q.normalize();
+        p.normalize();
+        std::cout<<"qwxyz="<<q.w()<<" "<<q.x()<<" "<<q.y()<<" "<<q.z()<<std::endl;
+        std::cout<<"pwxyz="<<p.w()<<" "<<p.x()<<" "<<p.y()<<" "<<p.z()<<std::endl;
+        //std::cout<<"quat_FromRotEstimatedwxyz="<<quat_FromRotEstimated.w()<<" "<<quat_FromRotEstimated.x()<<" "<<quat_FromRotEstimated.y()<<" "<<quat_FromRotEstimated.z()<<std::endl;
+        float myAngularDistance=p.angularDistance(q);
+        std::cout<<"MyAngularDistance="<<myAngularDistance<<std::endl;
+
+    } else {//if datasetB is the result of transforming datasetA
+
         Quaterniond q(myTransformador.getMatRot_toQuaternion());
         Quaterniond p(myRegistrador.getMatRot_toQuaternion());
 
