@@ -113,6 +113,10 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
     cosmicNoiseDeviation = new QLineEdit;
     cosmicNoiseDeviation->setText("0");
 
+    gaussianNoiseCheck = new QCheckBox();
+    gaussianNoiseCheck->setChecked(false);
+    cosmicNoiseCheck = new QCheckBox();
+    cosmicNoiseCheck->setChecked(false);
     QGroupBox *frequencyGroupBox=new QGroupBox(tr("Interpolate FREQUENCY "));
     QVBoxLayout *frequencyVBox = new QVBoxLayout;
 
@@ -230,9 +234,10 @@ DialogScalaTraslaRota::DialogScalaTraslaRota(QWidget *parent)
 
     leftLayout->addWidget(label2);
     leftLayout->addWidget(labelGaussNoise);
-
+    leftLayout->addWidget(gaussianNoiseCheck);
     leftLayout->addWidget(gaussianNoiseDeviation);
     leftLayout->addWidget(labelCosmicNoise);
+    leftLayout->addWidget(cosmicNoiseCheck);
     leftLayout->addWidget(cosmicNoiseDeviation);
 
 
@@ -283,6 +288,13 @@ void DialogScalaTraslaRota::onOK()
             fType=2;
         }
     }
+
+    if (gaussianNoiseCheck->isChecked()){
+        gNoise=1;
+    } else gNoise=0;
+    if (cosmicNoiseCheck->isChecked()){
+        cNoise=1;
+    } else cNoise=0;
    double freq = frequency->text().toDouble();
    std::cout<< "onOK" <<std::endl;
    ((MainWindow*)(parent))->performModifySequence(sx,sy,sz,tx,ty,tz,rx,ry,rz,gNoise,cNoise,tOffset,fType,freq);
@@ -299,8 +311,8 @@ void DialogScalaTraslaRota::onOK()
 }
 
 void DialogScalaTraslaRota::setDataDialog(DataDialogScalaTraslaRota* aModel){
-    dialogModel = aModel;
-    double value = 0.0;
+   dialogModel = aModel;
+   double value = 0.0;
    traslaX->setText( QString::number(dialogModel->getTraslaX(), 'f', 6));
    traslaY->setText( QString::number(dialogModel->getTraslaY(), 'f', 6));
    traslaZ->setText( QString::number(dialogModel->getTraslaZ(), 'f', 6));
@@ -313,6 +325,15 @@ void DialogScalaTraslaRota::setDataDialog(DataDialogScalaTraslaRota* aModel){
    timeOffset->setText( QString::number(dialogModel->getTimeOffset(), 'f', 6));
    gaussianNoiseDeviation->setText( QString::number(dialogModel->getGaussianNoiseDeviation(), 'f', 6));
    cosmicNoiseDeviation->setText( QString::number(dialogModel->getCosmicNoiseDeviation(), 'f', 6));
+
+   if (dialogModel->getGaussianNoiseDeviation() == 1){
+       gaussianNoiseCheck->setChecked(true);
+   }
+
+   if (dialogModel->getCosmicNoiseDeviation() == 1){
+       cosmicNoiseCheck->setChecked(true);
+
+   }
    int frequencyType=dialogModel->getFrequencyType();
    if (frequencyType==0){
        std::cout<< "DialogScalaTraslaRota::setDataDialog frequencyType="<< frequencyType <<std::endl;

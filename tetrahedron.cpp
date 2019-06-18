@@ -65,6 +65,7 @@ int side = qMin(width, height);
 
 void Tetrahedron::paintGL(){
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+glClearColor(1.0f, 1.0f, 1.0f, 1.0f);//set background color to white
 draw();
 }
 
@@ -100,15 +101,15 @@ for (int i = 0; i < 4; ++i) {
 // DRAW A  GRID
         glBegin(GL_LINES);
         for(int i=0;i<=100;i++) {
-            if (i==0) { glColor3f(.6,.3,.3); } else { glColor3f(.25,.25,.25); };
+            if (i==0) { glColor3f(.6,.3,.3); } else { glColor3f(.35,.35,.35); };
             glVertex3f(i,0,0);
             glVertex3f(i,0,100);
-            if (i==0) { glColor3f(.3,.3,.6); } else { glColor3f(.25,.25,.25); };
+            if (i==0) { glColor3f(.3,.3,.6); } else { glColor3f(.35,.35,.35); };
             glVertex3f(0,0,i);
             glVertex3f(100,0,i);
 
         };
-        glColor3f(.3,.6,.3);
+        glColor3f(.3,1.0,.3);
         glVertex3f(0,0,0);
         glVertex3f(0,100,0);
         glEnd();
@@ -126,7 +127,7 @@ for (int i = 0; i < 4; ++i) {
                 }
                 contLin1 ++;
             }
-            glColor3f(.3,.3,.6);
+            glColor3f(.3,.3,1.0);
             //glBegin(GL_POINTS);
             contLin2 --;
             for (int j=0; j < contLin2; j++){// Bucle for, important the < simbol instead of <=
@@ -136,7 +137,7 @@ for (int i = 0; i < 4; ++i) {
 
             }
             contLin2 ++;
-            glColor3f(.6,.3,.3);
+            glColor3f(1.0,.3,.3);
             contLin3 --;
             for (int k=0; k < contLin3; k++){// Bucle for, important the < simbol instead of <=
 
@@ -160,7 +161,7 @@ for (int i = 0; i < 4; ++i) {
                 }
                 contLin1 ++;
             }
-            glColor3f(.3,.3,.6);
+            glColor3f(.3,.3,1.0);
 
 
             //glBegin(GL_POINTS);
@@ -173,7 +174,7 @@ for (int i = 0; i < 4; ++i) {
             }
             contLin2 ++;
 
-            glColor3f(.6,.3,.3);
+            glColor3f(1.0,.3,.3);
             contLin3 --;
             for (int k=0; k < contLin3; k++){// Bucle for, important the < simbol instead of <=
 

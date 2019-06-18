@@ -1415,30 +1415,30 @@ double AjusteTiempo::calculateOffsetTXYZ6(int maxLine,  MatrixXd A1,MatrixXd B2)
         z=B2.row(i)(3);
         // the Distance to the origin (0,0,0) of a 3d point (x,y, z)
         // should be calculated like sqrt( (0-x)^2 + (0-y)^2 + (0-z)^2)
-        time_Distance3DB2.row(i)<< B2.row(i)(0), sqrt( x*x + y*y + z*z );
+        time_Distance3DB2.row(i)<< t, sqrt( x*x + y*y + z*z );
     }
     std::cout<<"time_Distance3DA1.rows()"<<time_Distance3DA1.rows()<<"\n";
     std::cout<<"time_Distance3DB2.rows()"<<time_Distance3DB2.rows()<<"\n";
     std::cout<<" CALCULATE OFFSET TXYZ6.with normalized cross correlation......................................"<<std::endl;
 
-    std::cout << std::setprecision(6) << std::fixed;
-    std::ofstream outA( "/home/tfm3/workspace/AjusteTiempo/miSalidaDistanceA.txt" );
-    outA << std::setprecision(6) << std::fixed;
-    for (int i=0;i++;i < time_Distance3DA1.rows()){
-        outA<< time_Distance3DA1(0) << " " << time_Distance3DA1(1) << std::endl;
-    }
+//    std::cout << std::setprecision(6) << std::fixed;
+//    std::ofstream outA( "/home/tfm3/workspace/AjusteTiempo/miSalidaDistanceA.txt" );
+//    outA << std::setprecision(6) << std::fixed;
+//    for (int i=0;i++;i < time_Distance3DA1.rows()){
+//        outA<< time_Distance3DA1(0) << " " << time_Distance3DA1(1) << std::endl;
+//    }
 
-    outA.close();
+//    outA.close();
 
 
-    std::cout << std::setprecision(6) << std::fixed;
-    std::ofstream outB( "/home/tfm3/workspace/AjusteTiempo/miSalidaDistanceB.txt" );
-    outB << std::setprecision(6) << std::fixed;
-    for (int i=0;i++;i < time_Distance3DB2.rows()){
-        outB<< time_Distance3DB2(0) << " " << time_Distance3DB2(1) << std::endl;
-    }
+//    std::cout << std::setprecision(6) << std::fixed;
+//    std::ofstream outB( "/home/tfm3/workspace/AjusteTiempo/miSalidaDistanceB.txt" );
+//    outB << std::setprecision(6) << std::fixed;
+//    for (int i=0;i++;i < time_Distance3DB2.rows()){
+//        outB<< time_Distance3DB2(0) << " " << time_Distance3DB2(1) << std::endl;
+//    }
 
-    outB.close();
+//    outB.close();
 
     std::cout << std::setprecision(6) << std::fixed;
     std::ofstream outRegresion( "/home/tfm3/workspace/AjusteTiempo/miSalidaRegresion.txt" );
@@ -1556,17 +1556,17 @@ double AjusteTiempo::calculateOffsetTXYZ6(int maxLine,  MatrixXd A1,MatrixXd B2)
               r= fabs(r);
 
               // r is the correlation coefficient at "delay"
-              std::cout <<"r ="<<r<<std::endl;
+//              std::cout <<"r ="<<r<<std::endl;
 
-              //std::cout <<"delay ="<<offset<<std::endl;
-              if ((fabs(r) <= 1 )&& (fabs(r) > rMax)){
+//              //std::cout <<"delay ="<<offset<<std::endl;
+//              if ((fabs(r) <= 1 )&& (fabs(r) > rMax)){
 
-                  rMax=r;
-                 // delayMax=delay;
+//                  rMax=r;
+//                 // delayMax=delay;
 
-              }
-              return rMax;
-
+//              }
+//              return rMax;
+                return r;
 }
 
 

@@ -376,20 +376,20 @@ void MainWindow::onEstimateSequence(int way,bool RANSAC){//Estimate transformati
         std::cout<<"rMax="<<rMax<<std::endl;
 
         //Apply estimated offset over B
-        for (int i=0; i< tBBpca.rows(); i++){
-            Vector4d myNewVector(((tBBpca.row(i))(0) + timeOffsetEstimated),(tBBpca.row(i))(1),(tBBpca.row(i))(2),(tBBpca.row(i))(3));
-            //Vector4d myNewVector(((tBBpca.row(i))(0) + offsetEstimated),(tBBpca.row(i))(1),(tBBpca.row(i))(2),(tBBpca.row(i))(3));
-            //contAddedValues++;
+//        for (int i=0; i< tBBpca.rows(); i++){
+//            Vector4d myNewVector(((tBBpca.row(i))(0) + timeOffsetEstimated),(tBBpca.row(i))(1),(tBBpca.row(i))(2),(tBBpca.row(i))(3));
+//            //Vector4d myNewVector(((tBBpca.row(i))(0) + offsetEstimated),(tBBpca.row(i))(1),(tBBpca.row(i))(2),(tBBpca.row(i))(3));
+//            //contAddedValues++;
 
 
 
-            tBBpca.row(i)<<myNewVector.transpose();
-         }
-         //myInterpolator.interpolateSerieToFrequency2(frequency, tAApca);
-        //Check if the time is aligned for A and B
-         for (int t=0; t<10; t++){
-                std::cout<<"================================================================timeA["<<t<<"]="<<tAApca(t,0)<<"  timeB["<<t<<"]="<<tBBpca(t,0)<<std::endl;
-         }
+//            tBBpca.row(i)<<myNewVector.transpose();
+//         }
+//         //myInterpolator.interpolateSerieToFrequency2(frequency, tAApca);
+//        //Check if the time is aligned for A and B
+//         for (int t=0; t<10; t++){
+//                std::cout<<"================================================================timeA["<<t<<"]="<<tAApca(t,0)<<"  timeB["<<t<<"]="<<tBBpca(t,0)<<std::endl;
+//         }
 
     //} else { // from if (timeOffset > 0) {
     //     timeOffsetEstimated=0;
@@ -525,7 +525,7 @@ statusProgressBar->setValue(75);
 
         //myRegistrador.rigid_transform_3D(newB,readingA,rotationEstimated,traslationEstimated);ok
 
-        if (way == 0) {//A to B
+        if (way == 0 || way == 2) {//A to B
             if (RANSAC)
                 myRegistrador.applyRANSAC(readingA,newB,rotationEstimated,traslationEstimated);
             else
@@ -546,7 +546,7 @@ statusProgressBar->setValue(75);
             //myRegistrador.applyTransformationsOverData(newA,dataEstimated,rotationEstimated,traslationEstimated);
 
 
-        } else { //B to A
+        } else if (way==1 || way==3){ //B to A
             if (RANSAC)
                 myRegistrador.applyRANSAC(newB,readingA,rotationEstimated,traslationEstimated);
             else
@@ -572,18 +572,23 @@ statusProgressBar->setValue(75);
 
     } else{
         medScala = (myScalaSVD(0)+myScalaSVD(1)+myScalaSVD(2))/3.0;
-        if (way == 0) { // A to B
+        if (way == 0 || way == 2) { // A to B
         //myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
-        myRegistrador.rigid_transform_3D(readingA,readingB,rotationEstimated,traslationEstimated);
+            if (RANSAC)
+                myRegistrador.applyRANSAC(readingA,readingB,rotationEstimated,traslationEstimated);
+            else
+                myRegistrador.rigid_transform_3D(readingA,readingB,rotationEstimated,traslationEstimated);
         std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
         std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
         //myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
         myRegistrador.applyTransformationsOverData(readingA,dataEstimated,rotationEstimated,traslationEstimated);
         myRegistrador.applyTransformationsOverQuaternion(dataAquaternion,dataQuaternionEstimated,rotationEstimated);
 
-        } else { // B to A
-
-        myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
+        } else if (way == 1 || way == 3){ // B to A
+            if (RANSAC)
+                myRegistrador.applyRANSAC(readingB,readingA,rotationEstimated,traslationEstimated);
+            else
+                myRegistrador.rigid_transform_3D(readingB,readingA,rotationEstimated,traslationEstimated);
         std::cout<< "MainWindow::onEstimateSequence rotationEstimated="<<rotationEstimated <<std::endl;
         std::cout<< "MainWindow::onEstimateSequence traslationEstimated="<<traslationEstimated <<std::endl;
         myRegistrador.applyTransformationsOverData(readingB,dataEstimated,rotationEstimated,traslationEstimated);
@@ -724,7 +729,7 @@ void MainWindow::onEstimateSequenceAtoB_RANSAC(){
 
     //QThread::sleep(5);
     bool RANSAC=true;
-    onEstimateSequence(3,RANSAC);
+    onEstimateSequence(2,RANSAC);
     statusBar()->showMessage(tr("Estimated secuence calculated, A to B, using RANSAC..."));
     statusProgressBar->setValue(0);
     //this->setTextOnStatusBar("Estimated secuence calculated");
@@ -734,7 +739,7 @@ void MainWindow::onEstimateSequenceAtoB_RANSAC(){
 void MainWindow::onEstimateSequenceBtoA_RANSAC(){//estimate transformations from dataset B to dataset A
     statusBar()->showMessage(tr("Please wait while calculating ..."));
     bool RANSAC=true;
-    onEstimateSequence(4,RANSAC);
+    onEstimateSequence(3,RANSAC);
     statusProgressBar->setValue(0);
     statusBar()->showMessage(tr("Estimated secuence calculated, B TO A , using RANSAC..."));
 }

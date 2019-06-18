@@ -195,6 +195,14 @@ void DialogShowEstimated::setDataDialog(DataDialogShowEstimated* aModel){
 
 
         labelTitle->setText("Show ESTIMATED transformations B TO A:");
+    } else if (dialogModel->getDialogType()==2) {
+
+
+        labelTitle->setText("Show ESTIMATED transformations A TO B RANSAC:");
+    } else if (dialogModel->getDialogType()==3) {
+
+
+        labelTitle->setText("Show ESTIMATED transformations B TO A RANSAC:");
     }
    double myScale=dialogModel->getScaleX();
    traslaX->setText( QString::number((dialogModel->getTraslaX()*myScale), 'f', 6));

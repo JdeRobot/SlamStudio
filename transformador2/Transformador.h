@@ -2,8 +2,10 @@
 #ifndef TRANSFORMADOR_H
 #define TRANSFORMADOR_H
 #include "Point3D.h"
+
 #include "Eigen/Geometry" //for quaternion
 #include "Eigen/Dense"
+#include "Eigen/SVD"
 using namespace Eigen;
 
 class Transformador {

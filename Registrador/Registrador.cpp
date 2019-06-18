@@ -22,13 +22,14 @@ void Registrador::applyRANSAC(MatrixXd A, MatrixXd B,  MatrixXd& bestRotation, M
     MatrixXd FinalRotation;
     Vector3d FinalTraslation;
     double bestError = 99999;
+    float errorThreshold = 0.001;
     unsigned t0, t1;
     t0 = clock();
     int numRows;
     numRows=0;
     numRows=A.rows();
     int randMAX=32767;
-    int nvalores = 20;
+    int nvalores = int(numRows/10);
     while (iterations < maxIterations){ // Comenzamos el bucle RANSANC
         iterations ++;
         //std::cout << "B "<<B<<std::endl;
@@ -97,8 +98,8 @@ void Registrador::applyRANSAC(MatrixXd A, MatrixXd B,  MatrixXd& bestRotation, M
                 Vector3d dataVector = B.row(k);
                 Vector3d vErrorInlier = (dataVector - newInlierTransformed.transpose()).cwiseAbs();
                 //std::cout << "vErrorInlier "<< vErrorInlier(0)<<" "<< vErrorInlier(1)<<" "<<vErrorInlier(2)<<std::endl;
-                if (vErrorInlier(0)<0.0025 && vErrorInlier(1)<0.0025 && vErrorInlier(2)<0.0025) {
-                //if (vErrorInlier(0)<0.0001 && vErrorInlier(1)<0.0001 && vErrorInlier(2)<0.0001) {
+                //if (vErrorInlier(0)<0.0025 && vErrorInlier(1)<0.0025 && vErrorInlier(2)<0.0025) {
+                if (vErrorInlier(0)<errorThreshold && vErrorInlier(1)<errorThreshold && vErrorInlier(2)<errorThreshold) {
                     //std::cout << "vErrorInlier "<< vErrorInlier(0)<<" "<< vErrorInlier(1)<<" "<<vErrorInlier(2)<<std::endl;
                     //std::cout << "newInlier "<< newInlier <<std::endl;
                     visitados[k]=true;

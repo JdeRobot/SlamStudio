@@ -14,6 +14,7 @@ class QPushButton;
 class QTextBox;
 class MainWindow;
 class QRadioButton;
+class QCheckBox;
 
 class DialogScalaTraslaRota : public QDialog
 {
@@ -54,6 +55,8 @@ private:
     QLineEdit *frequency;//for interpolation to a given frequency
     //QLabel *labPCAIndex;
     //QLineEdit *pcaIndex;
+    QCheckBox *gaussianNoiseCheck;
+    QCheckBox *cosmicNoiseCheck;
     QLineEdit *gaussianNoiseDeviation;
     QLineEdit *cosmicNoiseDeviation;
 
