@@ -2,9 +2,7 @@
 
 
 DataDialogParameters::DataDialogParameters()
-{
-
-}
+= default;
 DataDialogParameters::DataDialogParameters(int maxLines, double step,double windowSize){
     MAXLINES=maxLines;
     stepOffset=step;

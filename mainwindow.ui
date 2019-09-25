@@ -1,24 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>1000</width>
+    <height>800</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="openFileA"/>
+    <addaction name="openFileB"/>
+    <addaction name="exitApp"/>
+   </widget>
+   <widget class="QMenu" name="menuSequence">
+    <property name="title">
+     <string>Sequence Manager </string>
+    </property>
+    <addaction name="modifySequence"/>
+   </widget>
+   <widget class="QMenu" name="menuEstimate">
+    <property name="title">
+     <string>Estimator</string>
+    </property>
+    <addaction name="estimateSequenceAtoB"/>
+    <addaction name="estimateSequenceBtoA"/>
+    <addaction name="estimateSequenceAtoB_RANSAC"/>
+    <addaction name="estimateSequenceBtoA_RANSAC"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="setDots"/>
+    <addaction name="setLines"/>
+    <addaction name="setViewJustEstimated"/>
+   </widget>
+   <widget class="QMenu" name="menuConf">
+    <property name="title">
+     <string>Configuration</string>
+    </property>
+    <addaction name="setConfParameters"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSequence"/>
+   <addaction name="menuEstimate"/>
+   <addaction name="menuView"/>
+   <addaction name="menuConf"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="openFileA">
+   <property name="text">
+    <string>Open dataset A</string>
+   </property>
+  </action>
+  <action name="openFileB">
+   <property name="text">
+    <string>Open dataset B</string>
+   </property>
+  </action>
+  <action name="exitApp">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="modifySequence">
+   <property name="text">
+    <string>Modify Sequence</string>
+   </property>
+  </action>
+  <action name="estimateSequenceAtoB">
+   <property name="text">
+    <string>Estimate sequence A to B</string>
+   </property>
+  </action>
+  <action name="estimateSequenceBtoA">
+   <property name="text">
+    <string>Estimate sequence B to A</string>
+   </property>
+  </action>
+  <action name="estimateSequenceAtoB_RANSAC">
+   <property name="text">
+    <string>Estimate sequence A to B with RANSAC</string>
+   </property>
+  </action>
+  <action name="estimateSequenceBtoA_RANSAC">
+   <property name="text">
+    <string>Estimate sequence B to A with RANSAC</string>
+   </property>
+  </action>
+  <action name="setDots">
+   <property name="text">
+    <string>3d dots</string>
+   </property>
+  </action>
+  <action name="setLines">
+   <property name="text">
+    <string>3d lines</string>
+   </property>
+  </action>
+  <action name="setViewJustEstimated">
+   <property name="text">
+    <string>show only estimated data</string>
+   </property>
+  </action>
+  <action name="setConfParameters">
+   <property name="text">
+    <string>modify Parameters</string>
+   </property>
+  </action>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

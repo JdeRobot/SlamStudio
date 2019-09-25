@@ -1,21 +1,7 @@
-#include <iostream>
-#include <ctime>
-#include <unistd.h>
-#include <fstream>
-#include <sys/time.h>
-#include <iomanip>
-#include <cmath>
-#include <math.h>
-#include <cstdlib>
-#include "Eigen/Dense"
-#include "Eigen/SVD"
-using namespace Eigen;
-#include <limits>
-#include <stdbool.h>
+
+
 #include "AjusteTiempo.h"
-#include "Interpolator/Interpolator.h"
-
-
+using namespace Eigen;
 AjusteTiempo::AjusteTiempo(){
 	std::cout<< "constructor por defecto AjusteTiempo" <<std::endl;
 }
@@ -477,7 +463,7 @@ void AjusteTiempo::calcularAutocorrelacion3(char coordinate, int maxLine, int in
 	// maxLine : numero máximo de líneas
 
 	std::cout << std::setprecision(6) << std::fixed;
-	std::ifstream inputFile( "/home/tfm3/workspace/AjusteTiempo/miEntradaA.txt" );
+	std::ifstream inputFile( "/home/tfm3/workspace/AjusteTiempo/original_data.txt" );
 	//inputFile >> std::setprecision(6) >> std::fixed;
 
     std::cout << std::setprecision(6) << std::fixed;

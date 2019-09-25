@@ -11,6 +11,16 @@
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
 #include "Eigen/Dense"
+#include <QColorDialog>
+#include <QMouseEvent>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <QMouseEvent>
+#include <QOpenGLShaderProgram>
+#include <QCoreApplication>
+#include <math.h>
+#include <iostream>
+
 class Tetrahedron : public QOpenGLWidget, protected QOpenGLFunctions
 {
 Q_OBJECT

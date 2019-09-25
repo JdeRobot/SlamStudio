@@ -1,21 +1,8 @@
 
-#include <iostream>
-#include <ctime>
-#include <unistd.h>
-#include <fstream>
-#include <sys/time.h>
-#include <iomanip>
-#include <cmath>
-#include <math.h>
-#include <cstdlib>
-#include "Eigen/Dense"
-#include "Eigen/SVD"
-using namespace Eigen;
-#include <limits>
-#include <stdbool.h>
+
 #include "GeneratorPCA.h"
 
-
+using namespace Eigen;
 
 
 GeneratorPCA::GeneratorPCA(){
@@ -78,7 +65,7 @@ void GeneratorPCA::calculatePCAbySVD(int maxLine, MatrixXd& A){
 	//READS A FILE WITH THE DATA
 
 	std::cout << std::setprecision(6) << std::fixed;
-		std::ifstream infile( "/home/tfm3/workspace/GeneratorPCA/miEntradaA.txt" );
+		std::ifstream infile( "/home/tfm3/workspace/GeneratorPCA/original_data.txt" );
 		//inputFile >> std::setprecision(6) >> std::fixed;
 
 	    std::cout << std::setprecision(6) << std::fixed;
@@ -111,7 +98,7 @@ void GeneratorPCA::calculatePCAbySVD(int maxLine, MatrixXd& A){
 		infile.close();
 
 		// Calculate PCA ,
-		//MatrixXd A (contLin,3);
+
 
 	A = readingA.block(0,0,contLin,3);
 	Eigen::MatrixXd aligned = A.rowwise() - A.colwise().mean();
@@ -183,11 +170,10 @@ void GeneratorPCA::calculatePCAbySVD( int rotation,MatrixXd& A , MatrixXd& A2 ,M
 	 * https://forum.kde.org/viewtopic.php?f=9&t=110265
 	 */
     // int rotation , means one of the six possibles orders of pca solution. XYZ, XZY, YZX,YXZ,ZXY,ZYX
-    std::cout <<"A.rows()="<<A.rows()<<std::endl;
-    std::cout <<"A.colwise().mean()="<<A.colwise().mean()<<std::endl;
+
 	Eigen::MatrixXd aligned = A.rowwise() - A.colwise().mean();
 	Eigen::MatrixXd cov = aligned.adjoint() * aligned;
-		cov = cov / (A.rows() - 1);
+	cov = cov / (A.rows() - 1);
 	//aligned = aligned / (aligned.rows() - 1);
 
 	// we can directly take SVD
@@ -204,31 +190,26 @@ void GeneratorPCA::calculatePCAbySVD( int rotation,MatrixXd& A , MatrixXd& A2 ,M
 	MatrixXd Aux1=pcaTransform.block(0,0,3,3);
 	//IMPORTANT : change order of columns . Column 0 by colum 2. When calculate PCA normally returns cols in increasing value.
 	//When calculate PCA using SVD columns are returned in decreasing value.
-	/*MatrixXd Aux2= pcaTransform.block(0,0,3,3);
-	Aux2.col(0)=Aux1.col(0);
-	Aux1.col(0)=Aux1.col(2);
-	Aux1.col(2)=Aux2.col(0);
-	*/
-	//int cont=2;
+
 	rotatePCA(rotation,Aux1);
-	std::cout <<"svd.matrixV_A1="<<Aux1<<std::endl;
-	std::cout <<"antesDeTerminarcalculatePCAbySVD1"<<std::endl;
+	//std::cout <<"svd.matrixV_A1="<<Aux1<<std::endl;
+	//std::cout <<"antesDeTerminarcalculatePCAbySVD1"<<std::endl;
 	pcaTransform= Aux1.block(0,0,3,3);
-	std::cout <<"antesDeTerminarcalculatePCAbySVD1"<<std::endl;
-	std::cout <<"svd.matrixV_pcaTransform="<<pcaTransform<<std::endl;
+	//std::cout <<"antesDeTerminarcalculatePCAbySVD1"<<std::endl;
+	//std::cout <<"svd.matrixV_pcaTransform="<<pcaTransform<<std::endl;
 	Eigen::MatrixXd projected = aligned * pcaTransform;
-	std::cout <<"antesDeTerminarcalculatePCAbySVD"<<std::endl;
+	//std::cout <<"antesDeTerminarcalculatePCAbySVD"<<std::endl;
 
 
 
-	std::cout <<"pcaTransform SVD="<<pcaTransform<<std::endl;
-	std::cout <<"pcaTransformRight="<<svd.matrixV().rightCols(3)<<std::endl;
-	std::cout <<"pcaTransformLeft="<<svd.matrixV().leftCols(3)<<std::endl;
-	std::cout <<"svd.matrixV="<<svd.matrixV()<<std::endl;
+	//std::cout <<"pcaTransform SVD="<<pcaTransform<<std::endl;
+	//std::cout <<"pcaTransformRight="<<svd.matrixV().rightCols(3)<<std::endl;
+	//std::cout <<"pcaTransformLeft="<<svd.matrixV().leftCols(3)<<std::endl;
+	//std::cout <<"svd.matrixV="<<svd.matrixV()<<std::endl;
 	//std::cout <<"svd.matrixU="<<svd.matrixU()<<std::endl;
 	// Return the dataset transformed by pca
     A2=projected.block(0,0,projected.rows(),projected.cols());
-    std::cout <<"A2="<<A2<<std::endl;
+    //std::cout <<"A2="<<A2<<std::endl;
 
 }
 
@@ -236,7 +217,7 @@ void GeneratorPCA::calculatePCA(int maxLine, MatrixXd& A){
 
 
 	std::cout << std::setprecision(6) << std::fixed;
-	std::ifstream infile( "/home/tfm3/workspace/GeneratorPCA/miEntradaA.txt" );
+	std::ifstream infile( "/home/tfm3/workspace/GeneratorPCA/original_data.txt" );
 	//inputFile >> std::setprecision(6) >> std::fixed;
 
     std::cout << std::setprecision(6) << std::fixed;
@@ -301,16 +282,6 @@ void GeneratorPCA::calculatePCA(int maxLine, MatrixXd& A){
 	// Map the dataset in the new three dimensional space.
 	centered = centered * pcaTransform;
 
-	/*for (int i= 0; i< contLin; i++){
-		//std::cout <<"i="<<i<<std::endl;
-		//std::cout <<"centered.row(i)="<<centered.row(i)<<std::endl;
-		VectorXd aRow = centered.row(i);
-		outA << aRow(0)<<" "<<aRow(1)<<" "<<aRow(2)<<"\n";
-		//std::cout <<"aRow="<<aRow<<std::endl;
-		//outA << centered.row(i).[1], centered.row(i).[2],centered.row(i).[3];
-		//outA << centered.row(i,1), centered.row(i,2),centered.row(i,3);
-
-	}*/
 
     outA.close();
 
@@ -321,28 +292,4 @@ void GeneratorPCA::calculatePCA(int maxLine, MatrixXd& A){
 }
 
 
-/*int main( int argc, char** argv )
-{
-	//std::cout << std::setprecision(6) << std::fixed;
-
-
-
-
-		std::cout <<"	ESTOY EN BLOQUE 2="<<std::endl;
-        GeneratorPCA miGeneratorPCA;
-		MatrixXd A,B;
-		double offset = 28;
-		int maxLine = 2500;
-		int intervalo = 200;		//micorrelador.calcularAutocorrelacion( maxLine,intervalo, offset, A,  B);
-		//micorrelador.calcularAutocorrelacion2( maxLine,intervalo, offset, A,  B);
-
-		miGeneratorPCA.calculatePCA(maxLine, A);
-		miGeneratorPCA.calculatePCAbySVD(maxLine, B);
-		//micorrelador.calcularAutocorrelacion3( 'y',maxLine,intervalo, offset, A,  B);
-		//micorrelador.calcularAutocorrelacion3( 'z',maxLine,intervalo, offset, A,  B);
-
-
-
-
-}*/
 

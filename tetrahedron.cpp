@@ -1,13 +1,5 @@
 #include "tetrahedron.h"
-#include <QColorDialog>
-#include <QMouseEvent>
-#include <GL/glu.h>
-#include <GL/glut.h>
-#include <QMouseEvent>
-#include <QOpenGLShaderProgram>
-#include <QCoreApplication>
-#include <math.h>
-#include <iostream>
+
 Tetrahedron::Tetrahedron(QWidget *parent)
 : QOpenGLWidget(parent)
 {
@@ -36,17 +28,9 @@ glEnable(GL_CULL_FACE);
 
 void Tetrahedron::resizeGL(int width, int height)
 {
-/*glViewport(0, 0, width, height);
-glMatrixMode(GL_PROJECTION);
-glLoadIdentity();
-GLfloat x = GLfloat(width) / height;
-//glFrustum(-x, +x, -1.0, +1.0, 4.0, 15.0);
-//glOrtho(-30.0, 30.0, -30.0, 30.0, -30.0, 30.0);;
-glOrtho(-11.0, 11.0, -11.0, 11.0, -11.0, 11.0);;
-glMatrixMode(GL_MODELVIEW);
-*/
 
-int side = qMin(width, height);
+
+    int side = qMin(width, height);
     glViewport((width - side) / 2, (height - side) / 2, side, side);
 
     glMatrixMode(GL_PROJECTION);
@@ -80,6 +64,7 @@ void Tetrahedron::draw()
 };
 glMatrixMode(GL_MODELVIEW);
 glLoadIdentity();
+glPointSize(2);   
 glTranslatef(0.0, 0.0, -10.0);
 glScalef(m_scale,m_scale,m_scale);
 //glTranslatef(0.0, 0.0, -5.0);
@@ -214,11 +199,11 @@ void Tetrahedron::wheelEvent(QWheelEvent *event){
     std::cout <<"wheelEvent"<<"delta="<<event->delta()<<std::endl;
     if(event->delta() > 0) {
         // Zoom in
-        m_scale +=0.0025;
+        m_scale +=0.0050;
 
     } else {
         // Zooming out
-         m_scale -=0.0025;
+         m_scale -=0.0050;
     }
     std::cout <<"wheelEvent"<<"m_scale="<<m_scale<<std::endl;
     update();
@@ -238,32 +223,6 @@ void Tetrahedron::mouseDoubleClickEvent(QMouseEvent *event)
     */
 }
 
-/*
-int Tetrahedron::faceAtPosition(const QPoint &pos)
-{
-const int MaxSize = 1024;
-GLuint buffer[MaxSize];
-GLint viewport[4];
-makeCurrent();
-glGetIntegerv(GL_VIEWPORT, viewport);
-glSelectBuffer(MaxSize, buffer);
-glRenderMode(GL_SELECT);
-glInitNames();
-glPushName(0);
-glMatrixMode(GL_PROJECTION);
-glPushMatrix();
-glLoadIdentity();
-//gluPickMatrix(GLdouble(pos.x()), GLdouble(viewport[3] - pos.y()),5.0, 5.0, viewport);
-GLfloat x = GLfloat(width()) / height();
-glFrustum(-x, x, -1.0, 1.0, 4.0, 15.0);
-draw();
-glMatrixMode(GL_PROJECTION);
-glPopMatrix();
-if (!glRenderMode(GL_RENDER))
-return -1;
-return buffer[3];
-}
-*/
 
 void Tetrahedron::setDataView(Eigen::MatrixXd dataModel){
    for (int i=0;i<dataModel.rows();i++){
