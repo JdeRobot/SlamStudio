@@ -1,14 +1,14 @@
-#### Installation Instructions:-
-##### Prerequisites:-
-###### 1. Follow [Qt5 installation](https://wiki.qt.io/Install_Qt_5_on_Ubuntu).
+## Installation Instructions:-
+### Prerequisites:-
+#### 1. Follow [Qt5 installation](https://wiki.qt.io/Install_Qt_5_on_Ubuntu).
 
-###### 2. Install OpenGL
+#### 2. Install OpenGL
 ```
 sudo apt-get update
 sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
 ```
 
-#### Build:
+## Build:
 ```
 git clone https://github.com/JdeRobot/slam-testbed.git
 git checkout debugging
@@ -19,12 +19,12 @@ cmake ..
 make -j4
 ```
 
-#### Run:
+## Run:
 ```
 ./slam_testbed
 ```
 
-#### Testing: 
+## Testing: 
 
 >> File > Open dataset A > select the "original_data.txt" file in data folder.
 
