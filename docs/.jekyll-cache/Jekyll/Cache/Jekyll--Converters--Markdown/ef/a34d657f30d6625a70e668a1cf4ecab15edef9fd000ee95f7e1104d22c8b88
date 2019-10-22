@@ -1,0 +1,36 @@
+I"^<h2 id="how-to-use">How to use</h2>
+
+<p>In the following sections you will learn how to use the application.</p>
+
+<h3 id="structure-of-files">Structure of files</h3>
+
+<p>Firstly, the sequences must have a specific structure to be read by SLAM-Testbed. The file must be a txt file that should contain all of these fields for each entry:</p>
+
+<ul>
+  <li>Timestamp.</li>
+  <li>Position: x, y, z.</li>
+  <li>Orientation representated as quaternion: qx, qy, qz, qw.</li>
+</ul>
+
+<p>separating each data by a space and break line after the ‘qw’.</p>
+
+<h3 id="load-a-sequence">Load a sequence</h3>
+
+<p>Open the application, click on ‘<em>File</em>’ at the top menu and then click on ‘<em>Open dataset A</em>’ and search your sequence file.</p>
+
+<p>If you only have one sequence, read the next section.</p>
+
+<p>In the case of having two sequences, for example, if you have a sequence and its Groundtruth, load the second secuence in ‘<em>File/Open dataset B</em>’ and move to the last section to know how to estimate the transformation between them.</p>
+
+<h3 id="modify-a-sequence">Modify a sequence</h3>
+
+<p>After loading one sequence, you can apply different transformations to it to create a new sequence to test SLAM-Testbed.</p>
+
+<p>In order to do so, click on ‘Secuence Manager &gt; Modify sequence’ to see the transformation menu and choose what transformation you want to do to the original sequence.</p>
+
+<h3 id="estimate-transformation">Estimate transformation</h3>
+
+<p>Once you have two loaded sequences, you can estimate the transformation between them in order to compare them and obtain different types of information like MSE (Mean square error).</p>
+
+<p>To do this, click on ‘<em>Estimator</em>’ and select whatever you prefer: estimate sequence A to B or B to A. After this, wait a few moments and you will see all the information of the estimation.</p>
+:ET

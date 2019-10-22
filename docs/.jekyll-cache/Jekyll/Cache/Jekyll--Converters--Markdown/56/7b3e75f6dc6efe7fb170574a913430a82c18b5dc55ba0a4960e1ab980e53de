@@ -1,0 +1,120 @@
+I"2
+<div class="feature__wrapper">
+
+  
+
+    
+
+    <div class="feature__item">
+      <div class="archive__item">
+        
+          <div class="archive__item-teaser">
+            <img src="/assets/images/cover/cover_column_1.png" alt="How to use" />
+            
+          </div>
+        
+
+        <div class="archive__item-body">
+          
+            <h2 class="archive__item-title">How to use</h2>
+          
+
+          
+            <div class="archive__item-excerpt">
+              <p>Learn to use SLAM-Testbed.</p>
+
+            </div>
+          
+
+          
+            <p><a href="/how_to_use/" class="btn btn--primary">Learn more</a></p>
+          
+        </div>
+      </div>
+    </div>
+  
+
+    
+
+    <div class="feature__item">
+      <div class="archive__item">
+        
+          <div class="archive__item-teaser">
+            <img src="/assets/images/cover/cover_column_2.png" alt="fully responsive" />
+            
+          </div>
+        
+
+        <div class="archive__item-body">
+          
+            <h2 class="archive__item-title">Contribute</h2>
+          
+
+          
+            <div class="archive__item-excerpt">
+              <p>Contribute to improve this project.</p>
+
+            </div>
+          
+
+          
+            <p><a href="/contribute/" class="btn btn--primary">Learn more</a></p>
+          
+        </div>
+      </div>
+    </div>
+  
+
+    
+
+    <div class="feature__item">
+      <div class="archive__item">
+        
+          <div class="archive__item-teaser">
+            <img src="/assets/images/cover/cover_column_3.png" alt="100% free" />
+            
+          </div>
+        
+
+        <div class="archive__item-body">
+          
+            <h2 class="archive__item-title">More information</h2>
+          
+
+          
+            <div class="archive__item-excerpt">
+              <p>Find out more about the requirements and objectives of the project.</p>
+
+            </div>
+          
+
+          
+            <p><a href="/about/" class="btn btn--primary">Learn more</a></p>
+          
+        </div>
+      </div>
+    </div>
+  
+
+</div>
+
+<h2 id="what-is-slam-testbed">What is SLAM-Testbed?</h2>
+
+<p>SLAM-Testbed is a tool in development used to analyze the trajectories obtained by <a href="https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping"><strong>SLAM</strong></a> algorithms. This application allows to:</p>
+
+<ul>
+  <li>Visualize the trajectory on 3D.</li>
+  <li>Generate a new sequence from one that already exists and visualize both or load a second sequence.</li>
+  <li>Obtain the following estimations projecting one sequence on the other:
+    <ul>
+      <li>Scale (x, y, z).</li>
+      <li>Translation (x, y, z).</li>
+      <li>Rotation (yaw, pitch, roll).</li>
+      <li>Time offset.</li>
+      <li>Correlation max value.</li>
+      <li>Root mean square error (RMSE).</li>
+    </ul>
+  </li>
+</ul>
+
+:ET
