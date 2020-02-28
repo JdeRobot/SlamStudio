@@ -1,5 +1,5 @@
 # Slam Testbed
-More information about installation usage can be found  [here](https://jderobot.github.io/slam-testbed/) .
+More information about installation and usages can be found  [here](https://jderobot.github.io/slam-testbed/) .
 ## Installation Instructions:-
 ### Prerequisites:-
 #### 1. Follow [Qt5 installation](https://wiki.qt.io/Install_Qt_5_on_Ubuntu) Or
