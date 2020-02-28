@@ -1,0 +1,13 @@
+# main links
+main:
+
+  - title: "Installation"
+    url: /installation/
+
+  - title: "How to use"
+    url: /how_to_use/
+
+  - title: About
+    url: /about/
+
+

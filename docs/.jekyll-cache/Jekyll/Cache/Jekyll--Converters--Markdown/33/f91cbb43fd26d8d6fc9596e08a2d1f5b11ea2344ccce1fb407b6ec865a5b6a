@@ -1,0 +1,47 @@
+I"�<p>We have tested the library in Ubuntu 16.04, but it should be easy to compile in other platforms.
+SLAM-Testbed works under Qt5 to create the user interface, so it’s multiplatform. Below are the steps for installing the software.</p>
+
+<h2 id="ubuntu">Ubuntu</h2>
+<h3 id="dependencies">Dependencies</h3>
+
+<h4 id="qt5">QT5</h4>
+<p>We use QT5 to create the user interface. Download and install instructions can be found at: <a href="https://wiki.qt.io/Install_Qt_5_on_Ubuntu">Qt5 installation</a>.</p>
+
+<h4 id="opengl">OpenGL</h4>
+<p>You need to ensure that you have alredy installed OpenGL. If not, you can install it following these instructions:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get update
+sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
+</code></pre></div></div>
+
+<h3 id="installation">Installation</h3>
+
+<p>Follow the next steps:</p>
+
+<ol>
+  <li>
+    <p>Download the software.</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> git clone https://github.com/JdeRobot/slam-testbed
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Build and compile.
+ Move to the directory where you have the clone repository and compile following these commands:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> mkdir build
+ cd build
+ qmake ../SlamTestBed.pro
+ make
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Run the application:
+ Run the application from ‘Build’ directory:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ./SlamTestBed	
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+:ET
