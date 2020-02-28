@@ -8,7 +8,7 @@ header:
     - label: "<i class='fas fa-download'></i> Install now"
       url: "/installation/"
 excerpt: 
-  Analize your SLAM sequences
+  Analyze your SLAM sequences
 
 feature_row:
   - image_path: /assets/images/cover/cover_column_1.png
