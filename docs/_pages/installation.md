@@ -53,7 +53,7 @@ Follow the next steps:
 	Run the application from 'Build' directory:
 
 	```
-	./slam_testbed
+	./slam_Testbed
 	```
 
 

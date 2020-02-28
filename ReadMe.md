@@ -25,7 +25,7 @@ make -j4
 
 ## Run:
 ```
-./slam_testbed
+./slam_Testbed
 ```
 
 ## Testing: 
