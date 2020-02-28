@@ -1,3 +1,5 @@
+#Slam Testbed
+More information about installation usage can be found  [here](https://jderobot.github.io/slam-testbed/) .
 ## Installation Instructions:-
 ### Prerequisites:-
 #### 1. Follow [Qt5 installation](https://wiki.qt.io/Install_Qt_5_on_Ubuntu) Or
@@ -23,7 +25,7 @@ make -j4
 
 ## Run:
 ```
-./slam_testbed
+./slam-Testbed
 ```
 
 ## Testing: 
@@ -33,4 +35,6 @@ make -j4
 >> File > Open dataset B > select the "modified_data.txt" file in data folder.
 
 >> Estimator > Estimate Sequence from A to B. 
+
+
 

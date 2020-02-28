@@ -18,7 +18,7 @@ Firstly, the sequences must have a specific structure to be read by SLAM-Testbed
 
 - Timestamp.
 - Position: x, y, z.
-- Orientation representated as quaternion: qx, qy, qz, qw.
+- Orientation represented as quaternion: qx, qy, qz, qw.
 
 separating each data by a space and break line after the 'qw'. 
 
