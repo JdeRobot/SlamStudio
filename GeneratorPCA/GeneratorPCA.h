@@ -1,7 +1,19 @@
 #ifndef GENERATORPCA_H
 #define GENERATORPCA_H
 #include <iostream>
+#include <iostream>
+#include <ctime>
+#include <unistd.h>
+#include <fstream>
+#include <sys/time.h>
+#include <iomanip>
+#include <cmath>
+#include <math.h>
+#include <cstdlib>
 #include "Eigen/Dense"
+#include "Eigen/SVD"
+#include <limits>
+#include <stdbool.h>
 using namespace Eigen;
 //using namespace std;
 

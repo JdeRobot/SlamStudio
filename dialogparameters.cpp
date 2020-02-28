@@ -6,9 +6,7 @@
 #include "configuration.h"
 
 DialogParameters::DialogParameters()
-{
-
-}
+= default;
 
 DialogParameters::DialogParameters(QWidget *parent)
     : QDialog(parent)

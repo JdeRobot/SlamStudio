@@ -21,7 +21,6 @@ public:
     DialogParameters();
     DialogParameters(QWidget *parent = 0);
     DataDialogParameters* dataModel;
-    //DialogScalaTraslaRota(QWidget *parent = 0, DataDialogScalaTraslaRota* aModel );
     MainWindow *parent;
 private:
     QLabel *labMaxLines;

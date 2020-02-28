@@ -1,10 +1,23 @@
 #ifndef INTERPOLATOR_H
 #define INTERPOLATOR_H
 #include <iostream>
+#include <ctime>
+#include <unistd.h>
+#include <fstream>
+#include <sys/time.h>
+#include <iomanip>
+#include <cmath>
+#include <math.h>
+#include <cstdlib>
 #include "Eigen/Dense"
-//#include "../AjusteTiempo/AjusteTiempo.h"
+#include "Eigen/SVD"
+#include <limits>
+#include <stdbool.h>
+#include "../AjusteTiempo/AjusteTiempo.h"
+#include "../configuration.h"
+
 using namespace Eigen;
-//using namespace std;
+
 
 class Interpolator {
 private:
@@ -12,10 +25,6 @@ private:
 
 public:
    Interpolator ();
-   //void genera2Series(int maxLine, double proporcionFrecuencia,double offset, MatrixXd& A, MatrixXd& B);
-   //void calcularAutocorrelacion(int maxLine,int intervalo, double offset, MatrixXd&A, MatrixXd&B);
-   //void calcularAutocorrelacion2(int maxLine,int intervalo, double offset, MatrixXd&A, MatrixXd&B);
-   //void calcularAutocorrelacion3(char coordinate, int maxLine, int intervalo,double offset, MatrixXd& A1, MatrixXd& B2);
    void interpolate(int maxLine, MatrixXd& A, MatrixXd& B);
    void reduceSequence (int maxLine, MatrixXd& aMatrix, int numberToDelete);
    void reduceSequence (int step, MatrixXd& aMatrix);
