@@ -2,6 +2,9 @@
 #define DIALOGSHOWESTIMATED_H
 #include <QDialog>
 #include "datadialogshowestimated.h"
+#include <QtWidgets>
+#include <iostream>
+//#include "mainwindow.h"
 
 class QDialogButtonBox;
 class QGroupBox;

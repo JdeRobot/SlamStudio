@@ -1,7 +1,8 @@
 #ifndef DIALOGMESSAGE_H
 #define DIALOGMESSAGE_H
 #include <QDialog>
-
+#include <QtWidgets>
+#include <iostream>
 
 class QDialogButtonBox;
 class QGroupBox;
@@ -30,13 +31,6 @@ private:
 public slots:
     void onOK();
     void onCancel();
-
-
-
-
- public:
-    void setText(QString aText);
-
 
 };
 

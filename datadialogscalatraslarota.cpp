@@ -1,7 +1,5 @@
 #include "datadialogscalatraslarota.h"
-DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(){
-
-}
+DataDialogScalaTraslaRota::DataDialogScalaTraslaRota() = default;
 DataDialogScalaTraslaRota::DataDialogScalaTraslaRota(double sX,double sY, double sZ,double tX,double tY, double tZ, double rX, double rY, double rZ,double gN , double cN,double tO, int freqType,double freq){
     scaleX=sX;
     scaleY=sY;
@@ -110,9 +108,7 @@ void DataDialogScalaTraslaRota::setRotaZ(double aValue){
 void DataDialogScalaTraslaRota::setGaussianNoiseDeviation(double aValue){
     gNoise=aValue;
 };
-void DataDialogScalaTraslaRota::setCosmicNoiseDeviation(double aValue){
-    cNoise=aValue;
-};
+
 void DataDialogScalaTraslaRota::setTimeOffset(double aValue){
     timeOffset=aValue;
 };

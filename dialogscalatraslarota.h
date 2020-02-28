@@ -1,6 +1,9 @@
 #ifndef DIALOGSCALATRASLAROTA_H
 #define DIALOGSCALATRASLAROTA_H
 #include <QDialog>
+#include <QtWidgets>
+#include <iostream>
+
 #include "datadialogscalatraslarota.h"
 
 //#include "mainwindow.h"
@@ -22,7 +25,6 @@ class DialogScalaTraslaRota : public QDialog
 
 public:
     DialogScalaTraslaRota(QWidget *parent = 0);
-    //DialogScalaTraslaRota(QWidget *parent = 0, DataDialogScalaTraslaRota* aModel );
     MainWindow *parent;
 
 private:
@@ -30,12 +32,12 @@ private:
     QLabel *label2;
     QLabel *labelGaussNoise;
     QLabel *labelCosmicNoise;
-    QLineEdit *saveFile;
+    QLineEdit *saveFile{};
     QLabel *labScaleX;
     QLineEdit *scaleX;
-    QLabel *labScaleY;
+    QLabel *labScaleY{};
     QLineEdit *scaleY;
-    QLabel *labScaleZ;
+    QLabel *labScaleZ{};
     QLineEdit *scaleZ;
     QLabel *labTraslaX;
     QLineEdit *traslaX;
@@ -66,13 +68,13 @@ private:
 
     //QCheckBox *Gaussian_Noise;
     //QCheckBox *Cosmic_Noise;
-    QDialogButtonBox *buttonBox;
-    QPushButton *modifyButton;
+    QDialogButtonBox *buttonBox{};
+    QPushButton *modifyButton{};
     //QPushButton *moreButton;
-    QWidget *extension;
+    QWidget *extension{};
     QPushButton *buttonOK;
     QPushButton *buttonCancel;
-    DataDialogScalaTraslaRota* dialogModel;
+    DataDialogScalaTraslaRota* dialogModel{};
 public slots:
     void onOK();
     void onCancel();

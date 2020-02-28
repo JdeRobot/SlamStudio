@@ -2,6 +2,17 @@
 #define WINSLAM_H
 #include <QWidget>
 #include "Eigen/Dense"
+#include "mainwindow.h"
+#include "tetrahedron.h"
+#include <QSlider>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QPushButton>
+#include <QDesktopWidget>
+#include <QApplication>
+#include <QMessageBox>
+#include <iostream>
 
 class QSlider;
 class QPushButton;
@@ -11,7 +22,7 @@ class MainWindow;
 
 class Winslam : public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     Winslam(MainWindow *mw);
@@ -28,18 +39,14 @@ protected:
 
 
 private slots:
-    //void dockUndock();
+
 
 private:
     QSlider *createSlider();
 
     Tetrahedron *tetrahedron;
 
-    /*QSlider *xSlider;
-    QSlider *ySlider;
-    QSlider *zSlider;
-    QPushButton *dockBtn;
-    */
+
     MainWindow *mainWindow;
     double arx[15000]= {0.0};
     double ary[15000]= {0.0};

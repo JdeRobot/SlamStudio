@@ -23,7 +23,6 @@ Statistics::Statistics(MatrixXd data1,MatrixXd data2){
 MatrixXd Statistics::calculateDiffError (MatrixXd data1, MatrixXd data2){
 	// Find the error
 		    	MatrixXd err = data1 - data2;
-		    	//std::cout << "err "<<std::endl<< err <<std::endl;
 		    	MatrixXd err2 = sqrt(err.array().pow(2));
 		    	return err2;
 

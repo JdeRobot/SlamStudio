@@ -24,7 +24,6 @@ double rotaZ;
 double gNoise;
 double cNoise;
 double timeOffset;
-int pcaIndex;
 double frequency;
 int frequencyType; // 0 maxFrequency, 1 MinFrequency ,2 customFrequency
 
@@ -58,7 +57,6 @@ void setRotaX(double aValue);
 void setRotaY(double aValue);
 void setRotaZ(double aValue);
 void setGaussianNoiseDeviation(double aValue);
-void setCosmicNoiseDeviation(double aValue);
 void setTimeOffset(double aValue);
 void setFrequencyType(int aValue);
 void setFrequency(double aValue);

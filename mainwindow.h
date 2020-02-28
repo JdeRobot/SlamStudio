@@ -1,8 +1,40 @@
-/*
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMenuBar>
+#include <QMenu>
+#include <QMessageBox>
+#include <QtWidgets>
+#include <QDialog>
+#include <QProgressBar>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "Eigen/Dense"
+#include "Eigen/Geometry"
+#include "Properties/ReaderProperties.h"
+#include "configuration.h"
+#include "Point3D.h"
+#include "Statistics/Statistics.h"
+#include "datadialogshowestimated.h"
+#include "dialogscalatraslarota.h"
+#include "winslam.h"
+#include "dialogshowestimated.h"
+#include "datadialogparameters.h"
+#include "dialogparameters.h"
+#include "dialogmessage.h"
+#include "transformation/Transformador.h"
+#include "Registrador/Registrador.h"
+#include "GeneratorPCA/GeneratorPCA.h"
+#include "ModuloEscala/FindScala.h"
+
+class QAction;
+class QLabel;
+class QMenu;
+class GLWidget;
+class QDialog;
+class QProgressBar;
 
 namespace Ui {
 class MainWindow;
@@ -13,66 +45,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-private:
-    Ui::MainWindow *ui;
-};
-
-#endif // MAINWINDOW_H
-*/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-
-#include <QMainWindow>
-#include <string>
-#include "winslam.h"
-#include "datadialogscalatraslarota.h"
-#include "datadialogshowestimated.h"
-#include "dialogscalatraslarota.h"
-#include "dialogshowestimated.h"
-#include "dialogmessage.h"
-#include "datadialogparameters.h"
-#include "dialogparameters.h"
-#include "transformador2/Transformador.h"
-#include "Registrador/Registrador.h"
-#include "GeneratorPCA/GeneratorPCA.h"
-#include "ModuloEscala/FindScala.h"
-#include "AjusteTiempo/AjusteTiempo.h"
-#include "Interpolator/Interpolator.h"
-#include "Point3D.h"
-#include "Eigen/Dense"
-#include "Eigen/Geometry"
-class QAction;
-class QActionGroup;
-class QLabel;
-class QMenu;
-class GLWidget;
-class QDialog;
-class QProgressBar;
-//class Point3D;
-
-class MainWindow : public QMainWindow
-
-{
-    Q_OBJECT
-
-public:
-    MainWindow();
-    void loadFile(const QString &fileName, MatrixXd &dataset, int dataSet_A_B);
-    void setScala(double X, double Y, double Z);
-    void setTrasla(double X, double Y, double Z);
-    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ,double gNoise,double cNoise, double timeOffset,int pcaIndex,double frequency);
-    void setTextOnStatusBar(QString aText);
-    void setProperties();
-//    void setMaxLines(int numLines);
-//    void setOffsetWindow(double offsetWindow);
-//    void setOffsetStep(double offsetStep);
-//    int getMaxLines();
-//    double getOffsetWindow();
-//    double getOffsetStep();
+    void loadFile(const QString &fileName, Eigen::MatrixXd &dataset, int dataSet_A_B);
+    void performModifySequence(double scalaX,double scalaY,double scalaZ, double traslaX,double traslaY, double traslaZ,double rotaX,double rotaY,double rotaZ, int gNoise, int cNoise, double timeOffset,int pcaIndex,double frequency, double gnoise_value);
     void cleanDataSets(); // this method clean the datasets, datasetA,datasetB and datasetEstimated
     QWidget *myWinSlam;
     QLabel *statusLabel;
@@ -97,18 +73,12 @@ public:
 
     DialogMessage* dialogMessage;
 
-    //PARAMETERS
-    //int MAXLINES=40000;
-    //double offsetWindow=5;
-    //double offsetStep=0.01;
-
 
     //============================== Model Objects to estimate transformation
     Transformador myTransformador; //Perform transformations (Scale,Rotation,Traslation,Gaussian and Cosmic Noise ) over dataset
     Registrador myRegistrador;  //Estimate Rotation and Traslation over a dataset
     GeneratorPCA myGeneratorPCA;//Calculate PCA over a dataset
     FindScala myFindScala; // to find the scala
-    AjusteTiempo myFindOffset; //to find timeOffset
     Interpolator myInterpolator;// to interpolate
     char * myInputFileName;
     char * myOutputFileName;
@@ -117,38 +87,29 @@ public:
     //============================== Matrix that will store the data model
     Eigen::MatrixXd readingA;
     Eigen::MatrixXd readingB;
-    Eigen::MatrixXd readingAbkp;
-    Eigen::MatrixXd readingBbkp;
-    Eigen::MatrixXd dataAquaternion;
-    Eigen::MatrixXd dataBquaternion;
+    Eigen::MatrixXd readingA_xyz;
+    Eigen::MatrixXd readingB_xyz;
+    Eigen::MatrixXd readingAquaternion;
+    Eigen::MatrixXd readingBquaternion;
     Eigen::MatrixXd dataQuaternionEstimated;
     Eigen::MatrixXd dataEstimated;
     Eigen::MatrixXd rotationEstimated;
     Eigen::MatrixXd traslationEstimated;
-    Eigen::Quaterniond quat_FromRotEstimated; //quaternion from rotation estimated
     Eigen::VectorXd timeA; //[10000];
     Eigen::VectorXd timeB; //[10000];
-    //double timeA [10000];
-    //double timeB [10000];
+
 
     //===============================
     double timeOffset;
     double timeOffsetEstimated;
-    double rMax;
     double frequency=-1;
     int ftype=-1;
     bool dataSetB_isLoaded_NotTransformed=false;//this variable indicate if dataset B is loaded from another file or if is the result of transforming dataSet A
 
-    //CONFIGURATION PROPERTIES
-    //double interpolationStep=0.0;
-    //int maxLineInputFile=0.0;
-    //int maxLineInterpolation=0.0;
-    //double offsetLimit=0.0;
 
 
-
-    //Point3D * myScala;
-private slots:
+private:
+    Ui::MainWindow *ui;
     void onOpenFileA();
     void onOpenFileB();
     void onModifySequence();
@@ -162,9 +123,7 @@ private slots:
     void onSetLines();//Menu View:indicate that dataset will be displayed as 3d lines
     void onViewJustEstimated();//Menu View; indicate that only estimated dataset will be shown
     void onModifyParameters();//Menu View: Shows several configuration parameters to be changed. Example:Max Number of Lines for dataset
-protected:
-    //Winslam myWinSlam;
 
 };
 
-#endif
+#endif // MAINWINDOW_H
